@@ -1,0 +1,6 @@
+node_modules
+assets/dist
+static/
+static_root/
+staticfiles/
+collected_static/

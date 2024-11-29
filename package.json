@@ -1,0 +1,55 @@
+{
+    "name": "iipdash",
+    "version": "0.1.0",
+    "description": "Integrated Infrastructure Planning (IIP) Dashboard",
+    "main": "index.js",
+    "scripts": {
+        "build": "webpack build --mode=production",
+        "format": "prettier --write \"assets/**/*.{js,css,scss}\" \".eslintrc.js\" \"webpack.config.js\"",
+        "lint": "eslint --fix --ext .js assets/js webpack.config.js",
+        "start": "webpack serve",
+        "test": "echo \"Error: no test specified yet\" && exit 1",
+        "watch": "webpack --config webpack.config.js --watch --mode=development"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/tehamalab/iipdash.git"
+    },
+    "keywords": [
+        "iip"
+    ],
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/tehamalab/iipdash/issues"
+    },
+    "homepage": "https://github.com/tehamalab/iipdash#readme",
+    "dependencies": {
+        "jquery": "^3.7.1",
+        "lodash": "^4.17.21"
+    },
+    "devDependencies": {
+        "autoprefixer": "^10.4.20",
+        "copy-webpack-plugin": "^11.0.0",
+        "css-loader": "^6.11.0",
+        "eslint": "^8.57.1",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-config-standard": "^17.1.0",
+        "eslint-plugin-import": "^2.31.0",
+        "eslint-plugin-n": "^16.6.2",
+        "eslint-plugin-prettier": "^5.2.1",
+        "eslint-plugin-promise": "^6.6.0",
+        "eslint-plugin-vue": "^9.31.0",
+        "expose-loader": "^5.0.0",
+        "mini-css-extract-plugin": "^2.9.2",
+        "postcss-loader": "^7.3.4",
+        "precss": "^4.0.0",
+        "prettier": "^3.4.1",
+        "sass": "^1.81.0",
+        "sass-loader": "^13.3.3",
+        "style-loader": "^3.3.4",
+        "webpack": "^5.96.1",
+        "webpack-cli": "^5.1.4",
+        "webpack-dev-server": "^4.15.2"
+    }
+}

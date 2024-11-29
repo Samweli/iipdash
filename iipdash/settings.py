@@ -142,8 +142,22 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+# https://docs.djangoproject.com/en/5.1/howto/static-files/deployment/
+
+STATICFILES_DIRS = env.list("STATICFILES_DIRS", default=[
+    BASE_DIR / "static",
+    BASE_DIR / "assets/dist"
+])
+
+STATICFILES_FINDERS = (
+    "django.contrib.staticfiles.finders.FileSystemFinder",
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder"
+)
 
 STATIC_URL = env("STATIC_URL", default="/static/")
+
+STATIC_ROOT = env("STATIC_ROOT", default=(BASE_DIR / "static_root"))
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
