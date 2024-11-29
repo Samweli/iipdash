@@ -1,0 +1,15 @@
+from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as CoreUserAdmin
+
+from .models import User
+
+
+@admin.register(User)
+class UserAdmin(CoreUserAdmin):
+    list_display_links = ['username', 'email']
+    readonly_fields = ['uuid']
+    fieldsets = CoreUserAdmin.fieldsets + (
+        ('Additional info', {
+            'fields': ['uuid']
+        }),
+    )

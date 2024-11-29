@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "users"
 ]
 
 MIDDLEWARE = [
@@ -82,7 +83,7 @@ WSGI_APPLICATION = "iipdash.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": env("DATABASE_ENGINE", default="django.db.backends.postgresql"),
+        "ENGINE": env("DATABASE_ENGINE", default="django.contrib.gis.db.backends.postgis"),
         "NAME": env("DATABASE_NAME", default="iipdash"),
         "USER": env("DATABASE_USER", default="iipdash"),
         "PASSWORD": env("DATABASE_PASSWORD", default="iipdash"),
@@ -93,6 +94,9 @@ DATABASES = {
     }
 }
 
+# Auth
+
+AUTH_USER_MODEL = 'users.User'
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -110,6 +114,17 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         "NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",
     },
+]
+
+# Password hashers
+# https://docs.djangoproject.com/en/5.1/ref/settings/#std-setting-PASSWORD_HASHERS
+# https://docs.djangoproject.com/en/5.1/topics/auth/passwords/
+PASSWORD_HASHERS = [
+    "django.contrib.auth.hashers.Argon2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2PasswordHasher",
+    "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher",
+    "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
+    "django.contrib.auth.hashers.ScryptPasswordHasher",
 ]
 
 
