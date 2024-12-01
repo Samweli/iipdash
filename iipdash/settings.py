@@ -44,7 +44,11 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "users"
+    "django.contrib.gis",
+    "treebeard",
+    "django_countries",
+    "users",
+    "administrative"
 ]
 
 MIDDLEWARE = [
@@ -149,6 +153,9 @@ USE_I18N = True
 
 USE_TZ = True
 
+# Countries
+# https://github.com/SmileyChris/django-countries?tab=readme-ov-file#customize-the-country-list
+COUNTRIES_ONLY = ["CD", "MW", "ZM"]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
