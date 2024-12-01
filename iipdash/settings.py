@@ -80,6 +80,7 @@ WSGI_APPLICATION = "iipdash.wsgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
+# https://docs.djangoproject.com/en/5.1/ref/settings/#test
 
 DATABASES = {
     "default": {
@@ -88,9 +89,18 @@ DATABASES = {
         "USER": env("DATABASE_USER", default="iipdash"),
         "PASSWORD": env("DATABASE_PASSWORD", default="iipdash"),
         "HOST": env("DATABASE_HOST", default="localhost"),
-        "PORT": env("DATABASE_PORT", default="5432"),
+        "PORT": env.int("DATABASE_PORT", default=5432),
         "CONN_MAX_AGE": env.int("DATABASE_CONN_MAX_AGE", default=0),
-        "ATOMIC_REQUESTS": env.bool("DATABASE_ATOMIC_REQUESTS", default=True)
+        "ATOMIC_REQUESTS": env.bool("DATABASE_ATOMIC_REQUESTS", default=True),
+        "CONN_HEALTH_CHECKS": env.bool("CONN_HEALTH_CHECKS", default=False),
+        "TEST": {
+            "NAME": env("TEST_DATABASE_NAME", default="test_iipdash"),
+            "USER": env("TEST_DATABASE_USER", default="test_iipdash"),
+            "PASSWORD": env("TEST_DATABASE_PASSWORD", default="test_iipdash"),
+            "HOST": env("TEST_DATABASE_HOST", default="localhost"),
+            "PORT": env.int("TEST_DATABASE_PORT", default=5432),
+            "MIGRATE": env.bool("TEST_DATABASE_MIGRATE", default=True),
+        }
     }
 }
 

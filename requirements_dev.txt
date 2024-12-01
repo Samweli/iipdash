@@ -1,4 +1,6 @@
 -r ./requirements.txt
 
+coverage
+factory-boy
 flake8
 isort
