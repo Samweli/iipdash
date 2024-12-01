@@ -7,7 +7,12 @@ from django.utils.translation import gettext_lazy as _
 
 
 class User(AbstractUser):
-    uuid = models.UUIDField(_("UUID"), editable=False, unique=True, default=uuid.uuid4)
+    uuid = models.UUIDField(
+        _("UUID"),
+        editable=False,
+        unique=True,
+        default=uuid.uuid4,
+    )
 
     @cached_property
     def display_name(self):
