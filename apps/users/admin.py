@@ -6,10 +6,6 @@ from .models import User
 
 @admin.register(User)
 class UserAdmin(CoreUserAdmin):
-    list_display_links = ['username', 'email']
-    readonly_fields = ['uuid']
-    fieldsets = CoreUserAdmin.fieldsets + (
-        ('Additional info', {
-            'fields': ['uuid']
-        }),
-    )
+    list_display_links = ["username", "email"]
+    readonly_fields = ["uuid"]
+    fieldsets = CoreUserAdmin.fieldsets + (("Additional info", {"fields": ["uuid"]}),)

@@ -1,0 +1,31 @@
+[project]
+name = "iipdash"
+requires-python = ">=3.12"
+description = "Integrated Infrastructure Planning (IIP) Dashboard"
+readme = "README.rst"
+keywords = [
+  "iip"
+]
+
+[project.urls]
+Homepage = "https://github.com/tehamalab/iipdash#readme"
+Documentation = "https://github.com/tehamalab/iipdash#readme"
+Changelog = "https://github.com/tehamalab/iipdash/HISTORY.rst"
+Repository = "https://github.com/tehamalab/iipdash"
+Issues = "https://github.com/tehamalab/iipdash/issues"
+
+
+[tool.black]
+line-length = 119
+target-version = ["py312"]
+exclude = """
+/(
+    migrations
+  | assets
+  | docker
+  | media_root
+  | node_modules
+  | static
+  | static_root
+)/
+"""

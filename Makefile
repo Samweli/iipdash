@@ -1,4 +1,4 @@
-.PHONY: help lint/flake8 lint/sort lint docs servedocs
+.PHONY: help install/dev install/pre-commit install lint/flake8 lint/sort lint format/black format docs servedocs
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
@@ -26,13 +26,30 @@ BROWSER := python -c "$$BROWSER_PYSCRIPT"
 help: ## display this message
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
+install/dev: ## install dependencies for local development
+	python -m pip install -U pip
+	python -m pip install -r requirements_dev.txt
+	python -m pip install -r requirements_docs.txt
+
+install/pre-commit: ## install pre-commit for local development
+	python -m pip install -U pre-commit
+	python -m pre_commit install --install-hooks
+	python -m pre_commit install --hook-type commit-msg
+
+install: install/dev install/pre-commit ## install and setup dependencies (e.g pre-commit, commitizen etc)
+
 lint/flake8: ## check style with flake8
-	flake8 .
+	python -m flake8 .
 
 lint/isort: ## sort imports with isort
-	isort .
+	python -m isort .
 
 lint: lint/isort lint/flake8 ## check style & sort imports
+
+format/black: ## format codes using black
+	python -m black .
+
+format: format/black ## format codes
 
 docs: ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs clean
@@ -40,5 +57,5 @@ docs: ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
 
-servedocs: ## build, watch and serve docs with live reload
+servedocs: ## build, watch and serve Sphinx HTML documentation with live reload
 	$(MAKE) -C docs livehtml

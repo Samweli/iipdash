@@ -14,4 +14,4 @@ class UserFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model: typing.Type[User] = User
-        django_get_or_create: typing.Tuple[str, ...] = ("username", )
+        django_get_or_create: typing.Tuple[str, ...] = ("username",)

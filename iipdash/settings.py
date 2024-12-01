@@ -27,7 +27,10 @@ sys.path.append(str(BASE_DIR / "apps"))
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = env("SECRET_KEY", default="django-insecure-7b%v^$@s8ct1c)yx^dr8-@h=oqr&%66q&9!)owdb)fc=adtb2")
+SECRET_KEY = env(
+    "SECRET_KEY",
+    default="django-insecure-7b%v^$@s8ct1c)yx^dr8-@h=oqr&%66q&9!)owdb)fc=adtb2",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env.bool("DEBUG", False)
@@ -44,7 +47,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "users"
+    "users",
 ]
 
 MIDDLEWARE = [
@@ -100,13 +103,13 @@ DATABASES = {
             "HOST": env("TEST_DATABASE_HOST", default="localhost"),
             "PORT": env.int("TEST_DATABASE_PORT", default=5432),
             "MIGRATE": env.bool("TEST_DATABASE_MIGRATE", default=True),
-        }
+        },
     }
 }
 
 # Auth
 
-AUTH_USER_MODEL = 'users.User'
+AUTH_USER_MODEL = "users.User"
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -154,14 +157,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 # https://docs.djangoproject.com/en/5.1/howto/static-files/deployment/
 
-STATICFILES_DIRS = env.list("STATICFILES_DIRS", default=[
-    BASE_DIR / "static",
-    BASE_DIR / "assets/dist"
-])
+STATICFILES_DIRS = env.list("STATICFILES_DIRS", default=[BASE_DIR / "static", BASE_DIR / "assets/dist"])
 
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder"
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
 
 STATIC_URL = env("STATIC_URL", default="/static/")
