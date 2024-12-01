@@ -2,6 +2,10 @@
 IIP Dashboard
 =============
 
+.. image:: https://github.com/sphinx-doc/sphinx/actions/workflows/main.yml/badge.svg
+   :target: https://github.com/sphinx-doc/sphinx/actions/workflows/main.yml
+   :alt: pre-commit
+
 Based on
 
 - Python_
