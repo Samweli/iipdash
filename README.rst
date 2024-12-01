@@ -2,8 +2,8 @@
 IIP Dashboard
 =============
 
-.. image:: https://github.com/sphinx-doc/sphinx/actions/workflows/main.yml/badge.svg
-   :target: https://github.com/sphinx-doc/sphinx/actions/workflows/main.yml
+.. image:: https://github.com/tehamalab/iipdash/actions/workflows/pre-commit.yaml/badge.svg
+   :target: https://github.com/tehamalab/iipdash/actions/workflows/pre-commit.yaml
    :alt: pre-commit
 
 Based on
