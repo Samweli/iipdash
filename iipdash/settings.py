@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "django_countries",
     "users",
     "administrative",
+    "education",
 ]
 
 MIDDLEWARE = [
