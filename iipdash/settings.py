@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "users",
     "administrative",
     "education",
+    "infrastructure",
 ]
 
 MIDDLEWARE = [
