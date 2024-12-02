@@ -121,6 +121,9 @@ class Institution(models.Model):
         verbose_name=_("administrative area"),
     )
 
+    osm_id = models.BigIntegerField(_("OSM id"), blank=True, null=True)
+    osm_type = models.CharField(_("OSM type"), max_length=255, blank=True)
+
     created_at = models.DateTimeField("created at", auto_now_add=True, db_default=Now(), db_index=True)
     updated_at = models.DateTimeField(_("updated_at"), auto_now=True, null=True, blank=True)
     extras = models.JSONField(_("extras"), blank=True, default=dict)
