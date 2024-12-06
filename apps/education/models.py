@@ -20,8 +20,18 @@ class Category(models.Model):
     code = models.SlugField(_("code"), blank=True, max_length=50)
     description = models.TextField(_("description"), blank=True)
 
-    created_at = models.DateTimeField("created at", auto_now_add=True, db_default=Now(), db_index=True)
-    updated_at = models.DateTimeField(_("updated at"), auto_now=True, null=True, blank=True)
+    created_at = models.DateTimeField(
+        "created at",
+        auto_now_add=True,
+        db_default=Now(),
+        db_index=True,
+    )
+    updated_at = models.DateTimeField(
+        _("updated at"),
+        auto_now=True,
+        null=True,
+        blank=True,
+    )
     extras = models.JSONField(_("extras"), blank=True, default=dict)
 
     class Meta:
@@ -51,8 +61,18 @@ class Ownership(models.Model):
     code = models.SlugField(_("code"), blank=True, max_length=50)
     description = models.TextField(_("description"), blank=True)
 
-    created_at = models.DateTimeField("created at", auto_now_add=True, db_default=Now(), db_index=True)
-    updated_at = models.DateTimeField(_("updated at"), auto_now=True, null=True, blank=True)
+    created_at = models.DateTimeField(
+        "created at",
+        auto_now_add=True,
+        db_default=Now(),
+        db_index=True,
+    )
+    updated_at = models.DateTimeField(
+        _("updated at"),
+        auto_now=True,
+        null=True,
+        blank=True,
+    )
     extras = models.JSONField(_("extras"), blank=True, default=dict)
 
     class Meta:
@@ -71,7 +91,12 @@ class Ownership(models.Model):
 class Institution(models.Model):
     """An educational institution."""
 
-    uuid = models.UUIDField(_("UUID"), default=uuid.uuid4, editable=False, unique=True)
+    uuid = models.UUIDField(
+        _("UUID"),
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+    )
 
     category = models.ForeignKey(
         "Category",
@@ -109,7 +134,13 @@ class Institution(models.Model):
     email = models.EmailField(_("email"), blank=True)
     website = models.URLField(_("website"), blank=True, null=True)
 
-    geometry = models.PointField(_("Geometry"), geography=True, blank=True, null=True, srid=4326)
+    geometry = models.PointField(
+        _("Geometry"),
+        geography=True,
+        blank=True,
+        null=True,
+        srid=4326,
+    )
 
     administrative_area = models.ForeignKey(
         "administrative.Area",
@@ -124,8 +155,18 @@ class Institution(models.Model):
     osm_id = models.BigIntegerField(_("OSM id"), blank=True, null=True)
     osm_type = models.CharField(_("OSM type"), max_length=255, blank=True)
 
-    created_at = models.DateTimeField("created at", auto_now_add=True, db_default=Now(), db_index=True)
-    updated_at = models.DateTimeField(_("updated_at"), auto_now=True, null=True, blank=True)
+    created_at = models.DateTimeField(
+        "created at",
+        auto_now_add=True,
+        db_default=Now(),
+        db_index=True,
+    )
+    updated_at = models.DateTimeField(
+        _("updated_at"),
+        auto_now=True,
+        null=True,
+        blank=True,
+    )
     extras = models.JSONField(_("extras"), blank=True, default=dict)
 
     class Meta:
