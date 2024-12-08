@@ -5,6 +5,13 @@
 # with PostGIS, RabbitMQ) are up and running in containers with appropriate
 # configurations for development.
 #
+# Services included:
+# - Django application (`iipdash-dev-django`): Main application container.
+# - Documentation (`iipdash-dev-docs`): For generating and serving Sphinx docs.
+# - PostgreSQL with PostGIS (`iipdash-dev-pg`, `iipdash-test-pg`): Development
+# and testing databases.
+# - RabbitMQ (`iipdash-dev-rabbitmq`): Message broker for Celery.
+#
 # Exposed ports are incremented by 1 in the leftmost digit to avoid conflicts
 # with existing services on the host machine. For example, if port 5432 is
 # taken, it will be incremented to 6432.
@@ -28,17 +35,18 @@
 
 version: "3.8"
 
+# Application services
 services:
-  # Django development container for the iipdash application.
+
+  # Django development container.
   #
-  # This container is responsible for running the Django application. It
-  # depends on PostgreSQL (for both development and testing) and RabbitMQ (for
-  # messaging). The `start` command in the Dockerfile is executed to launch
-  # the application.
+  # Runs the Django application. It depends on PostgreSQL (for both
+  # development and testing) and RabbitMQ (for messaging). The `start` command
+  # in the Dockerfile is executed to launch the application.
   #
   # Usage:
   #
-  # - localhost uri:
+  # - localhost URI:
   # ```
   # http://localhost:8000
   # ```
@@ -57,7 +65,7 @@ services:
     depends_on:
       - iipdash-dev-pg
       - iipdash-test-pg
-      # - iipdash-dev-rabbitmq
+      - iipdash-dev-rabbitmq
     volumes:
       - .:/home/iipdash/iipdash:z
     env_file:
@@ -73,16 +81,43 @@ services:
       retries: 5
       start_period: 10s
 
+  # Documentation development container.
+  #
+  # Usage:
+  #
+  # - localhost URI to access live html documentation:
+  # ```
+  # http://localhost:9000
+  # ```
+  #
+  # - generate Sphinx HTML documentation, including API docs:
+  # ```
+  # docker exec -it iipdash-dev-docs make docs
+  # ```
+  iipdash-dev-docs:
+    build:
+      context: .
+      dockerfile: ./docker/development/django/Dockerfile
+    image: iipdash-dev-docs
+    container_name: iipdash-dev-docs
+    volumes:
+      - .:/home/iipdash/iipdash:z
+    env_file:
+      - .env
+    ports:
+      - 9000:9000
+    command: /start-docs
+
   # Postgres Database with PostGIS for development
   #
   # Usage:
   #
-  # - localhost uri:
+  # - localhost URI:
   # ```
   # postgresql+psycopg://iipdash:iipdash@localhost:6432/iipdash
   # ```
   #
-  # -docker uri:
+  # -docker URI:
   # ```
   # postgresql+psycopg://iipdash:iipdash@iipdash-dev-pg:5432/iipdash
   # ```
@@ -110,12 +145,12 @@ services:
   #
   # Usage:
   #
-  # - localhost uri:
+  # - localhost URI:
   # ```
   # postgresql+psycopg://test_iipdash:test_iipdash@localhost:7432/test_iipdash
   # ```
   #
-  # - docker uri:
+  # - docker URI:
   # ```
   # postgresql+psycopg://test_iipdash:test_iipdash@iipdash-test-pg:5432/test_iipdash
   # ```
@@ -143,12 +178,12 @@ services:
   #
   # Usage:
   #
-  # - localhost uri:
+  # - localhost URI:
   # ```
   # amqp://iipdash:iipdash@localhost:6672//
   # ```
   #
-  # - docker uri:
+  # - docker URI:
   # ```
   # amqp://iipdash:iipdash@iipdash-dev-rabbitmq:5672//
   # ```
@@ -169,6 +204,7 @@ services:
       retries: 5
       start_period: 10s
 
+# Named volumes for persistent data storage
 volumes:
 
   iipdash-dev-pg-data:

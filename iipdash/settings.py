@@ -10,7 +10,6 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
-import sys
 from pathlib import Path
 
 import environ
@@ -20,8 +19,6 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env()
 env.read_env(str(BASE_DIR / ".env"))
-
-sys.path.append(str(BASE_DIR / "apps"))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -51,10 +48,10 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "treebeard",
     "django_countries",
-    "users",
-    "administrative",
-    "education",
-    "infrastructure",
+    "apps.users",
+    "apps.administrative",
+    "apps.education",
+    "apps.infrastructure",
 ]
 
 MIDDLEWARE = [
@@ -167,7 +164,13 @@ COUNTRIES_ONLY = ["CD", "MW", "ZM"]
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 # https://docs.djangoproject.com/en/5.1/howto/static-files/deployment/
 
-STATICFILES_DIRS = env.list("STATICFILES_DIRS", default=[BASE_DIR / "static", BASE_DIR / "assets/dist"])
+STATICFILES_DIRS = env.list(
+    "STATICFILES_DIRS",
+    default=[
+        BASE_DIR / "static",
+        BASE_DIR / "assets/dist",
+    ],
+)
 
 STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",

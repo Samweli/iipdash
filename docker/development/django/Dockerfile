@@ -111,19 +111,21 @@ RUN groupadd -g ${USER_GID} ${USER_GROUP} && \
 # Set working directory to the app's home directory
 WORKDIR ${APP_HOME}
 
-# Copy, configure, and set permissions for entrypoint and start scripts
+# Copy, configure, and set permissions for entrypoint, start, and docs scripts
 COPY --chown=${USER_NAME}:${USER_GROUP} ./docker/development/django/entrypoint \
-     ./docker/development/django/start /
-RUN sed -i 's/\r$//g' /entrypoint /start && \
-    chmod +x /entrypoint /start
+     ./docker/development/django/start \
+     ./docker/development/docs/start-docs /
+RUN sed -i 's/\r$//g' /entrypoint /start /start-docs && \
+    chmod +x /entrypoint /start /start-docs
 
 # Copy requirements files with proper ownership
 # Upgrade pip and install dependencies
 COPY --chown=${USER_NAME}:${USER_GROUP} requirements.txt \
-     requirements_dev.txt ./
+     requirements_dev.txt requirements_docs.txt ./
 RUN --mount=type=cache,target=${PIP_CACHE_DIR} \
-    pip install --upgrade pip && \
-    pip install --no-cache-dir -r requirements_dev.txt
+    pip install --cache-dir=${PIP_CACHE_DIR} --upgrade pip && \
+    pip install --cache-dir=${PIP_CACHE_DIR} -r requirements_dev.txt && \
+    pip install --cache-dir=${PIP_CACHE_DIR} -r requirements_docs.txt
 
 # Switch to the non-root user for security
 USER ${USER_NAME}
