@@ -1,28 +1,78 @@
-# docker-compose-dev.yaml
+# docker-compose-development.yaml
 
-# To avoid conflicts with already existing services on the host,
-# exposed ports are incremented by 1 on their leftmost digit.
+# This file defines the development environment for the iipdash project using
+# Docker Compose. It ensures that the necessary services (Django, PostgreSQL
+# with PostGIS, RabbitMQ) are up and running in containers with appropriate
+# configurations for development.
 #
-# From the project root directory:
+# Exposed ports are incremented by 1 in the leftmost digit to avoid conflicts
+# with existing services on the host machine. For example, if port 5432 is
+# taken, it will be incremented to 6432.
 #
-# - To start, run:
+# Usage Instructions (from the project root directory):
+#
+# To start the services, run:
 # ```sh
-# docker compose -f ./docker/development/docker-compose.yaml up
+# docker compose -f ./docker-compose-development.yaml up
 # ```
 #
-# - To stop, run:
+# To stop the services, run:
 # ```sh
-# docker compose -f ./docker/development/docker-compose.yaml down
+# docker compose -f ./docker-compose-development.yaml down
 # ```
 #
-# - To stop and clean, run:
+# To stop and clean the services (removes volumes and orphaned containers), run:
 # ```sh
-# docker compose -f ./docker/development/docker-compose.yaml down -v --remove-orphans
+# docker compose -f ./docker-compose-development.yaml down -v --remove-orphans
 # ```
 
 version: "3.8"
 
 services:
+  # Django development container for the iipdash application.
+  #
+  # This container is responsible for running the Django application. It
+  # depends on PostgreSQL (for both development and testing) and RabbitMQ (for
+  # messaging). The `start` command in the Dockerfile is executed to launch
+  # the application.
+  #
+  # Usage:
+  #
+  # - localhost uri:
+  # ```
+  # http://localhost:8000
+  # ```
+  iipdash-dev-django: &iipdash-dev-django
+    build:
+      context: .
+      dockerfile: ./docker/development/django/Dockerfile
+    image: iipdash-dev-django
+    container_name: iipdash-dev-django
+    environment:
+        DATABASE_HOST: iipdash-dev-pg
+        DATABASE_PORT: 5432
+        TEST_DATABASE_HOST: iipdash-test-pg
+        TEST_DATABASE_PORT: 5432
+        CELERY_BROKER_URL: amqp://iipdash:iipdash@iipdash-dev-rabbitmq:5672//
+    depends_on:
+      - iipdash-dev-pg
+      - iipdash-test-pg
+      # - iipdash-dev-rabbitmq
+    volumes:
+      - .:/home/iipdash/iipdash:z
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+    command: /start
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
   # Postgres Database with PostGIS for development
   #
   # Usage:
@@ -44,7 +94,7 @@ services:
       POSTGRES_PASSWORD: ${DEVELOPMENT_DATABASE_PASSWORD:-iipdash}
       POSTGRES_DB: ${DEVELOPMENT_DATABASE_NAME:-iipdash}
     volumes:
-      - ../postgis/docker-entrypoint-initdb.d/initdb-postgis.sh:/docker-entrypoint-initdb.d/10_postgis.sh
+      - ./docker/postgis/docker-entrypoint-initdb.d/initdb-postgis.sh:/docker-entrypoint-initdb.d/10_postgis.sh
       - iipdash-dev-pg-data:/var/lib/postgresql/data
     ports:
       - ${DEVELOPMENT_DATABASE_PORT:-6432}:5432
@@ -54,6 +104,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
   # Postgres Database with PostGIS for testing
   #
@@ -76,7 +127,7 @@ services:
       POSTGRES_PASSWORD: ${TEST_DATABASE_PASSWORD:-test_iipdash}
       POSTGRES_DB: ${TEST_DATABASE_NAME:-test_iipdash}
     volumes:
-      - ../postgis/docker-entrypoint-initdb.d/initdb-postgis.sh:/docker-entrypoint-initdb.d/10_postgis.sh
+      - ./docker/postgis/docker-entrypoint-initdb.d/initdb-postgis.sh:/docker-entrypoint-initdb.d/10_postgis.sh
       - iipdash-test-pg-data:/var/lib/postgresql/data
     ports:
       - ${TEST_DATABASE_PORT:-7432}:5432
@@ -86,6 +137,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
   # RabbitMQ for development
   #
@@ -115,6 +167,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+      start_period: 10s
 
 volumes:
 

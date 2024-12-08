@@ -80,16 +80,16 @@ docker/pull: ## pull docker images i.e python etc
 	docker pull rabbitmq:4.0.4-management
 
 .PHONY: docker/up/dev
-docker/up/dev: ## create and start development docker containers, networks etc.
-	docker compose -f ./docker/development/docker-compose.yaml up
+docker/up/dev: docker/clean/dangling ## create and start development docker containers, networks etc.
+	docker compose -f ./docker-compose-development.yaml up --remove-orphans --build
 
 .PHONY: docker/down/dev
-docker/down/dev: ## stop and remove development docker containers, networks etc.
-	docker compose -f ./docker/development/docker-compose.yaml down
+docker/down/dev: docker/clean/dangling ## stop and remove development docker containers, networks etc.
+	docker compose -f ./docker-compose-development.yaml down --remove-orphans
 
 .PHONY: docker/clean/dev
-docker/clean/dev: ## stop and remove development docker containers, networks, volumes etc.
-	docker compose -f ./docker/development/docker-compose.yaml down -v --remove-orphans
+docker/clean/dev: docker/clean/dangling ## stop and remove development docker containers, networks, volumes etc.
+	docker compose -f ./docker-compose-development.yaml down -v --remove-orphans
 
 .PHONY: docker/clean/dangling  ## clean dangling docker images
 docker/clean/dangling:
