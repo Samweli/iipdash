@@ -4,3 +4,5 @@ django-environ
 
 django-treebeard
 django-countries[pyuca]
+
+django-import-export[all]

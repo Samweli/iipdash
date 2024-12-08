@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "django.contrib.gis",
     "treebeard",
     "django_countries",
+    "import_export",
     "apps.users",
     "apps.administrative",
     "apps.education",

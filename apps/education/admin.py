@@ -1,11 +1,13 @@
 from django.contrib.gis import admin
 from django.contrib.gis.admin import GISModelAdmin
 
+from import_export.admin import ImportExportModelAdmin
+
 from .models import Category, Institution, Ownership
 
 
 @admin.register(Category)
-class CategoryAdmin(admin.ModelAdmin):
+class CategoryAdmin(ImportExportModelAdmin):
     list_display = ["name", "code", "description", "id", "uuid"]
     list_display_links = ["name", "id", "uuid"]
     search_fields = ["name", "code", "id", "uuid"]
@@ -13,7 +15,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Ownership)
-class OwnershipAdmin(admin.ModelAdmin):
+class OwnershipAdmin(ImportExportModelAdmin):
     list_display = ["name", "code", "description", "id", "uuid"]
     list_display_links = ["name", "id", "uuid"]
     search_fields = ["name", "code", "id", "uuid"]
@@ -21,7 +23,7 @@ class OwnershipAdmin(admin.ModelAdmin):
 
 
 @admin.register(Institution)
-class InstitutionAdmin(GISModelAdmin):
+class InstitutionAdmin(GISModelAdmin, ImportExportModelAdmin):
     list_display = [
         "name",
         "category",
