@@ -37,7 +37,7 @@ services:
   # postgresql+psycopg://iipdash:iipdash@iipdash-dev-pg:5432/iipdash
   # ```
   iipdash-dev-pg:
-    image: postgis/postgis:16-3.4
+    image: postgis/postgis:17-3.5
     container_name: iipdash-dev-pg
     environment:
       POSTGRES_USER: ${DEVELOPMENT_DATABASE_USER:-iipdash}
@@ -69,7 +69,7 @@ services:
   # postgresql+psycopg://test_iipdash:test_iipdash@iipdash-test-pg:5432/test_iipdash
   # ```
   iipdash-test-pg:
-    image: postgis/postgis:16-3.4
+    image: postgis/postgis:17-3.5
     container_name: iipdash-test-pg
     environment:
       POSTGRES_USER: ${TEST_DATABASE_USER:-test_iipdash}
@@ -101,7 +101,7 @@ services:
   # amqp://iipdash:iipdash@iipdash-dev-rabbitmq:5672//
   # ```
   iipdash-dev-rabbitmq:
-    image: rabbitmq:4.0.3-management
+    image: rabbitmq:4.0.4-management
     container_name: iipdash-dev-rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${DEVELOPMENT_RABBITMQ_USER:-iipdash}

@@ -79,6 +79,18 @@ docker/pull: ## pull docker images i.e python etc
 	docker pull postgis/postgis:17-3.5
 	docker pull rabbitmq:4.0.4-management
 
+.PHONY: docker/up/dev
+docker/up/dev: ## create and start development docker containers, networks etc.
+	docker compose -f ./docker/development/docker-compose.yaml up
+
+.PHONY: docker/down/dev
+docker/down/dev: ## stop and remove development docker containers, networks etc.
+	docker compose -f ./docker/development/docker-compose.yaml down
+
+.PHONY: docker/clean/dev
+docker/clean/dev: ## stop and remove development docker containers, networks, volumes etc.
+	docker compose -f ./docker/development/docker-compose.yaml down -v --remove-orphans
+
 .PHONY: docker/clean/dangling  ## clean dangling docker images
 docker/clean/dangling:
 	docker image ls --filter "dangling=true" -a -q | xargs -L1 -r -t docker rmi
