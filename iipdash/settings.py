@@ -186,3 +186,15 @@ STATIC_ROOT = env("STATIC_ROOT", default=(BASE_DIR / "static_root"))
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+# Site
+
+SITE_NAME = env("SITE_NAME", default="IIP dashboard")
+
+# Admin site
+
+ADMIN_SITE_NAME = env("ADMIN_SITE_HEADER", default=SITE_NAME)
+
+ADMIN_SITE_HEADER = env("ADMIN_SITE_HEADER", default=SITE_NAME)
+
+ADMIN_INDEX_TITLE = env("ADMIN_INDEX_TITLE", default="Administration")
