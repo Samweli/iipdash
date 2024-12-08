@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# Define the application directory using the APP_HOME environment variable.
+# If APP_HOME is not set, default to /home/iipdash/iipdash.
+APP_HOME="${APP_HOME:-/home/iipdash/iipdash}"
+
+# Navigate to the application directory.
+cd "$APP_HOME" || {
+  echo "Error: Failed to navigate to application directory $APP_HOME."
+  exit 1
+}
+
+exec make servedocs

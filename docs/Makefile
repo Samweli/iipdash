@@ -8,7 +8,7 @@ SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = .
 BUILDDIR      = _build
 REFS = ..
-REFS_EXCLUDES = ../apps/*/migrations ../manage.py
+REFS_EXCLUDES = ../apps/*/migrations ../apps/*/tests ../manage.py
 
 .PHONY: help livehtml apidocs Makefile
 

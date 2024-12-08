@@ -1,0 +1,18 @@
+#!/bin/bash
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+# Ensure the APP_HOME environment variable is set
+APP_HOME="${APP_HOME:-/home/iipdash/iipdash}"
+
+# Resolve APP_HOME to an absolute path
+if [ -d "$APP_HOME" ]; then
+  APP_HOME=$(realpath "$APP_HOME")
+fi
+
+# Export the resolved APP_HOME so it is available to the executed command
+export APP_HOME
+
+exec "$@"

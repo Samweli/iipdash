@@ -1,0 +1,214 @@
+# docker-compose-development.yaml
+
+# This file defines the development environment for the iipdash project using
+# Docker Compose. It ensures that the necessary services (Django, PostgreSQL
+# with PostGIS, RabbitMQ) are up and running in containers with appropriate
+# configurations for development.
+#
+# Services included:
+# - Django application (`iipdash-dev-django`): Main application container.
+# - Documentation (`iipdash-dev-docs`): For generating and serving Sphinx docs.
+# - PostgreSQL with PostGIS (`iipdash-dev-pg`, `iipdash-test-pg`): Development
+# and testing databases.
+# - RabbitMQ (`iipdash-dev-rabbitmq`): Message broker for Celery.
+#
+# Exposed ports are incremented by 1 in the leftmost digit to avoid conflicts
+# with existing services on the host machine. For example, if port 5432 is
+# taken, it will be incremented to 6432.
+#
+# Usage Instructions (from the project root directory):
+#
+# To start the services, run:
+# ```sh
+# docker compose -f ./docker-compose-development.yaml up
+# ```
+#
+# To stop the services, run:
+# ```sh
+# docker compose -f ./docker-compose-development.yaml down
+# ```
+#
+# To stop and clean the services (removes volumes and orphaned containers), run:
+# ```sh
+# docker compose -f ./docker-compose-development.yaml down -v --remove-orphans
+# ```
+
+version: "3.8"
+
+# Application services
+services:
+
+  # Django development container.
+  #
+  # Runs the Django application. It depends on PostgreSQL (for both
+  # development and testing) and RabbitMQ (for messaging). The `start` command
+  # in the Dockerfile is executed to launch the application.
+  #
+  # Usage:
+  #
+  # - localhost URI:
+  # ```
+  # http://localhost:8000
+  # ```
+  iipdash-dev-django: &iipdash-dev-django
+    build:
+      context: .
+      dockerfile: ./docker/development/django/Dockerfile
+    image: iipdash-dev-django
+    container_name: iipdash-dev-django
+    environment:
+        DATABASE_HOST: iipdash-dev-pg
+        DATABASE_PORT: 5432
+        TEST_DATABASE_HOST: iipdash-test-pg
+        TEST_DATABASE_PORT: 5432
+        CELERY_BROKER_URL: amqp://iipdash:iipdash@iipdash-dev-rabbitmq:5672//
+    depends_on:
+      - iipdash-dev-pg
+      - iipdash-test-pg
+      - iipdash-dev-rabbitmq
+    volumes:
+      - .:/home/iipdash/iipdash:z
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+    command: /start
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "--silent", "--fail", "http://localhost:8000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
+
+  # Documentation development container.
+  #
+  # Usage:
+  #
+  # - localhost URI to access live html documentation:
+  # ```
+  # http://localhost:9000
+  # ```
+  #
+  # - generate Sphinx HTML documentation, including API docs:
+  # ```
+  # docker exec -it iipdash-dev-docs make docs
+  # ```
+  iipdash-dev-docs:
+    build:
+      context: .
+      dockerfile: ./docker/development/django/Dockerfile
+    image: iipdash-dev-docs
+    container_name: iipdash-dev-docs
+    volumes:
+      - .:/home/iipdash/iipdash:z
+    env_file:
+      - .env
+    ports:
+      - 9000:9000
+    command: /start-docs
+
+  # Postgres Database with PostGIS for development
+  #
+  # Usage:
+  #
+  # - localhost URI:
+  # ```
+  # postgresql+psycopg://iipdash:iipdash@localhost:6432/iipdash
+  # ```
+  #
+  # -docker URI:
+  # ```
+  # postgresql+psycopg://iipdash:iipdash@iipdash-dev-pg:5432/iipdash
+  # ```
+  iipdash-dev-pg:
+    image: postgis/postgis:17-3.5
+    container_name: iipdash-dev-pg
+    environment:
+      POSTGRES_USER: ${DEVELOPMENT_DATABASE_USER:-iipdash}
+      POSTGRES_PASSWORD: ${DEVELOPMENT_DATABASE_PASSWORD:-iipdash}
+      POSTGRES_DB: ${DEVELOPMENT_DATABASE_NAME:-iipdash}
+    volumes:
+      - ./docker/postgis/docker-entrypoint-initdb.d/initdb-postgis.sh:/docker-entrypoint-initdb.d/10_postgis.sh
+      - iipdash-dev-pg-data:/var/lib/postgresql/data
+    ports:
+      - ${DEVELOPMENT_DATABASE_PORT:-6432}:5432
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DEVELOPMENT_DATABASE_USER:-iipdash}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # Postgres Database with PostGIS for testing
+  #
+  # Usage:
+  #
+  # - localhost URI:
+  # ```
+  # postgresql+psycopg://test_iipdash:test_iipdash@localhost:7432/test_iipdash
+  # ```
+  #
+  # - docker URI:
+  # ```
+  # postgresql+psycopg://test_iipdash:test_iipdash@iipdash-test-pg:5432/test_iipdash
+  # ```
+  iipdash-test-pg:
+    image: postgis/postgis:17-3.5
+    container_name: iipdash-test-pg
+    environment:
+      POSTGRES_USER: ${TEST_DATABASE_USER:-test_iipdash}
+      POSTGRES_PASSWORD: ${TEST_DATABASE_PASSWORD:-test_iipdash}
+      POSTGRES_DB: ${TEST_DATABASE_NAME:-test_iipdash}
+    volumes:
+      - ./docker/postgis/docker-entrypoint-initdb.d/initdb-postgis.sh:/docker-entrypoint-initdb.d/10_postgis.sh
+      - iipdash-test-pg-data:/var/lib/postgresql/data
+    ports:
+      - ${TEST_DATABASE_PORT:-7432}:5432
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${TEST_DATABASE_USER:-test_iipdash}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # RabbitMQ for development
+  #
+  # Usage:
+  #
+  # - localhost URI:
+  # ```
+  # amqp://iipdash:iipdash@localhost:6672//
+  # ```
+  #
+  # - docker URI:
+  # ```
+  # amqp://iipdash:iipdash@iipdash-dev-rabbitmq:5672//
+  # ```
+  iipdash-dev-rabbitmq:
+    image: rabbitmq:4.0.4-management
+    container_name: iipdash-dev-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: ${DEVELOPMENT_RABBITMQ_USER:-iipdash}
+      RABBITMQ_DEFAULT_PASS: ${DEVELOPMENT_RABBITMQ_PASSWORD:-iipdash}
+    ports:
+      - ${DEVELOPMENT_RABBITMQ_PORT:-6672:5672}
+      - 26672:15672
+    restart: always
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+# Named volumes for persistent data storage
+volumes:
+
+  iipdash-dev-pg-data:
+    driver: local
+
+  iipdash-test-pg-data:
+    driver: local

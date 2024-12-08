@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Customize postgis docker image to create only extensions needed.
-# See: https://github.com/postgis/docker-postgis/blob/master/16-3.5/16-3.4/initdb-postgis.sh
+# See: https://github.com/postgis/docker-postgis/blob/master/16-3.5/initdb-postgis.sh
 
 set -e
 
