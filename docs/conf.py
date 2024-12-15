@@ -69,7 +69,13 @@ master_doc = "index"
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "*_test.py", "**/migrations/*"]
+exclude_patterns = [
+    "_build",
+    "Thumbs.db",
+    ".DS_Store",
+    "*_test.py",
+    "**/migrations/*",
+]
 
 # The name of the Pygments (syntax highlighting) style to use.
 pygments_style = "sphinx"
@@ -85,7 +91,10 @@ todo_include_todos = False
 # should be linked to in this documentation.
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
-    "django": ("http://docs.djangoproject.com/en/stable/", "http://docs.djangoproject.com/en/stable/_objects/"),
+    "django": (
+        "http://docs.djangoproject.com/en/stable/",
+        "http://docs.djangoproject.com/en/stable/_objects/",
+    ),
     "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
 }
 
