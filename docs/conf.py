@@ -48,7 +48,7 @@ extensions = [
     "sphinx.ext.napoleon",  # Supports Google and NumPy docstrings
     "sphinx.ext.autodoc",  # Extracts docstrings
     "sphinx.ext.viewcode",  # Links to source code
-    # 'sphinx.ext.intersphinx',  # Links to other projects (optional)
+    "sphinx.ext.intersphinx",  # Link to other project docs (e.g, Django)
     # 'sphinx.ext.autosummary',  # Generates summary tables
     "sphinxcontrib.spelling",  # Checks the spelling errors, typos etc
     "sphinx_rtd_theme",  # ReadTheDocs-style theme
@@ -76,6 +76,18 @@ pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
+
+
+# -- Options for intersphinx extension -------------------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/extensions/intersphinx.html
+
+# This config value contains the locations and names of other projects that
+# should be linked to in this documentation.
+intersphinx_mapping = {
+    "python": ("https://docs.python.org/3/", None),
+    "django": ("http://docs.djangoproject.com/en/stable/", "http://docs.djangoproject.com/en/stable/_objects/"),
+    "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
+}
 
 
 # -- Options for Spelling checker -------------------------------------------------
