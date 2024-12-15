@@ -1,3 +1,5 @@
+pyenchant
 Sphinx
 sphinx-rtd-theme
 sphinx-autobuild
+sphinxcontrib-spelling

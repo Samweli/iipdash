@@ -16,6 +16,13 @@ REFS_EXCLUDES = ../apps/*/migrations ../apps/*/tests ../manage.py
 help:
 	@$(SPHINXBUILD) -M help "$(SOURCEDIR)" "$(BUILDDIR)" $(SPHINXOPTS) $(O)
 
+# Check for spelling errors and typos in documentation
+spelling:
+	$(SPHINXBUILD) -b spelling $(SOURCEDIR) $(SPHINXOPTS) $(BUILDDIR)/spelling
+	@echo
+	@echo "Check finished. Wrong words can be found in " \
+		"$(BUILDDIR)/spelling"
+
 # Build, watch and serve docs with live reload
 livehtml:
 	sphinx-autobuild -b html --host 0.0.0.0 --port 9000 --watch $(REFS) -c . $(SOURCEDIR) $(BUILDDIR)/html

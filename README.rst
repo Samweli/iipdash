@@ -10,7 +10,7 @@ Based on
 
 - Python_
 - Django_
-- Postgresql_
+- PostgreSQL_
 
 Development Installation
 ========================
@@ -20,7 +20,7 @@ Database Setup
 PostgreSQL is used as a primary database engine.
 
 
-On ubuntu or Debian based system to install and start Postgresql you can run something like
+On Ubuntu or Debian based system to install and start PostgreSQL you can run something like
 
 .. code:: bash
 
@@ -29,9 +29,9 @@ On ubuntu or Debian based system to install and start Postgresql you can run som
     sudo service postgresql start
 
 
-After installing Postgresql, you will need to initialize the database.
+After installing PostgreSQL, you will need to initialize the database.
 
-Login as  Postgresql admin user (`postgres`)
+Login as  PostgreSQL admin user (`postgres`)
 
 .. code:: bash
 
@@ -204,7 +204,7 @@ For more information on Django deployment please look for the available resource
 including https://docs.djangoproject.com/en/5.0/howto/deployment/
 
 You can also use included docker compose configuration for production deployment.
-The docker images don’t include deployment of Postgresql,
+The docker images don’t include deployment of PostgreSQL,
 a queue/message broker (example RabbitMQ) and a proxy server (example Nginx),
 therefore those might need to be pre-configured separately.
 
@@ -213,4 +213,4 @@ therefore those might need to be pre-configured separately.
 .. _isort: https://isort.readthedocs.io/en/latest/
 .. _Python: https://www.python.org/
 .. _Django: https://www.djangoproject.com/
-.. _Postgresql: https://www.postgresql.org/
+.. _PostgreSQL: https://www.postgresql.org/

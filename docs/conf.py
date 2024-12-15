@@ -45,10 +45,13 @@ doc_description = "Integrated Infrastructure Planning (IIP) Dashboard"
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
-    "sphinx.ext.napoleon",
-    "sphinx.ext.autodoc",
-    "sphinx.ext.viewcode",
-    "sphinx_rtd_theme",
+    "sphinx.ext.napoleon",  # Supports Google and NumPy docstrings
+    "sphinx.ext.autodoc",  # Extracts docstrings
+    "sphinx.ext.viewcode",  # Links to source code
+    # 'sphinx.ext.intersphinx',  # Links to other projects (optional)
+    # 'sphinx.ext.autosummary',  # Generates summary tables
+    "sphinxcontrib.spelling",  # Checks the spelling errors, typos etc
+    "sphinx_rtd_theme",  # ReadTheDocs-style theme
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -73,6 +76,23 @@ pygments_style = "sphinx"
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
+
+
+# -- Options for Spelling checker -------------------------------------------------
+# https://sphinxcontrib-spelling.readthedocs.io/en/latest/customize.html
+
+# String specifying the language, as understood by PyEnchant and enchant.
+spelling_lang = "en_US"
+
+# String specifying a file containing a list of words known to be spelled
+# correctly but that do not appear in the language dictionary selected by
+# `spelling_lang`. The file should contain one word per line.
+#
+spelling_word_list_filename = "spelling_wordlist.txt"
+
+# Boolean controlling whether a misspelling is emitted as a sphinx warning
+# or as an info message.
+spelling_warning = True
 
 
 # -- Options for HTML output -------------------------------------------------

@@ -41,6 +41,7 @@ ENV LANG=en_US.UTF-8 \
 # - binutils, build-essential: Tools for building software (C/C++ libraries)
 # - gdal-bin, libgdal-dev, libproj-dev: GIS libraries for working with spatial data
 # - libgeos-dev: Geometry engine library required for GIS operations
+# - libenchant-2-dev: Wrapper library for various spell checker engines
 # - libfreetype6-dev, libjpeg-dev, libtiff-dev, zlib1g-dev: Image processing dependencies
 # - libpq-dev: PostgreSQL client libraries for psycopg2
 # - libxslt1-dev: XML and XSLT processing library
@@ -63,6 +64,7 @@ RUN --mount=type=cache,target=/var/cache/apt \
         gdal-bin \
         gettext \
         git \
+        libenchant-2-dev \
         libfreetype6-dev \
         libgdal-dev \
         libgeos-dev \
