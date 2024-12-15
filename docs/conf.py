@@ -16,6 +16,12 @@ from pathlib import Path
 import django
 
 import sphinx_rtd_theme  # noqa: F401
+from sphinx.application import Sphinx
+from sphinx.ext import autodoc
+from sphinx.util import logging
+from sphinx.util.typing import ExtensionMetadata
+
+logger = logging.getLogger(__name__)
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -92,8 +98,8 @@ todo_include_todos = False
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
     "django": (
-        "http://docs.djangoproject.com/en/stable/",
-        "http://docs.djangoproject.com/en/stable/_objects/",
+        "https://docs.djangoproject.com/en/stable/",
+        "https://docs.djangoproject.com/en/stable/_objects/",
     ),
     "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
 }
@@ -205,3 +211,108 @@ texinfo_documents = [
         "Miscellaneous",
     ),
 ]
+
+
+# -- Extensions ----------------------------------------
+# https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#event-autodoc-skip-member
+
+
+def skip_members(
+    app: Sphinx,
+    what: str,
+    name: str,
+    obj: object,
+    skip: bool | None,
+    options: autodoc.Options,
+) -> bool | None:
+    """
+    Hook for the `autodoc-skip-member` event to include or exclude certain members.
+
+    This function decides whether a member (e.g., method, attribute) of a
+    class or module should be skipped from documentation. Members are excluded
+    based on specific rules, such as being in a predefined exclusion list or
+    having specific naming conventions.
+
+    Args:
+        app (Sphinx):
+            The Sphinx application object.
+
+        what (str):
+            The type of the object which the docstring belongs
+            to (e.g., "module", "class", "method", "attribute").
+
+        name (str):
+            The fully qualified name of the object.
+
+        obj (object):
+            The member object itself (e.g., function, method, attribute).
+
+        skip (bool | None):
+            A boolean indicating if autodoc will skip this member if the user
+            handler does not override the decision
+
+        options (autodoc.Options):
+            The options given to the directive: an object with attributes
+            `inherited_members`, `undoc_members`, `show_inheritance`
+            and `no-index` that are true if the flag option of same name was
+            given to the auto directive
+
+    Returns:
+        bool:
+            - `True` if the member should be skipped.
+            - `False` if the member should be included.
+
+    See Also:
+        https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#event-autodoc-skip-member
+    """
+    DJANGO_EXCLUDE_MODULES = [
+        # models.Model fields, which are picked from class attributes
+        "django.db.models.query_utils",
+        "django.db.models.fields.related_descriptors",
+    ]
+    DJANGO_EXCLUDE_NAMES = [
+        # apps.users.models.User
+        "get_next_by_date_joined",
+        "get_previous_by_date_joined",
+        # BaseModelAdmin
+        "declared_fieldsets",
+        # "fieldsets",
+        "media",
+    ]
+
+    member_cls = type(obj)
+    member_module = member_cls.__module__
+
+    ignored_name = name in DJANGO_EXCLUDE_NAMES
+    ignored_module = what == "class" and member_module in DJANGO_EXCLUDE_MODULES
+    if ignored_name or ignored_module:
+        skip = True
+    return skip
+
+
+def setup(app: Sphinx) -> ExtensionMetadata:
+    """
+    Allow this module to be used as Sphinx extension.
+
+    It connects :func:`skip_member` function to the
+    sphinx events :event:`autodoc-skip-member` allowing dynamic control over
+    which members are included or excluded from the documentation.
+
+    Args:
+
+        app (sphinx.application.Sphinx):
+            The Sphinx application object.
+
+    Returns:
+        ExtensionMetadata:
+            The metadata returned by this extension.
+
+    See Also:
+        https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#event-autodoc-skip-member
+    """
+    app.connect("autodoc-skip-member", skip_members)
+
+    return {
+        "parallel_read_safe": True,
+        "parallel_write_safe": True,
+    }
