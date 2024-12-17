@@ -102,6 +102,8 @@ intersphinx_mapping = {
         "https://docs.djangoproject.com/en/stable/_objects/",
     ),
     "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
+    "psycopg": ("https://www.psycopg.org/psycopg3/docs/", None),
+    "treebeard": ("https://django-treebeard.readthedocs.io/en/latest/", None),
 }
 
 
@@ -269,6 +271,8 @@ def skip_members(
         # models.Model fields, which are picked from class attributes
         "django.db.models.query_utils",
         "django.db.models.fields.related_descriptors",
+        "django_countries.fields",
+        "django.contrib.gis.db.models.proxy",
     ]
     DJANGO_EXCLUDE_NAMES = [
         # apps.users.models.User
@@ -285,6 +289,7 @@ def skip_members(
 
     ignored_name = name in DJANGO_EXCLUDE_NAMES
     ignored_module = what == "class" and member_module in DJANGO_EXCLUDE_MODULES
+    logger.info(f"skip: {name}, {member_cls}")
     if ignored_name or ignored_module:
         skip = True
     return skip
