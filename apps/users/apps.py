@@ -2,8 +2,8 @@
 Users application configuration.
 
 This module defines the configuration for the `users` application by extending
-Django's built-in :class:`django.apps.AppConfig` to configure the app's settings,
-such as its `name`, `label`, and human-readable `verbose name` etc.
+Django's built-in :class:`django.apps.AppConfig` to configure the app's
+settings, such as its `name`, `label`, and human-readable `verbose name` etc.
 
 References:
     - :class:`django.apps.AppConfig`

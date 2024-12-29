@@ -9,7 +9,7 @@ References:
     - :class:`django.db.models.Model`
 
 See Also:
-    https://docs.djangoproject.com/en/stable/ref/contrib/auth/
+    - https://docs.djangoproject.com/en/stable/ref/contrib/auth/
 
 """
 

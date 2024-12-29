@@ -104,6 +104,7 @@ intersphinx_mapping = {
     "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
     "psycopg": ("https://www.psycopg.org/psycopg3/docs/", None),
     "treebeard": ("https://django-treebeard.readthedocs.io/en/latest/", None),
+    "import_export": ("https://django-import-export.readthedocs.io/en/latest/", None),
 }
 
 
@@ -278,6 +279,11 @@ def skip_members(
         # apps.users.models.User
         "get_next_by_date_joined",
         "get_previous_by_date_joined",
+        # apps.administrative.models.Area
+        "node_order_by",
+        "get_country_display",
+        "get_next_by_created_at",
+        "get_previous_by_created_at",
         # BaseModelAdmin
         "declared_fieldsets",
         # "fieldsets",
