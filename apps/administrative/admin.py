@@ -1,7 +1,7 @@
 """
 Administrative Area admin configuration
 
-This module defines defines the admin interface for the
+This module defines the admin interface for the
 :class:`~apps.administrative.models.Area` model. It integrates features from
 :class:`treebeard.admin.TreeAdmin`, :class:`django.contrib.gis.admin.GISModelAdmin`,
 and :class:`import_export.admin.ImportExportModelAdmin` to provide a

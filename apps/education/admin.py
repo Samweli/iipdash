@@ -1,3 +1,18 @@
+"""
+Educational Institution admin configurations.
+
+This module defines the admin interface for the
+:class:`~apps.education.models.Category`, :class:`~apps.education.models.Ownership`
+and :class:`~apps.education.models.Institution` models.
+
+References:
+    - :class:`~apps.education.models.Category`
+    - :class:`~apps.education.models.Ownership`
+    - :class:`~apps.education.models.Institution`
+    - :class:`django.contrib.gis.admin.GISModelAdmin`
+    - :class:`import_export.admin.ImportExportModelAdmin`
+"""
+
 from django.contrib.gis import admin
 from django.contrib.gis.admin import GISModelAdmin
 
@@ -8,23 +23,63 @@ from .models import Category, Institution, Ownership
 
 @admin.register(Category)
 class CategoryAdmin(ImportExportModelAdmin):
-    list_display = ["name", "code", "description", "id", "uuid"]
-    list_display_links = ["name", "id", "uuid"]
-    search_fields = ["name", "code", "id", "uuid"]
-    readonly_fields = ["id", "uuid", "created_at", "updated_at"]
+    """
+    Admin interface configuration for the :class:`~apps.education.models.Category` model.
+
+    This class extends :class:`import_export.admin.ImportExportModelAdmin` for
+    data import and export.
+    """
+
+    #: A list of fields to display in the admin change list view
+    list_display: list[str] = ["name", "code", "description", "id", "uuid"]
+
+    #: A list of fields in the admin's list view that link to the detailed
+    #: area editing page.
+    list_display_links: list[str] = ["name", "id", "uuid"]
+
+    #: A list of fields that can be searched in the admin interface.
+    search_fields: list[str] = ["name", "code", "id", "uuid"]
+
+    #: A list of fields that are displayed as read-only in the admin interface.
+    readonly_fields: list[str] = ["id", "uuid", "created_at", "updated_at"]
 
 
 @admin.register(Ownership)
 class OwnershipAdmin(ImportExportModelAdmin):
-    list_display = ["name", "code", "description", "id", "uuid"]
-    list_display_links = ["name", "id", "uuid"]
-    search_fields = ["name", "code", "id", "uuid"]
-    readonly_fields = ["id", "uuid", "created_at", "updated_at"]
+    """
+    Admin interface configuration for the :class:`~apps.education.models.Ownership` model.
+
+    This class extends :class:`import_export.admin.ImportExportModelAdmin` for
+    data import and export.
+    """
+
+    #: A list of fields to display in the admin change list view
+    list_display: list[str] = ["name", "code", "description", "id", "uuid"]
+
+    #: A list of fields in the admin's list view that link to the detailed
+    #: area editing page.
+    list_display_links: list[str] = ["name", "id", "uuid"]
+
+    #: A list of fields that can be searched in the admin interface.
+    search_fields: list[str] = ["name", "code", "id", "uuid"]
+
+    #: A list of fields that are displayed as read-only in the admin interface.
+    readonly_fields: list[str] = ["id", "uuid", "created_at", "updated_at"]
 
 
 @admin.register(Institution)
 class InstitutionAdmin(GISModelAdmin, ImportExportModelAdmin):
-    list_display = [
+    """
+    Admin interface configuration for the :class:`~apps.education.models.Institution` model.
+
+    This class extends :class:`django.contrib.gis.admin.GISModelAdmin`
+    for managing geographic data, and
+    :class:`import_export.admin.ImportExportModelAdmin` for data import and
+    export.
+    """
+
+    #: A list of fields to display in the admin change list view
+    list_display: list[str] = [
         "name",
         "category",
         "ownership",
@@ -33,7 +88,16 @@ class InstitutionAdmin(GISModelAdmin, ImportExportModelAdmin):
         "id",
         "uuid",
     ]
-    list_display_links = ["name", "id", "uuid"]
-    list_filter = ["category", "ownership", "administrative_area__country"]
-    search_fields = ["name", "code", "id", "uuid"]
-    readonly_fields = ["id", "uuid", "created_at", "updated_at"]
+
+    #: A list of fields in the admin's list view that link to the detailed
+    #: area editing page.
+    list_display_links: list[str] = ["name", "id", "uuid"]
+
+    #: A list of fields for filtering results in the admin change list view.
+    list_filter: list[str] = ["category", "ownership", "administrative_area__country"]
+
+    #: A list of fields that can be searched in the admin interface.
+    search_fields: list[str] = ["name", "code", "id", "uuid"]
+
+    #: A list of fields that are displayed as read-only in the admin interface.
+    readonly_fields: list[str] = ["id", "uuid", "created_at", "updated_at"]

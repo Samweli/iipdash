@@ -276,6 +276,8 @@ def skip_members(
         "django.contrib.gis.db.models.proxy",
     ]
     DJANGO_EXCLUDE_NAMES = [
+        # models
+        "objects",
         # apps.users.models.User
         "get_next_by_date_joined",
         "get_previous_by_date_joined",
