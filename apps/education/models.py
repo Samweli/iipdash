@@ -95,7 +95,7 @@ class Category(models.Model):
 
     class Meta:
         """
-        Meta options for the `Category` model.
+        Meta options for the :class:`Category` model.
 
         Attributes:
             verbose_name (str):
@@ -215,7 +215,7 @@ class Ownership(models.Model):
 
     class Meta:
         """
-        Meta options for the `Ownership` model.
+        Meta options for the :class:`Ownership` model.
 
         Attributes:
             verbose_name (str):
@@ -309,7 +309,7 @@ class Institution(models.Model):
         geometry (:class:`django.contrib.gis.db.models.PointField`):
             The spatial location of the institution.
 
-        administrative_area: (:class:`django.db.models.ForeignKey`):
+        administrative_area (:class:`django.db.models.ForeignKey`):
             The adminstrative area to which the institution belongs.
 
         osm_id (:class:`django.db.models.CharField`):
@@ -435,7 +435,7 @@ class Institution(models.Model):
 
     class Meta:
         """
-        Meta options for the `Institution` model.
+        Meta options for the :class:`Institution` model.
 
         Attributes:
             verbose_name (str):

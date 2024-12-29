@@ -202,7 +202,7 @@ class Area(MP_Node):
 
     class Meta:
         """
-        Meta options for the `Area` model.
+        Meta options for the :class:`Area` model.
 
         Attributes:
             verbose_name (str):

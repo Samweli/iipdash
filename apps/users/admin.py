@@ -7,7 +7,7 @@ model by extending Django's built-in :class:`django.contrib.auth.admin.UserAdmin
 References:
     - :class:`django.contrib.admin.ModelAdmin`
     - :class:`django.contrib.auth.admin.UserAdmin`
-    - :class:`apps.users.models.User`
+    - :class:`~apps.users.models.User`
 """
 
 from django.contrib import admin
