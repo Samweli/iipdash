@@ -5,9 +5,10 @@ from .factories import UserFactory
 
 
 class UserModelTestCase(TestCase):
+    """Test suite for the User model."""
 
     def test_user_creation(self) -> None:
-        """Test that a User instance can be created and and has valid attributes."""
+        """Test that a User instance can be created and has valid attributes."""
         user: User = UserFactory.create()
 
         self.assertIsInstance(user, User)
