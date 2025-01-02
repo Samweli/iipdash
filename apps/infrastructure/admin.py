@@ -2,12 +2,12 @@
 Infrastructure admin configurations.
 
 This module defines the admin interface for the
-:class:`~apps.infrastructure.models.OpticalFibre`,
-and :class:`~apps.infrastructure.models.CellTower` models.
+:class:`infrastructure.models.OpticalFibre`,
+and :class:`infrastructure.models.CellTower` models.
 
 References:
-    - :class:`~apps.infrastructure.models.OpticalFibre`
-    - :class:`~apps.infrastructure.models.CellTower`
+    - :class:`infrastructure.models.OpticalFibre`
+    - :class:`infrastructure.models.CellTower`
     - :class:`django.contrib.gis.admin.GISModelAdmin`
     - :class:`import_export.admin.ImportExportModelAdmin`
 """
@@ -24,7 +24,7 @@ from .models import CellTower, OpticalFibre
 class OpticalFibreAdmin(GISModelAdmin, ImportExportModelAdmin):
     """
     Admin interface configuration for the
-    :class:`~apps.infrastructure.models.OpticalFibre` model.
+    :class:`infrastructure.models.OpticalFibre` model.
 
     This class extends :class:`django.contrib.gis.admin.GISModelAdmin`
     for managing geographic data, and
@@ -46,7 +46,7 @@ class OpticalFibreAdmin(GISModelAdmin, ImportExportModelAdmin):
 class CellTowerAdmin(GISModelAdmin, ImportExportModelAdmin):
     """
     Admin interface configuration for the
-    :class:`~apps.infrastructure.models.CellTower` model.
+    :class:`infrastructure.models.CellTower` model.
 
     This class extends :class:`django.contrib.gis.admin.GISModelAdmin`
     for managing geographic data, and

@@ -2,13 +2,13 @@
 Educational Institution admin configurations.
 
 This module defines the admin interface for the
-:class:`~apps.education.models.Category`, :class:`~apps.education.models.Ownership`
-and :class:`~apps.education.models.Institution` models.
+:class:`education.models.Category`, :class:`education.models.Ownership`
+and :class:`education.models.Institution` models.
 
 References:
-    - :class:`~apps.education.models.Category`
-    - :class:`~apps.education.models.Ownership`
-    - :class:`~apps.education.models.Institution`
+    - :class:`education.models.Category`
+    - :class:`education.models.Ownership`
+    - :class:`education.models.Institution`
     - :class:`django.contrib.gis.admin.GISModelAdmin`
     - :class:`import_export.admin.ImportExportModelAdmin`
 """
@@ -24,7 +24,7 @@ from .models import Category, Institution, Ownership
 @admin.register(Category)
 class CategoryAdmin(ImportExportModelAdmin):
     """
-    Admin interface configuration for the :class:`~apps.education.models.Category` model.
+    Admin interface configuration for the :class:`education.models.Category` model.
 
     This class extends :class:`import_export.admin.ImportExportModelAdmin` for
     data import and export.
@@ -47,7 +47,7 @@ class CategoryAdmin(ImportExportModelAdmin):
 @admin.register(Ownership)
 class OwnershipAdmin(ImportExportModelAdmin):
     """
-    Admin interface configuration for the :class:`~apps.education.models.Ownership` model.
+    Admin interface configuration for the :class:`education.models.Ownership` model.
 
     This class extends :class:`import_export.admin.ImportExportModelAdmin` for
     data import and export.
@@ -70,7 +70,7 @@ class OwnershipAdmin(ImportExportModelAdmin):
 @admin.register(Institution)
 class InstitutionAdmin(GISModelAdmin, ImportExportModelAdmin):
     """
-    Admin interface configuration for the :class:`~apps.education.models.Institution` model.
+    Admin interface configuration for the :class:`education.models.Institution` model.
 
     This class extends :class:`django.contrib.gis.admin.GISModelAdmin`
     for managing geographic data, and

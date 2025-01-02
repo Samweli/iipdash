@@ -1,7 +1,7 @@
-apps.users package
-==================
+users package
+=============
 
-.. automodule:: apps.users
+.. automodule:: users
    :members:
    :undoc-members:
    :show-inheritance:
@@ -9,26 +9,26 @@ apps.users package
 Submodules
 ----------
 
-apps.users.admin module
------------------------
+users.admin module
+------------------
 
-.. automodule:: apps.users.admin
+.. automodule:: users.admin
    :members:
    :undoc-members:
    :show-inheritance:
 
-apps.users.apps module
-----------------------
+users.apps module
+-----------------
 
-.. automodule:: apps.users.apps
+.. automodule:: users.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-apps.users.models module
-------------------------
+users.models module
+-------------------
 
-.. automodule:: apps.users.models
+.. automodule:: users.models
    :members:
    :undoc-members:
    :show-inheritance:

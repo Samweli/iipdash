@@ -10,12 +10,15 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import sys
 from pathlib import Path
 
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+sys.path.append(str(BASE_DIR / "apps"))
 
 env = environ.Env()
 env.read_env(str(BASE_DIR / ".env"))
@@ -49,10 +52,10 @@ INSTALLED_APPS = [
     "treebeard",
     "django_countries",
     "import_export",
-    "apps.users",
-    "apps.administrative",
-    "apps.education",
-    "apps.infrastructure",
+    "users",
+    "administrative",
+    "education",
+    "infrastructure",
 ]
 
 MIDDLEWARE = [

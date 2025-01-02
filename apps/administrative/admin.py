@@ -2,14 +2,14 @@
 Administrative Area admin configuration
 
 This module defines the admin interface for the
-:class:`~apps.administrative.models.Area` model. It integrates features from
+:class:`administrative.models.Area` model. It integrates features from
 :class:`treebeard.admin.TreeAdmin`, :class:`django.contrib.gis.admin.GISModelAdmin`,
 and :class:`import_export.admin.ImportExportModelAdmin` to provide a
 hierarchical view, geographic data management, and data import/export
 functionalities.
 
 References:
-    - :class:`~apps.administrative.models.Area`
+    - :class:`administrative.models.Area`
     - :class:`treebeard.admin.TreeAdmin`
     - :class:`django.contrib.gis.admin.GISModelAdmin`
     - :class:`import_export.admin.ImportExportModelAdmin`
@@ -29,7 +29,7 @@ from .models import Area
 @admin.register(Area)
 class AreaAdmin(TreeAdmin, GISModelAdmin, ImportExportModelAdmin):
     """
-    Admin interface configuration for the :class:`~apps.administrative.models.Area` model.
+    Admin interface configuration for the :class:`administrative.models.Area` model.
 
     This class extends :class:`treebeard.admin.TreeAdmin` for managing
     hierarchical structures, :class:`django.contrib.gis.admin.GISModelAdmin`
