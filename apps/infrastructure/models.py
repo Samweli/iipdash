@@ -1,8 +1,8 @@
 """
 Infrastructure models.
 
-This module defines a :class:`OpticalFibre` and :class:`CellTower` models,
-which represents optical fibre networks and cellular towers.
+This module defines a :class:`FiberOptic` and :class:`CellTower` models,
+which represents fiber optic networks and cellular towers.
 
 References:
     - :class:`django.contrib.gis.db.models.MultiLineStringField`
@@ -28,48 +28,48 @@ from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 
 
-class OpticalFibre(models.Model):
-    """An optical fibre network.
+class FiberOptic(models.Model):
+    """A fiber optic network.
 
-    It represents an optical fibre network country, spatial geometry,
+    It represents an fiber optic network country, spatial geometry,
     and additional information.
 
     Attributes:
         id (:class:`django.db.models.BigAutoField`):
-            A database primary key for the optical fibre network. Inherited
+            A database primary key for the fiber optic network. Inherited
             from :class:`django.db.models.Model`.
 
         uuid (:class:`django.db.models.UUIDField`):
-            A universally unique identifier (UUID) for the optical fibre
+            A universally unique identifier (UUID) for the fiber optic
             network, generated using :func:`uuid.uuid4`. This field is
             non-editable, unique, and set by default.
 
         country (:class:`django_countries.fields.CountryField`):
-            The country to which the optical fibre network belongs.
+            The country to which the fiber optic network belongs.
 
         name (:class:`django.db.models.CharField`):
-            A human-readable name of the optical fibre network.
+            A human-readable name of the fiber optic network.
 
         description (:class:`django.db.models.TextField`):
-            A long-form description of the optical fibre network.
+            A long-form description of the fiber optic network.
 
         geometry (:class:`django.contrib.gis.db.models.MultiPolygonField`):
-            The spatial/geometric shape of the optical fibre network.
+            The spatial/geometric shape of the fiber optic network.
 
         created_at (:class:`django.db.models.DateTimeField`):
-            The database level timestamp of when the optical fibre network was
+            The database level timestamp of when the fiber optic network was
             created.
 
         updated_at (:class:`django.db.models.DateTimeField`):
-            The database level timestamp of when the optical fibre network was
+            The database level timestamp of when the fiber optic network was
             latest modified.
 
         extras (:class:`django.db.models.JSONField`):
-            Additional arbitrary data related to the optical fibre network.
+            Additional arbitrary data related to the fiber optic network.
 
     """
 
-    #: A universally unique identifier (UUID) for the optical fibre network.
+    #: A universally unique identifier (UUID) for the fiber optic network.
     uuid = models.UUIDField(
         _("UUID"),
         default=uuid.uuid4,
@@ -77,16 +77,16 @@ class OpticalFibre(models.Model):
         unique=True,
     )
 
-    #: The country to which the optical fibre network belongs.
+    #: The country to which the fiber optic network belongs.
     country = CountryField(_("country"), blank=True, db_index=True)
 
-    #: A human-readable name of the optical fibre network.
+    #: A human-readable name of the fiber optic network.
     name = models.CharField(_("name"), max_length=255, blank=True)
 
-    #: A long-form description of the optical fibre network.
+    #: A long-form description of the fiber optic network.
     description = models.TextField(_("description"), blank=True)
 
-    #: The spatial/geometric shape of the optical fibre network.
+    #: The spatial/geometric shape of the fiber optic network.
     geometry = models.MultiLineStringField(
         _("geometry"),
         geography=True,
@@ -95,7 +95,7 @@ class OpticalFibre(models.Model):
         srid=4326,
     )
 
-    #: The database level timestamp of when the optical fibre network was
+    #: The database level timestamp of when the fiber optic network was
     #: created.
     created_at = models.DateTimeField(
         _("created at"),
@@ -104,7 +104,7 @@ class OpticalFibre(models.Model):
         db_index=True,
     )
 
-    #: The database level timestamp of when the optical fibre network was
+    #: The database level timestamp of when the fiber optic network was
     #: latest modified.
     updated_at = models.DateTimeField(
         _("updated at"),
@@ -113,34 +113,34 @@ class OpticalFibre(models.Model):
         blank=True,
     )
 
-    #: Additional arbitrary data related to the optical fibre network.
+    #: Additional arbitrary data related to the fiber optic network.
     extras = models.JSONField(_("extras"), blank=True, default=dict)
 
     class Meta:
         """
-        Meta options for the :class:`OpticalFibre` model.
+        Meta options for the :class:`FiberOptic` model.
 
         Attributes:
             verbose_name (str):
-                The human-readable name for a single optical fibre network.
+                The human-readable name for a single fiber optic network.
 
             verbose_name_plural (str):
-                The human-readable name for multiple optical fibre network.
+                The human-readable name for multiple fiber optic network.
         """
 
-        verbose_name = _("Optical Fibre Network")
-        verbose_name_plural = _("Optical Fibre Networks")
+        verbose_name = _("Fiber Optic Network")
+        verbose_name_plural = _("Fiber Optic Networks")
 
     def save(self, *args: Tuple[Any, ...], **kwargs: Dict[str, Any]) -> None:
         """
-        Save the current optical fibre network instance.
+        Save the current fiber optic network instance.
 
-        It ensures the optical fibre network geometry field is stored as a
+        It ensures the fiber optic network geometry field is stored as a
         :class:`django.contrib.gis.geos.MultiLineString`. If the geometry is
         provided as a single :class:`django.contrib.gis.geos.LineString`, it
         is automatically converted to a
         :class:`django.contrib.gis.geos.MultiLineString` before saving. This
-        ensures consistency when handling optical fibre network geometry
+        ensures consistency when handling fiber optic network geometry
         spatial data.
 
         Args:
@@ -159,15 +159,15 @@ class OpticalFibre(models.Model):
 
     def __str__(self):
         """
-        Returns the string representation of the optical fibre network.
+        Returns the string representation of the fiber optic network.
 
         Returns:
             str:
-                The name of the optical fibre network, or a formatted string
+                The name of the fiber optic network, or a formatted string
                 with the country and UUID.
         """
         return self.name or format_lazy(
-            "Optical Fibre: {country}: {uuid}",
+            "Fiber Optic: {country}: {uuid}",
             country=self.country,
             uuid=self.uuid,
         )
