@@ -315,6 +315,9 @@ class Institution(models.Model):
         has_electricity (:class:`django.db.models.BooleanField`):
             Whether the institution is connected to electricity or not.
 
+        has_fiber_optic (:class:`django.db.models.BooleanField`):
+            Whether the institution is connected to fiber optic or not.
+
         osm_id (:class:`django.db.models.CharField`):
             OpenStreetMap ID of the institution.
 
@@ -412,6 +415,9 @@ class Institution(models.Model):
 
     #: Whether the institution is connected to electricity or not
     has_electricity = models.BooleanField(_("has electricity"), blank=True, null=True)
+
+    #: Whether the institution is connected to fiber optic or not
+    has_fiber_optic = models.BooleanField(_("has fiber optic"), blank=True, null=True)
 
     #: OpenStreetMap ID of the institution.
     osm_id = models.BigIntegerField(_("OSM id"), blank=True, null=True)
