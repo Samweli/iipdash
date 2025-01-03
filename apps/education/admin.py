@@ -94,7 +94,7 @@ class InstitutionAdmin(GISModelAdmin, ImportExportModelAdmin):
     list_display_links: list[str] = ["name", "id", "uuid"]
 
     #: A list of fields for filtering results in the admin change list view.
-    list_filter: list[str] = ["category", "ownership", "administrative_area__country"]
+    list_filter: list[str] = ["administrative_area__country", "category", "ownership", "has_electricity"]
 
     #: A list of fields that can be searched in the admin interface.
     search_fields: list[str] = ["name", "code", "id", "uuid"]
