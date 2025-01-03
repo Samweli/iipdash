@@ -6,3 +6,5 @@ django-treebeard
 django-countries[pyuca]
 
 django-import-export[all]
+
+django-debug-toolbar
