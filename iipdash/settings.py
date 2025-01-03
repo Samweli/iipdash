@@ -53,6 +53,10 @@ INSTALLED_APPS = [
     "treebeard",
     "django_countries",
     "import_export",
+    "rest_framework",
+    "oauth2_provider",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
     "users",
     "administrative",
     "education",
@@ -84,6 +88,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "iipdash.context_processors.site",
             ],
         },
     },
@@ -198,6 +203,10 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SITE_NAME = env("SITE_NAME", default="IIP dashboard")
 
+SITE_API_NAME = env("SITE_API_NAME", default=f"{SITE_NAME} API")
+
+SITE_API_URL = env("SITE_API_URL", default="")
+
 # Admin site
 
 ADMIN_SITE_NAME = env("ADMIN_SITE_HEADER", default=SITE_NAME)
@@ -205,3 +214,27 @@ ADMIN_SITE_NAME = env("ADMIN_SITE_HEADER", default=SITE_NAME)
 ADMIN_SITE_HEADER = env("ADMIN_SITE_HEADER", default=SITE_NAME)
 
 ADMIN_INDEX_TITLE = env("ADMIN_INDEX_TITLE", default="Administration")
+
+# REST framework settings
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+        "rest_framework.authentication.SessionAuthentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticatedOrReadOnly"],
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_FILTER_BACKENDS": ["django_filters.rest_framework.DjangoFilterBackend"],
+}
+
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": SITE_API_NAME,
+    "DESCRIPTION": "",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+    "SERVE_PUBLIC": False,
+    "SCHEMA_PATH_PREFIX": "/api",
+    "SCHEMA_PATH_PREFIX_TRIM": True,
+    "REDOC_DIST": "SIDECAR",
+}
