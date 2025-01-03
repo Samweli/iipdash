@@ -34,7 +34,7 @@ class AreaModelTestCase(TestCase):
         self.assertIsNotNone(area.extras)
         self.assertEqual(str(area), area.name)
 
-    def test_geometry_auto_conversion(self):
+    def test_geometry_auto_conversion(self) -> None:
         """Test save method converts a Polygon to MultiPolygon."""
         area: Area = AreaFactory.create(depth=1)
 
@@ -45,7 +45,7 @@ class AreaModelTestCase(TestCase):
         self.assertIsInstance(area.geometry, geos.MultiPolygon)
         self.assertEqual(len(area.geometry), 1)
 
-    def test_invalid_geometry(self):
+    def test_invalid_geometry(self) -> None:
         """Test that invalid geometry raises a validation error."""
         with self.assertRaises(ValueError):
             AreaFactory.create(depth=1, geometry="Invalid Geometry")

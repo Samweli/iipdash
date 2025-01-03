@@ -10,17 +10,17 @@ from ..models import Area
 
 
 class AreaFactory(factory.django.DjangoModelFactory):
-    type_code = factory.Iterator(["ADM0", "ADM1"], cycle=True)
-    country = factory.Iterator([code for code, name in countries], cycle=True)
-    name = factory.Faker("city")
-    code = factory.Faker("postcode")
-    description = factory.Faker("text", max_nb_chars=200)
+    type_code: str = factory.Iterator(["ADM0", "ADM1"], cycle=True)
+    country: str = factory.Iterator([code for code, name in countries], cycle=True)
+    name: str = factory.Faker("city")
+    code: str = factory.Faker("postcode")
+    description: str = factory.Faker("text", max_nb_chars=200)
 
     @factory.lazy_attribute
     def full_name(self) -> str:
         return f"{self.name} ({self.type_code})"
 
-    population = factory.fuzzy.FuzzyInteger(1_000, 1_000_000)
+    population: int = factory.fuzzy.FuzzyInteger(1_000, 1_000_000)
 
     @factory.lazy_attribute
     def population_male(self) -> int:
@@ -30,14 +30,14 @@ class AreaFactory(factory.django.DjangoModelFactory):
     def population_female(self) -> int:
         return int(self.population - self.population_male)
 
-    population_year = factory.fuzzy.FuzzyInteger(2000, 2023)
+    population_year: int = factory.fuzzy.FuzzyInteger(2000, 2023)
 
     @factory.lazy_attribute
     def geometry(self) -> geos.MultiPolygon:
         return geos.MultiPolygon(geos.Polygon(((0, 0), (1, 0), (1, 1), (0, 1), (0, 0))))
 
-    area = factory.fuzzy.FuzzyFloat(100.0, 100_000.0)
-    extras = factory.Faker("pydict", value_types=[str, int, bool])
+    area: float = factory.fuzzy.FuzzyFloat(100.0, 100_000.0)
+    extras: dict = factory.Faker("pydict", value_types=[str, int, bool])
 
     class Meta:
         model: typing.Type[Area] = Area
