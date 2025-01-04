@@ -102,6 +102,8 @@ class InstitutionModelTestCase(TestCase):
         self.assertIsNotNone(institution.website)
         self.assertIsNotNone(institution.geometry)
         self.assertIsNotNone(institution.administrative_area)
+        self.assertIsNotNone(institution.has_electricity)
+        self.assertIsNotNone(institution.has_fiber_optic)
         self.assertIsNotNone(institution.osm_id)
         self.assertIsNotNone(institution.osm_type)
         self.assertIsNotNone(institution.created_at)

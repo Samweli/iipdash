@@ -5,18 +5,17 @@ from django.contrib.gis import geos
 
 import factory
 import factory.fuzzy
+from administrative.models import Area
+from administrative.tests.factories import AreaFactory
 from django_countries import countries
 from faker import Faker
 
-from apps.administrative.models import Area
-from apps.administrative.tests.factories import AreaFactory
-
-from ..models import CellTower, OpticalFibre
+from ..models import CellTower, FiberOptic
 
 fake = Faker()
 
 
-class OpticalFibreFactory(factory.django.DjangoModelFactory):
+class FiberOpticFactory(factory.django.DjangoModelFactory):
     country: str = factory.Iterator([code for code, name in countries], cycle=True)
     name: str = factory.Faker("company")
     description: str = factory.Faker("text", max_nb_chars=200)
@@ -33,7 +32,7 @@ class OpticalFibreFactory(factory.django.DjangoModelFactory):
     extras: typing.Dict[str, typing.Any] = factory.Faker("pydict", value_types=[str, int, bool])
 
     class Meta:
-        model: typing.Type[OpticalFibre] = OpticalFibre
+        model: typing.Type[FiberOptic] = FiberOptic
 
 
 class CellTowerFactory(factory.django.DjangoModelFactory):

@@ -4,11 +4,10 @@ from django.contrib.gis import geos
 
 import factory
 import factory.fuzzy
+from administrative.models import Area
+from administrative.tests.factories import AreaFactory
 from django_countries import countries
 from faker import Faker
-
-from apps.administrative.models import Area
-from apps.administrative.tests.factories import AreaFactory
 
 from ..models import Category, Institution, Ownership
 
@@ -83,6 +82,8 @@ class InstitutionFactory(factory.django.DjangoModelFactory):
         return geos.Point(float(latlong[1]), float(latlong[0]))
 
     administrative_area: Area = factory.SubFactory(AreaFactory, depth=1)
+    has_electricity: bool = factory.Faker("boolean")
+    has_fiber_optic: bool = factory.Faker("boolean")
     osm_id: int = factory.Faker("random_number", digits=10)
     osm_type: str = factory.Iterator(["nodes"], cycle=True)
     extras: typing.Dict[str, typing.Any] = factory.Faker("pydict", value_types=[str, int, bool])

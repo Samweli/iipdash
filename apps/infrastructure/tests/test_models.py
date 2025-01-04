@@ -1,35 +1,35 @@
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
-from ..models import CellTower, OpticalFibre
-from .factories import CellTowerFactory, OpticalFibreFactory
+from ..models import CellTower, FiberOptic
+from .factories import CellTowerFactory, FiberOpticFactory
 
 
-class OpticalFibreModelTestCase(TestCase):
-    """Test suite for the OpticalFibre model."""
+class FiberOpticModelTestCase(TestCase):
+    """Test suite for the FiberOptic model."""
 
-    def test_optical_fibre_creation(self) -> None:
-        """Test that a OpticalFibre instance can be created and has valid attributes."""
-        optical_fibre: OpticalFibre = OpticalFibreFactory.create()
+    def test_fiber_optic_creation(self) -> None:
+        """Test that a FiberOptic instance can be created and has valid attributes."""
+        fiber_optic: FiberOptic = FiberOpticFactory.create()
 
-        self.assertIsInstance(optical_fibre, OpticalFibre)
-        self.assertEqual(OpticalFibre.objects.count(), 1)
+        self.assertIsInstance(fiber_optic, FiberOptic)
+        self.assertEqual(FiberOptic.objects.count(), 1)
 
-        self.assertIsNotNone(optical_fibre.id)
-        self.assertIsNotNone(optical_fibre.uuid)
-        self.assertIsNotNone(optical_fibre.country)
-        self.assertIsNotNone(optical_fibre.name)
-        self.assertIsNotNone(optical_fibre.description)
-        self.assertIsNotNone(optical_fibre.geometry)
-        self.assertIsNotNone(optical_fibre.created_at)
-        self.assertIsNotNone(optical_fibre.updated_at)
-        self.assertIsNotNone(optical_fibre.extras)
-        self.assertEqual(str(optical_fibre), optical_fibre.name)
+        self.assertIsNotNone(fiber_optic.id)
+        self.assertIsNotNone(fiber_optic.uuid)
+        self.assertIsNotNone(fiber_optic.country)
+        self.assertIsNotNone(fiber_optic.name)
+        self.assertIsNotNone(fiber_optic.description)
+        self.assertIsNotNone(fiber_optic.geometry)
+        self.assertIsNotNone(fiber_optic.created_at)
+        self.assertIsNotNone(fiber_optic.updated_at)
+        self.assertIsNotNone(fiber_optic.extras)
+        self.assertEqual(str(fiber_optic), fiber_optic.name)
 
     def test_invalid_geometry_raises_error(self) -> None:
         """Test that invalid geometry raises a validation error."""
         with self.assertRaises(ValueError):
-            OpticalFibreFactory.create(geometry="Invalid Geometry")
+            FiberOpticFactory.create(geometry="Invalid Geometry")
 
 
 class CellTowerModelTestCase(TestCase):
