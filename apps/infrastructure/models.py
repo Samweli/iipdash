@@ -286,7 +286,7 @@ class CellTower(models.Model):
     )
 
     #: The data source level timestamp of when the cell tower was created.
-    src_created = models.DateTimeField(
+    src_created_at = models.DateTimeField(
         _("source record created at"),
         null=True,
         blank=True,

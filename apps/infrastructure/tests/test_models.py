@@ -50,7 +50,7 @@ class CellTowerModelTestCase(TestCase):
         self.assertIsNotNone(cell_tower.location_is_approximate)
         self.assertIsNotNone(cell_tower.range)
         self.assertIsNotNone(cell_tower.administrative_area)
-        self.assertIsNotNone(cell_tower.src_created)
+        self.assertIsNotNone(cell_tower.src_created_at)
         self.assertIsNotNone(cell_tower.src_updated_at)
         self.assertIsNotNone(cell_tower.created_at)
         self.assertIsNotNone(cell_tower.updated_at)

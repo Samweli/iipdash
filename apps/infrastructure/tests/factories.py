@@ -55,7 +55,7 @@ class CellTowerFactory(factory.django.DjangoModelFactory):
     location_is_approximate: bool = factory.Faker("boolean")
     range: float = factory.Faker("pyfloat", left_digits=3, right_digits=2, positive=True)
     administrative_area: Area = factory.SubFactory(AreaFactory, depth=1)
-    src_created: datetime.datetime = factory.Faker("date_time_this_month", tzinfo=datetime.timezone.utc)
+    src_created_at: datetime.datetime = factory.Faker("date_time_this_month", tzinfo=datetime.timezone.utc)
     src_updated_at: datetime.datetime = factory.Faker("date_time_this_month", tzinfo=datetime.timezone.utc)
     extras: typing.Dict[str, typing.Any] = factory.Faker("pydict", value_types=[str, int, bool])
 
