@@ -28,7 +28,7 @@ class UserModelTestCase(TestCase):
         self.assertIsNone(user.last_login)
         self.assertEqual(user.display_name, user.first_name)
 
-    def test_user_display_name(self):
+    def test_user_display_name(self) -> None:
         """Test the display name of the User instance."""
         user: User = UserFactory.build()
         self.assertIsNotNone(user.first_name)
