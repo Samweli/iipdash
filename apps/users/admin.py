@@ -1,13 +1,13 @@
 """
 User admin configuration.
 
-This module defines the admin interface for the custom :class:`~apps.users.models.User`
+This module defines the admin interface for the custom :class:`users.models.User`
 model by extending Django's built-in :class:`django.contrib.auth.admin.UserAdmin`.
 
 References:
     - :class:`django.contrib.admin.ModelAdmin`
     - :class:`django.contrib.auth.admin.UserAdmin`
-    - :class:`~apps.users.models.User`
+    - :class:`users.models.User`
 """
 
 from django.contrib import admin
@@ -19,7 +19,7 @@ from .models import User
 @admin.register(User)
 class UserAdmin(CoreUserAdmin):
     """
-    Admin interface configuration for the :class:`~apps.users.models.User` model.
+    Admin interface configuration for the :class:`users.models.User` model.
 
     This class extends :class:`django.contrib.auth.admin.UserAdmin` to provide
     additional customization for the user management interface in the Django admin panel.

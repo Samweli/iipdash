@@ -1,7 +1,7 @@
-apps.education package
-======================
+education package
+=================
 
-.. automodule:: apps.education
+.. automodule:: education
    :members:
    :undoc-members:
    :show-inheritance:
@@ -9,26 +9,26 @@ apps.education package
 Submodules
 ----------
 
-apps.education.admin module
----------------------------
+education.admin module
+----------------------
 
-.. automodule:: apps.education.admin
+.. automodule:: education.admin
    :members:
    :undoc-members:
    :show-inheritance:
 
-apps.education.apps module
---------------------------
+education.apps module
+---------------------
 
-.. automodule:: apps.education.apps
+.. automodule:: education.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-apps.education.models module
-----------------------------
+education.models module
+-----------------------
 
-.. automodule:: apps.education.models
+.. automodule:: education.models
    :members:
    :undoc-members:
    :show-inheritance:

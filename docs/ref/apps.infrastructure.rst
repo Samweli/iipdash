@@ -1,7 +1,7 @@
-apps.infrastructure package
-===========================
+infrastructure package
+======================
 
-.. automodule:: apps.infrastructure
+.. automodule:: infrastructure
    :members:
    :undoc-members:
    :show-inheritance:
@@ -9,26 +9,26 @@ apps.infrastructure package
 Submodules
 ----------
 
-apps.infrastructure.admin module
---------------------------------
+infrastructure.admin module
+---------------------------
 
-.. automodule:: apps.infrastructure.admin
+.. automodule:: infrastructure.admin
    :members:
    :undoc-members:
    :show-inheritance:
 
-apps.infrastructure.apps module
--------------------------------
+infrastructure.apps module
+--------------------------
 
-.. automodule:: apps.infrastructure.apps
+.. automodule:: infrastructure.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-apps.infrastructure.models module
----------------------------------
+infrastructure.models module
+----------------------------
 
-.. automodule:: apps.infrastructure.models
+.. automodule:: infrastructure.models
    :members:
    :undoc-members:
    :show-inheritance:

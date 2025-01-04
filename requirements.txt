@@ -6,3 +6,12 @@ django-treebeard
 django-countries[pyuca]
 
 django-import-export[all]
+
+django-debug-toolbar
+
+djangorestframework
+djangorestframework-gis
+markdown
+django-filter
+django-oauth-toolkit
+drf-spectacular[sidecar]

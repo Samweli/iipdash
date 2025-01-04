@@ -312,6 +312,12 @@ class Institution(models.Model):
         administrative_area (:class:`django.db.models.ForeignKey`):
             The adminstrative area to which the institution belongs.
 
+        has_electricity (:class:`django.db.models.BooleanField`):
+            Whether the institution is connected to electricity or not.
+
+        has_fiber_optic (:class:`django.db.models.BooleanField`):
+            Whether the institution is connected to fiber optic or not.
+
         osm_id (:class:`django.db.models.CharField`):
             OpenStreetMap ID of the institution.
 
@@ -406,6 +412,12 @@ class Institution(models.Model):
         on_delete=models.SET_NULL,
         verbose_name=_("administrative area"),
     )
+
+    #: Whether the institution is connected to electricity or not
+    has_electricity = models.BooleanField(_("has electricity"), blank=True, null=True)
+
+    #: Whether the institution is connected to fiber optic or not
+    has_fiber_optic = models.BooleanField(_("has fiber optic"), blank=True, null=True)
 
     #: OpenStreetMap ID of the institution.
     osm_id = models.BigIntegerField(_("OSM id"), blank=True, null=True)

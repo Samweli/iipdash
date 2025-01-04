@@ -1,7 +1,7 @@
-apps.administrative package
-===========================
+administrative package
+======================
 
-.. automodule:: apps.administrative
+.. automodule:: administrative
    :members:
    :undoc-members:
    :show-inheritance:
@@ -9,26 +9,26 @@ apps.administrative package
 Submodules
 ----------
 
-apps.administrative.admin module
---------------------------------
+administrative.admin module
+---------------------------
 
-.. automodule:: apps.administrative.admin
+.. automodule:: administrative.admin
    :members:
    :undoc-members:
    :show-inheritance:
 
-apps.administrative.apps module
--------------------------------
+administrative.apps module
+--------------------------
 
-.. automodule:: apps.administrative.apps
+.. automodule:: administrative.apps
    :members:
    :undoc-members:
    :show-inheritance:
 
-apps.administrative.models module
----------------------------------
+administrative.models module
+----------------------------
 
-.. automodule:: apps.administrative.models
+.. automodule:: administrative.models
    :members:
    :undoc-members:
    :show-inheritance:

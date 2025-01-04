@@ -49,12 +49,27 @@ Including another URLconf:
 """
 
 from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path
+from django.urls import include, path
+
+from debug_toolbar.toolbar import debug_toolbar_urls
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
+
+from .api_urls import router as api_router
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/auth/", include("rest_framework.urls")),
+    path("api/oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
+    path("api/", include((api_router.urls, "api"))),
+    path("openapi/schema/", SpectacularAPIView.as_view(), name="openapi-schema"),
+    path("openapi/docs/", SpectacularRedocView.as_view(url_name="openapi-schema"), name="openapi-docs"),
 ]
+
+if settings.DEBUG:
+
+    urlpatterns = urlpatterns + debug_toolbar_urls() + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 admin.site.site_header = getattr(settings, "ADMIN_SITE_HEADER", "")
 admin.site.index_title = getattr(settings, "ADMIN_INDEX_TITLE", "")

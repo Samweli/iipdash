@@ -27,7 +27,7 @@ class UsersConfig(AppConfig):
 
     #: The full Python path to the application. This is used by Django
     #: to locate the application module.
-    name: str = "apps.users"
+    name: str = "users"
 
     #: A human-readable name for the application, used in the Django
     #: admin and other parts of the framework.
