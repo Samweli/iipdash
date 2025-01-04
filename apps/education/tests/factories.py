@@ -27,7 +27,7 @@ class CategoryFactory(factory.django.DjangoModelFactory):
         cycle=True,
     )
     description: str = factory.Faker("text", max_nb_chars=200)
-    extras: dict = factory.Faker("pydict", value_types=[str, int, bool])
+    extras: typing.Dict[str, typing.Any] = factory.Faker("pydict", value_types=[str, int, bool])
 
     class Meta:
         model: typing.Type[Category] = Category
@@ -49,7 +49,7 @@ class OwnershipFactory(factory.django.DjangoModelFactory):
         cycle=True,
     )
     description: str = factory.Faker("text", max_nb_chars=200)
-    extras: dict = factory.Faker("pydict", value_types=[str, int, bool])
+    extras: typing.Dict[str, typing.Any] = factory.Faker("pydict", value_types=[str, int, bool])
 
     class Meta:
         model: typing.Type[Ownership] = Ownership
@@ -71,12 +71,12 @@ class InstitutionFactory(factory.django.DjangoModelFactory):
 
     @factory.lazy_attribute
     def geometry(self) -> geos.Point:
-        country_code = fake.random_element([code for code, name in countries])
+        country_code: typing.Optional[str] = fake.random_element([code for code, name in countries])
         if self.administrative_area and self.administrative_area.country:
             if self.administrative_area.country.code:
                 country_code = self.administrative_area.country.code
 
-        latlong = fake.local_latlng(country_code=country_code)
+        latlong: typing.Tuple[str, ...] = fake.local_latlng(country_code=country_code)
         if not latlong:
             latlong = fake.local_latlng()
 
@@ -85,7 +85,7 @@ class InstitutionFactory(factory.django.DjangoModelFactory):
     administrative_area: Area = factory.SubFactory(AreaFactory, depth=1)
     osm_id: int = factory.Faker("random_number", digits=10)
     osm_type: str = factory.Iterator(["nodes"], cycle=True)
-    extras: dict = factory.Faker("pydict", value_types=[str, int, bool])
+    extras: typing.Dict[str, typing.Any] = factory.Faker("pydict", value_types=[str, int, bool])
 
     class Meta:
         model: typing.Type[Institution] = Institution

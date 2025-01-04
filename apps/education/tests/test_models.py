@@ -46,7 +46,7 @@ class CategoryModelTestCase(TestCase):
 class OwnershipModelTestCase(TestCase):
     """Test suite for the Ownership model."""
 
-    def test_category_creation(self) -> None:
+    def test_ownership_creation(self) -> None:
         """Test that an Ownership instance can be created and has valid attributes."""
         ownership: Ownership = OwnershipFactory.create()
 
@@ -80,7 +80,7 @@ class OwnershipModelTestCase(TestCase):
 class InstitutionModelTestCase(TestCase):
     """Test suite for the Institution model."""
 
-    def test_category_creation(self) -> None:
+    def test_institution_creation(self) -> None:
         """Test that an Institution instance can be created and has valid attributes."""
         institution: Institution = InstitutionFactory.create()
 
@@ -119,3 +119,8 @@ class InstitutionModelTestCase(TestCase):
         self.assertIsNone(institution.category)
         self.assertIsNone(institution.ownership)
         self.assertIsNone(institution.administrative_area)
+
+    def test_invalid_geometry_raises_error(self) -> None:
+        """Test that invalid geometry raises a `ValueError`."""
+        with self.assertRaises(ValueError):
+            InstitutionFactory.create(geometry="Invalid Geometry")

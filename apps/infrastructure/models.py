@@ -210,7 +210,7 @@ class CellTower(models.Model):
         src_created_at (:class:`django.db.models.DateTimeField`):
             The data source level timestamp of when the cell tower was created.
 
-        src_supdated_at (:class:`django.db.models.DateTimeField`):
+        src_updated_at (:class:`django.db.models.DateTimeField`):
             The data source level timestamp of when the cell tower was latest
             modified.
 

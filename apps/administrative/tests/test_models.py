@@ -45,7 +45,7 @@ class AreaModelTestCase(TestCase):
         self.assertIsInstance(area.geometry, geos.MultiPolygon)
         self.assertEqual(len(area.geometry), 1)
 
-    def test_invalid_geometry(self) -> None:
-        """Test that invalid geometry raises a validation error."""
+    def test_invalid_geometry_raises_error(self) -> None:
+        """Test that invalid geometry raises a `ValueError`."""
         with self.assertRaises(ValueError):
             AreaFactory.create(depth=1, geometry="Invalid Geometry")

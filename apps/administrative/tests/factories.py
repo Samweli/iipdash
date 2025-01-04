@@ -37,7 +37,7 @@ class AreaFactory(factory.django.DjangoModelFactory):
         return geos.MultiPolygon(geos.Polygon(((0, 0), (1, 0), (1, 1), (0, 1), (0, 0))))
 
     area: float = factory.fuzzy.FuzzyFloat(100.0, 100_000.0)
-    extras: dict = factory.Faker("pydict", value_types=[str, int, bool])
+    extras: typing.Dict[str, typing.Any] = factory.Faker("pydict", value_types=[str, int, bool])
 
     class Meta:
         model: typing.Type[Area] = Area
