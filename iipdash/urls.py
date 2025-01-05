@@ -54,7 +54,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from debug_toolbar.toolbar import debug_toolbar_urls
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView
+from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
 from .api_urls import router as api_router
 
@@ -65,6 +65,7 @@ urlpatterns = [
     path("api/", include((api_router.urls, "api"))),
     path("openapi/schema/", SpectacularAPIView.as_view(), name="openapi-schema"),
     path("openapi/docs/", SpectacularRedocView.as_view(url_name="openapi-schema"), name="openapi-docs"),
+    path("openapi/swagger-ui/", SpectacularSwaggerView.as_view(url_name="openapi-schema"), name="openapi-swagger-ui"),
 ]
 
 if settings.DEBUG:

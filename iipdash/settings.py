@@ -234,7 +234,15 @@ SPECTACULAR_SETTINGS = {
     "VERSION": "1.0.0",
     "SERVE_INCLUDE_SCHEMA": False,
     "SERVE_PUBLIC": False,
+    "SERVERS": [
+        {
+            "url": "/api",
+            "description": "Default API server",
+        },
+    ],
     "SCHEMA_PATH_PREFIX": "/api",
     "SCHEMA_PATH_PREFIX_TRIM": True,
     "REDOC_DIST": "SIDECAR",
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
 }

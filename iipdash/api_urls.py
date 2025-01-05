@@ -1,4 +1,5 @@
+from education.api.urls import router as education_router
 from rest_framework import routers
 
 router = routers.DefaultRouter()
-# router.registry.extend(some_router.registry)
+router.registry.extend(education_router.registry)

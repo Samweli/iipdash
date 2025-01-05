@@ -62,17 +62,32 @@ class Category(models.Model):
         default=uuid.uuid4,
         editable=False,
         unique=True,
+        help_text=_("A universally unique identifier (UUID) for the category."),
     )
 
     #: A human-readable name of the category.
-    name = models.CharField(_("name"), max_length=255, db_index=True)
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        db_index=True,
+        help_text=_("A human-readable name of the category."),
+    )
 
     #: A unique slugified code for the category, generated automatically
     #: if not provided.
-    code = models.SlugField(_("code"), blank=True, max_length=50)
+    code = models.SlugField(
+        _("code"),
+        blank=True,
+        max_length=50,
+        help_text=_("A unique slugified code for the category."),
+    )
 
     #: A long-form description of the category.
-    description = models.TextField(_("description"), blank=True)
+    description = models.TextField(
+        _("description"),
+        blank=True,
+        help_text=_("A long-form description of the category."),
+    )
 
     #: The database level timestamp of when the category was created.
     created_at = models.DateTimeField(
@@ -80,6 +95,7 @@ class Category(models.Model):
         auto_now_add=True,
         db_default=Now(),
         db_index=True,
+        help_text=_("The database level timestamp of when the category was created."),
     )
 
     #: The database level timestamp of when the category was latest modified.
@@ -88,10 +104,16 @@ class Category(models.Model):
         auto_now=True,
         null=True,
         blank=True,
+        help_text=_("The database level timestamp of when the category was latest modified."),
     )
 
     #: Additional arbitrary data related to the category.
-    extras = models.JSONField(_("extras"), blank=True, default=dict)
+    extras = models.JSONField(
+        _("extras"),
+        blank=True,
+        default=dict,
+        help_text=_("Additional arbitrary data related to the category."),
+    )
 
     class Meta:
         """
