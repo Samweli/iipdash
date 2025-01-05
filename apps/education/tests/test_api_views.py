@@ -5,7 +5,7 @@ from django.test import TestCase
 from rest_framework import status
 from rest_framework.test import APIClient
 
-from .factories import CategoryFactory
+from .factories import CategoryFactory, OwnershipFactory
 
 
 class CategoryAPITestCase(TestCase):
@@ -74,4 +74,73 @@ class CategoryAPITestCase(TestCase):
     def test_retrieve_category_not_found(self) -> None:
         """Test that the `retrieve` endpoint returns 404 error, if `Category` does not exist."""
         response = self.client.get(f"/api/categories/{uuid.uuid4()}/")
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+
+class OwnershipAPITestCase(TestCase):
+    """Test suite for the OwnershipViewSet."""
+
+    def setUp(self) -> None:
+        """Set up the test case."""
+        self.client = APIClient()
+        self.ownership = OwnershipFactory.create()
+
+    def test_list_ownerships(self) -> None:
+        """Test that the `list` endpoint returns the correct list of `Ownership`."""
+        response = self.client.get("/api/ownerships/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertIsNotNone(response.data[0]["uuid"])
+        self.assertIsNotNone(response.data[0]["name"])
+        self.assertIsNotNone(response.data[0]["code"])
+        self.assertIsNotNone(response.data[0]["description"])
+        self.assertIsNotNone(response.data[0]["created_at"])
+        self.assertIsNotNone(response.data[0]["updated_at"])
+        self.assertIsNotNone(response.data[0]["extras"])
+        self.assertEqual(response.data[0]["uuid"], str(self.ownership.uuid))
+
+    def test_list_ownerships_searching(self) -> None:
+        """Test that the `list` endpoint with search filters returns the correct list of `Ownership`."""
+        response = self.client.get("/api/ownerships/", {"search": self.ownership.name})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertIsNotNone(response.data[0]["uuid"])
+        self.assertIsNotNone(response.data[0]["name"])
+        self.assertIsNotNone(response.data[0]["code"])
+        self.assertIsNotNone(response.data[0]["description"])
+        self.assertIsNotNone(response.data[0]["created_at"])
+        self.assertIsNotNone(response.data[0]["updated_at"])
+        self.assertIsNotNone(response.data[0]["extras"])
+        self.assertEqual(response.data[0]["uuid"], str(self.ownership.uuid))
+
+    def test_list_ownerships_ordering(self) -> None:
+        """Test that the `list` endpoint with ordering filters returns the correct list of `Ownership`."""
+        response = self.client.get("/api/ownerships/", {"ordering": "name"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data), 1)
+        self.assertIsNotNone(response.data[0]["uuid"])
+        self.assertIsNotNone(response.data[0]["name"])
+        self.assertIsNotNone(response.data[0]["code"])
+        self.assertIsNotNone(response.data[0]["description"])
+        self.assertIsNotNone(response.data[0]["created_at"])
+        self.assertIsNotNone(response.data[0]["updated_at"])
+        self.assertIsNotNone(response.data[0]["extras"])
+        self.assertEqual(response.data[0]["uuid"], str(self.ownership.uuid))
+
+    def test_retrieve_ownership(self) -> None:
+        """Test that the `retrieve` endpoint returns the correct `Ownership`."""
+        response = self.client.get(f"/api/ownerships/{self.ownership.uuid}/")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsNotNone(response.data["uuid"])
+        self.assertIsNotNone(response.data["name"])
+        self.assertIsNotNone(response.data["code"])
+        self.assertIsNotNone(response.data["description"])
+        self.assertIsNotNone(response.data["created_at"])
+        self.assertIsNotNone(response.data["updated_at"])
+        self.assertIsNotNone(response.data["extras"])
+        self.assertEqual(response.data["uuid"], str(self.ownership.uuid))
+
+    def test_retrieve_ownership_not_found(self) -> None:
+        """Test that the `retrieve` endpoint returns 404 error, if `Ownership` does not exist."""
+        response = self.client.get(f"/api/ownerships/{uuid.uuid4()}/")
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

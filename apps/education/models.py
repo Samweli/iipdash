@@ -203,17 +203,30 @@ class Ownership(models.Model):
         default=uuid.uuid4,
         editable=False,
         unique=True,
+        help_text=_("A universally unique identifier (UUID) for the ownership."),
     )
 
     #:  A human-readable name of the ownership.
-    name = models.CharField(_("name"), max_length=255, db_index=True)
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        db_index=True,
+        help_text=_("A human-readable name of the ownership."),
+    )
 
     #: A unique slugified code for the ownership, generated automatically
     #: if not provided.
-    code = models.SlugField(_("code"), blank=True, max_length=50)
+    code = models.SlugField(
+        _("code"),
+        blank=True,
+        max_length=50,
+        help_text=_("A unique slugified code for the ownership."),
+    )
 
     #: A long-form description of the ownership.
-    description = models.TextField(_("description"), blank=True)
+    description = models.TextField(
+        _("description"), blank=True, help_text=_("A long-form description of the ownership.")
+    )
 
     #: The database level timestamp of when the ownership was created.
     created_at = models.DateTimeField(
@@ -221,6 +234,7 @@ class Ownership(models.Model):
         auto_now_add=True,
         db_default=Now(),
         db_index=True,
+        help_text=_("The database level timestamp of when the ownership was created."),
     )
 
     #: The database level timestamp of when the ownership was latest
@@ -230,10 +244,16 @@ class Ownership(models.Model):
         auto_now=True,
         null=True,
         blank=True,
+        help_text=_("The database level timestamp of when the ownership was latest modified."),
     )
 
     #: Additional arbitrary data related to the ownership.
-    extras = models.JSONField(_("extras"), blank=True, default=dict)
+    extras = models.JSONField(
+        _("extras"),
+        blank=True,
+        default=dict,
+        help_text=_("Additional arbitrary data related to the ownership."),
+    )
 
     class Meta:
         """
