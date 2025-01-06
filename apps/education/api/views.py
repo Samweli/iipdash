@@ -4,12 +4,13 @@ from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import filters, viewsets
+from rest_framework import viewsets
+from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
 
-from ..models import Category, Ownership
-from .serializers import CategorySerializer, OwnershipSerializer
+from ..models import Category, Institution, Ownership
+from .serializers import CategorySerializer, InstitutionSerializer, OwnershipSerializer
 
-__all__ = ["CategoryViewSet"]
+__all__ = ["CategoryViewSet", "OwnershipViewSet", "InstitutionViewSet"]
 
 
 @extend_schema_view(
@@ -44,9 +45,9 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     required_scopes: List[str] = ["default"]
 
     #: A list of filters applied to the queryset.
-    filter_backends: List[Type[filters.BaseFilterBackend]] = [
-        filters.SearchFilter,
-        filters.OrderingFilter,
+    filter_backends: List[Type[BaseFilterBackend]] = [
+        SearchFilter,
+        OrderingFilter,
     ]
 
     #: A list of fields that can be searched via query parameters.
@@ -88,9 +89,9 @@ class OwnershipViewSet(viewsets.ReadOnlyModelViewSet):
     required_scopes: List[str] = ["default"]
 
     #: A list of filters applied to the queryset.
-    filter_backends: List[Type[filters.BaseFilterBackend]] = [
-        filters.SearchFilter,
-        filters.OrderingFilter,
+    filter_backends: List[Type[BaseFilterBackend]] = [
+        SearchFilter,
+        OrderingFilter,
     ]
 
     #: A list of fields that can be searched via query parameters.
@@ -98,3 +99,30 @@ class OwnershipViewSet(viewsets.ReadOnlyModelViewSet):
 
     #: A list of fields that can be used for ordering results.
     ordering_fields: List[str] = ["name", "created_at", "updated_at"]
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary=_("List Education Institution"),
+        description=_("Retrieve a list of education institutions."),
+    ),
+    retrieve=extend_schema(
+        summary=_("Retrieve Education Institution"),
+        description=_("Retrieve details of an education institution."),
+    ),
+)
+class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
+    """Education Institutions API endpoint"""
+
+    serializer_class = InstitutionSerializer
+    lookup_field = "uuid"
+    required_scopes = ["default"]
+
+    filter_backends = [
+        SearchFilter,
+        OrderingFilter,
+    ]
+    search_fields = ["name"]
+    ordering_fields = ["name", "created_at", "updated_at"]
+
+    queryset = Institution.objects.select_related("category", "ownership", "administrative_area").order_by("name")

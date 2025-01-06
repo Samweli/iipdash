@@ -1,11 +1,37 @@
 from typing import List, Type
 
+from administrative.models import Area
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
+from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from ..models import Category, Ownership
+from ..models import Category, Institution, Ownership
 
 __all__ = ["CategorySerializer", "OwnershipSerializer"]
+
+
+class RelatedCategorySerializer(serializers.ModelSerializer):
+    """A serializer for related categories."""
+
+    class Meta:
+        model = Category
+        fields = ["uuid", "name"]
+
+
+class RelatedOwnershipSerializer(serializers.ModelSerializer):
+    """A serializer for related ownership."""
+
+    class Meta:
+        model = Ownership
+        fields = ["uuid", "name"]
+
+
+class RelatedAreaSerializer(serializers.ModelSerializer):
+    """A serializer for related administrative areas."""
+
+    class Meta:
+        model = Area
+        fields = ["uuid", "name", "country"]
 
 
 @extend_schema_serializer(
@@ -98,3 +124,16 @@ class OwnershipSerializer(serializers.ModelSerializer):
             "extras",
         ]
         read_only_fields: List[str] = ["id", "uuid", "created_at", "updated_at"]
+
+
+class InstitutionSerializer(GeoFeatureModelSerializer):
+
+    category = RelatedCategorySerializer(read_only=True)
+    ownership = RelatedOwnershipSerializer(read_only=True)
+    administrative_area = RelatedAreaSerializer(read_only=True)
+
+    class Meta:
+        model = Institution
+        id_field = "uuid"
+        geo_field = "geometry"
+        exclude = ["id"]
