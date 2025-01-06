@@ -5,10 +5,11 @@ from django.contrib.gis import geos
 
 import factory
 import factory.fuzzy
-from administrative.models import Area
-from administrative.tests.factories import AreaFactory
 from django_countries import countries
 from faker import Faker
+
+from administrative.models import Area
+from administrative.tests.factories import AreaFactory
 
 from ..models import CellTower, FiberOptic
 

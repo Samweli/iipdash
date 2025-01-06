@@ -1,9 +1,10 @@
 from typing import List, Type
 
-from administrative.models import Area
 from drf_spectacular.utils import OpenApiExample, extend_schema_serializer
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
+
+from administrative.models import Area
 
 from ..models import Category, Institution, Ownership
 
