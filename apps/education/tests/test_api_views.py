@@ -3,9 +3,14 @@ import uuid
 from django.test import TestCase
 
 from rest_framework import status
+from rest_framework.reverse import reverse
+from rest_framework.settings import api_settings
 from rest_framework.test import APIClient
 
 from .factories import CategoryFactory, OwnershipFactory
+
+_search_param = api_settings.SEARCH_PARAM
+_ordering_param = api_settings.ORDERING_PARAM
 
 
 class CategoryAPITestCase(TestCase):
@@ -18,7 +23,8 @@ class CategoryAPITestCase(TestCase):
 
     def test_list_categories(self) -> None:
         """Test that the `list` endpoint returns the correct list of `Category`."""
-        response = self.client.get("/api/categories/")
+        url = reverse("api:category-list")
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertIsNotNone(response.data[0]["uuid"])
@@ -32,7 +38,10 @@ class CategoryAPITestCase(TestCase):
 
     def test_list_categories_searching(self) -> None:
         """Test that the `list` endpoint with search filters returns the correct list of `Category`."""
-        response = self.client.get("/api/categories/", {"search": self.category.name})
+
+        url = reverse("api:category-list")
+        response = self.client.get(url, {_search_param: self.category.name})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertIsNotNone(response.data[0]["uuid"])
@@ -46,7 +55,8 @@ class CategoryAPITestCase(TestCase):
 
     def test_list_categories_ordering(self) -> None:
         """Test that the `list` endpoint with ordering filters returns the correct list of `Category`."""
-        response = self.client.get("/api/categories/", {"ordering": "name"})
+        url = reverse("api:category-list")
+        response = self.client.get(url, {_ordering_param: "name"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertIsNotNone(response.data[0]["uuid"])
@@ -60,7 +70,8 @@ class CategoryAPITestCase(TestCase):
 
     def test_retrieve_category(self) -> None:
         """Test that the `retrieve` endpoint returns the correct `Category`."""
-        response = self.client.get(f"/api/categories/{self.category.uuid}/")
+        url = reverse("api:category-detail", kwargs={"uuid": self.category.uuid})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(response.data["uuid"])
         self.assertIsNotNone(response.data["name"])
@@ -73,7 +84,8 @@ class CategoryAPITestCase(TestCase):
 
     def test_retrieve_category_not_found(self) -> None:
         """Test that the `retrieve` endpoint returns 404 error, if `Category` does not exist."""
-        response = self.client.get(f"/api/categories/{uuid.uuid4()}/")
+        url = reverse("api:category-detail", kwargs={"uuid": uuid.uuid4()})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
@@ -87,7 +99,8 @@ class OwnershipAPITestCase(TestCase):
 
     def test_list_ownerships(self) -> None:
         """Test that the `list` endpoint returns the correct list of `Ownership`."""
-        response = self.client.get("/api/ownerships/")
+        url = reverse("api:ownership-list")
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertIsNotNone(response.data[0]["uuid"])
@@ -101,7 +114,10 @@ class OwnershipAPITestCase(TestCase):
 
     def test_list_ownerships_searching(self) -> None:
         """Test that the `list` endpoint with search filters returns the correct list of `Ownership`."""
-        response = self.client.get("/api/ownerships/", {"search": self.ownership.name})
+
+        url = reverse("api:ownership-list")
+        response = self.client.get(url, {_search_param: self.ownership.name})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertIsNotNone(response.data[0]["uuid"])
@@ -115,7 +131,8 @@ class OwnershipAPITestCase(TestCase):
 
     def test_list_ownerships_ordering(self) -> None:
         """Test that the `list` endpoint with ordering filters returns the correct list of `Ownership`."""
-        response = self.client.get("/api/ownerships/", {"ordering": "name"})
+        url = reverse("api:ownership-list")
+        response = self.client.get(url, {_ordering_param: "name"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data), 1)
         self.assertIsNotNone(response.data[0]["uuid"])
@@ -129,7 +146,8 @@ class OwnershipAPITestCase(TestCase):
 
     def test_retrieve_ownership(self) -> None:
         """Test that the `retrieve` endpoint returns the correct `Ownership`."""
-        response = self.client.get(f"/api/ownerships/{self.ownership.uuid}/")
+        url = reverse("api:ownership-detail", kwargs={"uuid": self.ownership.uuid})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(response.data["uuid"])
         self.assertIsNotNone(response.data["name"])
@@ -142,5 +160,6 @@ class OwnershipAPITestCase(TestCase):
 
     def test_retrieve_ownership_not_found(self) -> None:
         """Test that the `retrieve` endpoint returns 404 error, if `Ownership` does not exist."""
-        response = self.client.get(f"/api/ownerships/{uuid.uuid4()}/")
+        url = reverse("api:category-detail", kwargs={"uuid": uuid.uuid4()})
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
