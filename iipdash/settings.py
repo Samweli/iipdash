@@ -13,6 +13,8 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 import sys
 from pathlib import Path
 
+from django.utils.translation import gettext_lazy as _
+
 import environ
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -171,7 +173,7 @@ USE_TZ = True
 
 # Countries
 # https://github.com/SmileyChris/django-countries?tab=readme-ov-file#customize-the-country-list
-COUNTRIES_ONLY = ["CD", "MW", "ZM"]
+COUNTRIES_ONLY = [("CD", _("Democratic Republic of the Congo")), "MW", "ZM"]
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
