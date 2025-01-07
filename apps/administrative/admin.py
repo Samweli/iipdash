@@ -45,6 +45,8 @@ class AreaAdmin(TreeAdmin, GISModelAdmin, ImportExportModelAdmin):
     #: area editing page.
     list_display_links: list[str] = ["name", "id", "uuid"]
 
+    list_filter = ["country", "depth"]
+
     #: A list of fields that can be searched in the admin interface.
     search_fields: list[str] = ["name"]
 
