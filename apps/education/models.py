@@ -16,6 +16,7 @@ import uuid
 from typing import Any, Dict, Tuple
 
 from django.contrib.gis.db import models
+from django.core.validators import MinValueValidator
 from django.db.models.functions import Now
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
@@ -360,6 +361,9 @@ class Institution(models.Model):
         has_fiber_optic (:class:`django.db.models.BooleanField`):
             Whether the institution is connected to fiber optic or not.
 
+        fon_distance (:class:`django.db.models.FloatField`):
+            The distance to the nearest fiber optic node (expressed in meters).
+
         osm_id (:class:`django.db.models.CharField`):
             OpenStreetMap ID of the institution.
 
@@ -435,16 +439,7 @@ class Institution(models.Model):
     #: A website URL of the institution.
     website = models.URLField(_("website"), blank=True, null=True)
 
-    #: The spatial location of the institution.
-    geometry = models.PointField(
-        _("Geometry"),
-        geography=True,
-        blank=True,
-        null=True,
-        srid=4326,
-    )
-
-    #: The adminstrative area to which the institution belongs.
+    #: The administrative area to which the institution belongs.
     administrative_area = models.ForeignKey(
         "administrative.Area",
         blank=True,
@@ -455,11 +450,29 @@ class Institution(models.Model):
         verbose_name=_("administrative area"),
     )
 
+    #: The spatial location of the institution.
+    geometry = models.PointField(
+        _("location"),
+        geography=True,
+        blank=True,
+        null=True,
+        srid=4326,
+    )
+
     #: Whether the institution is connected to electricity or not
     has_electricity = models.BooleanField(_("has electricity"), blank=True, null=True)
 
     #: Whether the institution is connected to fiber optic or not
-    has_fiber_optic = models.BooleanField(_("has fiber optic"), blank=True, null=True)
+    has_fiber_optic = models.BooleanField(_("connected to fiber optic"), blank=True, null=True)
+
+    #: The distance to the nearest fiber optic node (meters).
+    fon_distance = models.FloatField(
+        _("distance to fiber node"),
+        blank=True,
+        null=True,
+        validators=[MinValueValidator(0.0)],
+        help_text=_("distance to the nearest fiber optic node (meters)"),
+    )
 
     #: OpenStreetMap ID of the institution.
     osm_id = models.BigIntegerField(_("OSM id"), blank=True, null=True)
