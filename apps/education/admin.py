@@ -93,6 +93,8 @@ class InstitutionAdmin(GISModelAdmin, ImportExportModelAdmin):
     #: area editing page.
     list_display_links: list[str] = ["name", "id", "uuid"]
 
+    list_select_related = ["administrative_area", "category", "ownership"]
+
     #: A list of fields for filtering results in the admin change list view.
     list_filter: list[str] = [
         "administrative_area__country",
@@ -107,3 +109,5 @@ class InstitutionAdmin(GISModelAdmin, ImportExportModelAdmin):
 
     #: A list of fields that are displayed as read-only in the admin interface.
     readonly_fields: list[str] = ["id", "uuid", "created_at", "updated_at"]
+
+    raw_id_fields = ["administrative_area"]
