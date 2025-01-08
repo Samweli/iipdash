@@ -402,7 +402,7 @@ class Institution(models.Model):
     )
 
     #: A human-readable name of the institution.
-    name = models.CharField(_("name"), max_length=255, db_index=True)
+    name = models.CharField(_("name"), max_length=255, blank=True, db_index=True)
 
     #: The ownership to which the institution belongs.
     ownership = models.ForeignKey(
