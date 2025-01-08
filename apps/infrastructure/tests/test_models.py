@@ -56,7 +56,7 @@ class CellTowerModelTestCase(TestCase):
         self.assertIsNotNone(cell_tower.updated_at)
         self.assertIsNotNone(cell_tower.extras)
         self.assertIsNotNone(cell_tower.display_name)
-        self.assertEqual(cell_tower.__str__(), cell_tower.display_name)
+        self.assertEqual(str(cell_tower), cell_tower.display_name)
 
     def test_cell_tower_creation_with_null_foreign_keys(self) -> None:
         """Test cell_tower creation with null administrative area."""

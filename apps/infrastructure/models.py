@@ -22,7 +22,6 @@ from django.contrib.gis import geos
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
 from django.db.models.functions import Now
-from django.utils.text import format_lazy
 from django.utils.translation import gettext_lazy as _
 
 from django_countries.fields import CountryField
@@ -157,6 +156,17 @@ class FiberOptic(models.Model):
             self.geometry = geos.MultiLineString(self.geometry)
         super().save(*args, **kwargs)
 
+    @property
+    def display_name(self):
+        """
+        A user-friendly display name for the optic network.
+
+        Returns:
+            str:
+                A user-friendly display name.
+        """
+        return _("Fiber Optic: %{country}s: %{uuid}s") % {"country": self.country, "uuid": self.uuid}
+
     def __str__(self):
         """
         Returns the string representation of the fiber optic network.
@@ -166,15 +176,11 @@ class FiberOptic(models.Model):
                 The name of the fiber optic network, or a formatted string
                 with the country and UUID.
         """
-        return self.name or format_lazy(
-            "Fiber Optic: {country}: {uuid}",
-            country=self.country,
-            uuid=self.uuid,
-        )
+        return self.name or self.display_name
 
 
 class CellTower(models.Model):
-    """A cell tower.
+    """A cellular tower.
 
     It represents a cellular tower country, spatial location, coverage, and
     additional information.
@@ -231,6 +237,7 @@ class CellTower(models.Model):
         default=uuid.uuid4,
         editable=False,
         unique=True,
+        help_text=_("A universally unique identifier (UUID) for the cell tower."),
     )
 
     #: The network type of the cell tower e.g., GSM, UMTS, LTE, CDMA.
@@ -238,7 +245,7 @@ class CellTower(models.Model):
         _("network type"),
         max_length=255,
         blank=True,
-        help_text=_("Examples; GSM, UMTS, LTE or CDMA."),
+        help_text=_("The network type of the cell tower e.g., GSM, UMTS, LTE, CDMA."),
     )
 
     #: The mobile country code of the cell tower. e.g., 650 for Malawi.
@@ -246,7 +253,7 @@ class CellTower(models.Model):
         _("mobile country code"),
         blank=True,
         null=True,
-        help_text=_("Example 650 for Malawi"),
+        help_text=_("The mobile country code of the cell tower. e.g., 650 for Malawi."),
     )
 
     #: The spatial location of the cell tower.
@@ -256,6 +263,7 @@ class CellTower(models.Model):
         blank=True,
         null=True,
         srid=4326,
+        help_text=_("The spatial location of the cell tower."),
     )
 
     #: Defines if coordinates of the cell tower are exact or approximate.
@@ -263,6 +271,7 @@ class CellTower(models.Model):
         _("location is approximate"),
         blank=True,
         null=True,
+        help_text=_("Defines if coordinates of the cell tower are exact or approximate."),
     )
 
     #: The estimated coverage range in meters of the cell tower.
@@ -271,7 +280,7 @@ class CellTower(models.Model):
         blank=True,
         null=True,
         validators=[MinValueValidator(0)],
-        help_text=_("Estimate of cell range"),
+        help_text=_("The estimated coverage range in meters of the cell tower."),
     )
 
     #: The adminstrative area to which the cell tower belongs.
@@ -283,6 +292,7 @@ class CellTower(models.Model):
         related_query_name="infrastructure_cell_tower",
         on_delete=models.SET_NULL,
         verbose_name=_("administrative area"),
+        help_text=_("The adminstrative area to which the cell tower belongs."),
     )
 
     #: The data source level timestamp of when the cell tower was created.
@@ -290,6 +300,7 @@ class CellTower(models.Model):
         _("source record created at"),
         null=True,
         blank=True,
+        help_text=_("The data source level timestamp of when the cell tower was created."),
     )
 
     #: The data source level timestamp of when the cell tower was latest
@@ -298,6 +309,7 @@ class CellTower(models.Model):
         _("source record updated at"),
         null=True,
         blank=True,
+        help_text=_("The data source level timestamp of when the cell tower was latest modified."),
     )
 
     #: The database level timestamp of when the cell tower was created.
@@ -306,6 +318,7 @@ class CellTower(models.Model):
         auto_now_add=True,
         db_default=Now(),
         db_index=True,
+        help_text=_("The database level timestamp of when the cell tower was created."),
     )
 
     #: The database level timestamp of when the cell tower was latest
@@ -315,10 +328,16 @@ class CellTower(models.Model):
         auto_now=True,
         null=True,
         blank=True,
+        help_text=_("The database level timestamp of when the cell tower was latest modified."),
     )
 
     #: Additional arbitrary data related to the cell tower.
-    extras = models.JSONField(_("extras"), blank=True, default=dict)
+    extras = models.JSONField(
+        _("extras"),
+        blank=True,
+        default=dict,
+        help_text=_("Additional arbitrary data related to the cell tower."),
+    )
 
     class Meta:
         """
@@ -344,11 +363,7 @@ class CellTower(models.Model):
             str:
                 A user-friendly display name.
         """
-        return format_lazy(
-            "{network_type} cell tower: {uuid}",
-            network_type=self.network_type,
-            uuid=self.uuid,
-        )
+        return _("%(network_type)s cell tower: %(uuid)s") % {"network_type": self.network_type, "uuid": self.uuid}
 
     def __str__(self):
         """
