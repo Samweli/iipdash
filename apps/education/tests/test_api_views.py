@@ -26,15 +26,16 @@ class CategoryAPITestCase(TestCase):
         url = reverse("api:category-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertIsNotNone(response.data[0]["uuid"])
-        self.assertIsNotNone(response.data[0]["name"])
-        self.assertIsNotNone(response.data[0]["code"])
-        self.assertIsNotNone(response.data[0]["description"])
-        self.assertIsNotNone(response.data[0]["created_at"])
-        self.assertIsNotNone(response.data[0]["updated_at"])
-        self.assertIsNotNone(response.data[0]["extras"])
-        self.assertEqual(response.data[0]["uuid"], str(self.category.uuid))
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertIsNotNone(results[0]["uuid"])
+        self.assertIsNotNone(results[0]["name"])
+        self.assertIsNotNone(results[0]["code"])
+        self.assertIsNotNone(results[0]["description"])
+        self.assertIsNotNone(results[0]["created_at"])
+        self.assertIsNotNone(results[0]["updated_at"])
+        self.assertIsNotNone(results[0]["extras"])
+        self.assertEqual(results[0]["uuid"], str(self.category.uuid))
 
     def test_list_categories_searching(self) -> None:
         """Test that the `list` endpoint with search filters returns the correct list of `Category`."""
@@ -43,30 +44,32 @@ class CategoryAPITestCase(TestCase):
         response = self.client.get(url, {_search_param: self.category.name})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertIsNotNone(response.data[0]["uuid"])
-        self.assertIsNotNone(response.data[0]["name"])
-        self.assertIsNotNone(response.data[0]["code"])
-        self.assertIsNotNone(response.data[0]["description"])
-        self.assertIsNotNone(response.data[0]["created_at"])
-        self.assertIsNotNone(response.data[0]["updated_at"])
-        self.assertIsNotNone(response.data[0]["extras"])
-        self.assertEqual(response.data[0]["uuid"], str(self.category.uuid))
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertIsNotNone(results[0]["uuid"])
+        self.assertIsNotNone(results[0]["name"])
+        self.assertIsNotNone(results[0]["code"])
+        self.assertIsNotNone(results[0]["description"])
+        self.assertIsNotNone(results[0]["created_at"])
+        self.assertIsNotNone(results[0]["updated_at"])
+        self.assertIsNotNone(results[0]["extras"])
+        self.assertEqual(results[0]["uuid"], str(self.category.uuid))
 
     def test_list_categories_ordering(self) -> None:
         """Test that the `list` endpoint with ordering filters returns the correct list of `Category`."""
         url = reverse("api:category-list")
         response = self.client.get(url, {_ordering_param: "name"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertIsNotNone(response.data[0]["uuid"])
-        self.assertIsNotNone(response.data[0]["name"])
-        self.assertIsNotNone(response.data[0]["code"])
-        self.assertIsNotNone(response.data[0]["description"])
-        self.assertIsNotNone(response.data[0]["created_at"])
-        self.assertIsNotNone(response.data[0]["updated_at"])
-        self.assertIsNotNone(response.data[0]["extras"])
-        self.assertEqual(response.data[0]["uuid"], str(self.category.uuid))
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertIsNotNone(results[0]["uuid"])
+        self.assertIsNotNone(results[0]["name"])
+        self.assertIsNotNone(results[0]["code"])
+        self.assertIsNotNone(results[0]["description"])
+        self.assertIsNotNone(results[0]["created_at"])
+        self.assertIsNotNone(results[0]["updated_at"])
+        self.assertIsNotNone(results[0]["extras"])
+        self.assertEqual(results[0]["uuid"], str(self.category.uuid))
 
     def test_retrieve_category(self) -> None:
         """Test that the `retrieve` endpoint returns the correct `Category`."""
@@ -102,15 +105,16 @@ class OwnershipAPITestCase(TestCase):
         url = reverse("api:ownership-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertIsNotNone(response.data[0]["uuid"])
-        self.assertIsNotNone(response.data[0]["name"])
-        self.assertIsNotNone(response.data[0]["code"])
-        self.assertIsNotNone(response.data[0]["description"])
-        self.assertIsNotNone(response.data[0]["created_at"])
-        self.assertIsNotNone(response.data[0]["updated_at"])
-        self.assertIsNotNone(response.data[0]["extras"])
-        self.assertEqual(response.data[0]["uuid"], str(self.ownership.uuid))
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertIsNotNone(results[0]["uuid"])
+        self.assertIsNotNone(results[0]["name"])
+        self.assertIsNotNone(results[0]["code"])
+        self.assertIsNotNone(results[0]["description"])
+        self.assertIsNotNone(results[0]["created_at"])
+        self.assertIsNotNone(results[0]["updated_at"])
+        self.assertIsNotNone(results[0]["extras"])
+        self.assertEqual(results[0]["uuid"], str(self.ownership.uuid))
 
     def test_list_ownerships_searching(self) -> None:
         """Test that the `list` endpoint with search filters returns the correct list of `Ownership`."""
@@ -119,30 +123,32 @@ class OwnershipAPITestCase(TestCase):
         response = self.client.get(url, {_search_param: self.ownership.name})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertIsNotNone(response.data[0]["uuid"])
-        self.assertIsNotNone(response.data[0]["name"])
-        self.assertIsNotNone(response.data[0]["code"])
-        self.assertIsNotNone(response.data[0]["description"])
-        self.assertIsNotNone(response.data[0]["created_at"])
-        self.assertIsNotNone(response.data[0]["updated_at"])
-        self.assertIsNotNone(response.data[0]["extras"])
-        self.assertEqual(response.data[0]["uuid"], str(self.ownership.uuid))
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertIsNotNone(results[0]["uuid"])
+        self.assertIsNotNone(results[0]["name"])
+        self.assertIsNotNone(results[0]["code"])
+        self.assertIsNotNone(results[0]["description"])
+        self.assertIsNotNone(results[0]["created_at"])
+        self.assertIsNotNone(results[0]["updated_at"])
+        self.assertIsNotNone(results[0]["extras"])
+        self.assertEqual(results[0]["uuid"], str(self.ownership.uuid))
 
     def test_list_ownerships_ordering(self) -> None:
         """Test that the `list` endpoint with ordering filters returns the correct list of `Ownership`."""
         url = reverse("api:ownership-list")
         response = self.client.get(url, {_ordering_param: "name"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data), 1)
-        self.assertIsNotNone(response.data[0]["uuid"])
-        self.assertIsNotNone(response.data[0]["name"])
-        self.assertIsNotNone(response.data[0]["code"])
-        self.assertIsNotNone(response.data[0]["description"])
-        self.assertIsNotNone(response.data[0]["created_at"])
-        self.assertIsNotNone(response.data[0]["updated_at"])
-        self.assertIsNotNone(response.data[0]["extras"])
-        self.assertEqual(response.data[0]["uuid"], str(self.ownership.uuid))
+        results = response.data["results"]
+        self.assertEqual(len(results), 1)
+        self.assertIsNotNone(results[0]["uuid"])
+        self.assertIsNotNone(results[0]["name"])
+        self.assertIsNotNone(results[0]["code"])
+        self.assertIsNotNone(results[0]["description"])
+        self.assertIsNotNone(results[0]["created_at"])
+        self.assertIsNotNone(results[0]["updated_at"])
+        self.assertIsNotNone(results[0]["extras"])
+        self.assertEqual(results[0]["uuid"], str(self.ownership.uuid))
 
     def test_retrieve_ownership(self) -> None:
         """Test that the `retrieve` endpoint returns the correct `Ownership`."""

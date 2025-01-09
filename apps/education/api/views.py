@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
+from rest_framework_gis.pagination import GeoJsonPagination
 
 from ..models import Category, Institution, Ownership
 from .serializers import CategorySerializer, InstitutionSerializer, OwnershipSerializer
@@ -117,6 +118,7 @@ class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = InstitutionSerializer
     lookup_field = "uuid"
     required_scopes = ["default"]
+    pagination_class = GeoJsonPagination
 
     filter_backends = [
         SearchFilter,
