@@ -52,7 +52,7 @@ class FiberOptic(models.Model):
         description (:class:`django.db.models.TextField`):
             A long-form description of the fiber optic network.
 
-        geometry (:class:`django.contrib.gis.db.models.MultiPolygonField`):
+        geometry (:class:`django.contrib.gis.db.models.MultiLineStringField`):
             The spatial/geometric shape of the fiber optic network.
 
         created_at (:class:`django.db.models.DateTimeField`):
@@ -74,16 +74,31 @@ class FiberOptic(models.Model):
         default=uuid.uuid4,
         editable=False,
         unique=True,
+        help_text=_("A universally unique identifier (UUID) for the fiber optic network"),
     )
 
     #: The country to which the fiber optic network belongs.
-    country = CountryField(_("country"), blank=True, db_index=True)
+    country = CountryField(
+        _("country"),
+        blank=True,
+        db_index=True,
+        help_text=_("The country to which the fiber optic network belongs."),
+    )
 
     #: A human-readable name of the fiber optic network.
-    name = models.CharField(_("name"), max_length=255, blank=True)
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        blank=True,
+        help_text=_("A human-readable name of the fiber optic network."),
+    )
 
     #: A long-form description of the fiber optic network.
-    description = models.TextField(_("description"), blank=True)
+    description = models.TextField(
+        _("description"),
+        blank=True,
+        help_text=_("A long-form description of the fiber optic network."),
+    )
 
     #: The spatial/geometric shape of the fiber optic network.
     geometry = models.MultiLineStringField(
@@ -92,6 +107,7 @@ class FiberOptic(models.Model):
         blank=True,
         null=True,
         srid=4326,
+        help_text=_("The spatial/geometric shape of the fiber optic network."),
     )
 
     #: The database level timestamp of when the fiber optic network was
@@ -101,6 +117,7 @@ class FiberOptic(models.Model):
         auto_now_add=True,
         db_default=Now(),
         db_index=True,
+        help_text=_("The database level timestamp of when the fiber optic network was created."),
     )
 
     #: The database level timestamp of when the fiber optic network was
@@ -110,10 +127,16 @@ class FiberOptic(models.Model):
         auto_now=True,
         null=True,
         blank=True,
+        help_text=_("The database level timestamp of when the fiber optic network was latest modified."),
     )
 
     #: Additional arbitrary data related to the fiber optic network.
-    extras = models.JSONField(_("extras"), blank=True, default=dict)
+    extras = models.JSONField(
+        _("extras"),
+        blank=True,
+        default=dict,
+        help_text=_("Additional arbitrary data related to the fiber optic network."),
+    )
 
     class Meta:
         """
@@ -165,7 +188,10 @@ class FiberOptic(models.Model):
             str:
                 A user-friendly display name.
         """
-        return _("Fiber Optic: %{country}s: %{uuid}s") % {"country": self.country, "uuid": self.uuid}
+        return _("Fiber Optic: %(country)s: %(uuid)s") % {
+            "country": self.country,
+            "uuid": self.uuid,
+        }
 
     def __str__(self):
         """
@@ -201,7 +227,7 @@ class CellTower(models.Model):
         mcc (:class:`django.db.models.SmallIntegerField`):
             The mobile country code of the cell tower. e.g., 650 for Malawi.
 
-        geometry (:class:`django.contrib.gis.db.models.MultiPolygonField`):
+        geometry (:class:`django.contrib.gis.db.models.PointField`):
             The spatial location of the cell tower.
 
         location_is_approximate (:class:`django.db.models.BooleanField`):
@@ -363,7 +389,10 @@ class CellTower(models.Model):
             str:
                 A user-friendly display name.
         """
-        return _("%(network_type)s cell tower: %(uuid)s") % {"network_type": self.network_type, "uuid": self.uuid}
+        return _("%(network_type)s cell tower: %(uuid)s") % {
+            "network_type": self.network_type,
+            "uuid": self.uuid,
+        }
 
     def __str__(self):
         """

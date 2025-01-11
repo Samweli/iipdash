@@ -8,9 +8,10 @@ from rest_framework import viewsets
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
 from rest_framework_gis.pagination import GeoJsonPagination
 
-from ..models import CellTower
+from ..models import CellTower, FiberOptic
+from .filters import FiberOpticFilter
 from .openapi import examples
-from .serializers import CellTowerSerializer
+from .serializers import CellTowerSerializer, FiberOpticSerializer
 
 __all__ = ["CellTowerViewSet"]
 
@@ -61,3 +62,60 @@ class CellTowerViewSet(viewsets.ReadOnlyModelViewSet):
 
     #: A list of fields that can be used for ordering results.
     ordering_fields: List[str] = ["network_type", "mcc", "range", "created_at", "updated_at"]
+
+
+@extend_schema_view(
+    list=extend_schema(
+        description=_("Retrieve a list of fiber optics, with optional searching, filtering, ordering and pagination."),
+        summary=_("List fiber optics"),
+        examples=examples.fiberoptic_list_examples,
+    ),
+    retrieve=extend_schema(
+        description=_("Retrieve details of a specific fiber optic."),
+        summary=_("Retrieve fiber optic"),
+        examples=examples.fiberoptic_retrieve_examples,
+    ),
+)
+class FiberOpticViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    A ViewSet for managing :class:`infrastructure.models.FiberOptic` objects.
+
+    This viewset provides endpoints for:
+    - Listing all fiber optics (`list` endpoint).
+    - Retrieving a specific fiber optic by UUID (`retrieve` endpoint).
+    """
+
+    #: A serializer class for converting `FiberOptic` objects to GeoJSON format.
+    serializer_class: Type[FiberOpticSerializer] = FiberOpticSerializer
+
+    #: A pagination class to handle GeoJSON format pagination for `FiberOptic` objects.
+    pagination_class: Type[GeoJsonPagination] = GeoJsonPagination
+
+    #: A lookup field used to retrieve a specific `FiberOptic` object.
+    lookup_field: str = "uuid"
+
+    #: A list of required OAuth2 scopes for accessing the `FiberOptic` API endpoints.
+    required_scopes: List[str] = ["default"]
+
+    #: A list of filter backends for applying search and order filters
+    #: to the queryset of `FiberOptic` objects.
+    filter_backends: List[Type[BaseFilterBackend]] = [
+        SearchFilter,
+        OrderingFilter,
+    ]
+
+    #: A custom filter for applying complex filters to the queryset of
+    #: `FiberOptic` objects.
+    filterset_class: Type[FiberOpticFilter] = FiberOpticFilter
+
+    #: A list of fields that are used for to apply full-text search
+    #: via query parameters to the queryset of `FiberOptic` objects
+    #: (i.e., `?q=<term>`).
+    search_fields: List[str] = ["country", "name"]
+
+    #: A list of fields that are used for ordering the queryset of
+    #: `FiberOptic` objects (e.g., `?ordering=<field>`).
+    ordering_fields: List[str] = ["country", "name", "created_at", "updated_at"]
+
+    #: A default queryset for retrieving `FiberOptic` objects.
+    queryset: QuerySet[FiberOptic] = FiberOptic.objects.order_by("-created_at")

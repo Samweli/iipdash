@@ -4,3 +4,4 @@ from . import views
 
 router = routers.SimpleRouter()
 router.register(r"celltowers", views.CellTowerViewSet, basename="celltower")
+router.register(r"fiberoptics", views.FiberOpticViewSet, basename="fiberoptic")
