@@ -45,11 +45,11 @@ class AreaViewSet(viewsets.ReadOnlyModelViewSet):
 @extend_schema_view(
     list=extend_schema(
         summary=_("List Area Education Summary"),
-        description=_("Retrieve a list of administrative areas."),
+        description=_("Retrieve a list of administrative areas with education statistics."),
     ),
     retrieve=extend_schema(
         summary=_("Retrieve Area Education Summary"),
-        description=_("Retrieve details of an administrative area."),
+        description=_("Retrieve details of an administrative area with education statistics."),
     ),
 )
 class AreaEducationViewSet(AreaViewSet):
@@ -62,28 +62,31 @@ class AreaEducationViewSet(AreaViewSet):
 
         qs = Area.objects.annotate(
             # institutions_count=Subquery(aggregates[:1]),
-            institutions_count=Count("education_institution"),
+            institutions_count=Count("related_education_institution"),
             institutions_electrified=Count(
-                "education_institution", filter=Q(education_institution__has_electricity=True)
+                "related_education_institution", filter=Q(related_education_institution__has_electricity=True)
             ),
             institutions_fiber_connected=Count(
-                "education_institution", filter=Q(education_institution__has_fiber_optic=True)
+                "related_education_institution", filter=Q(related_education_institution__has_fiber_optic=True)
             ),
             institutions_electrified_no_fiber=Count(
-                "education_institution",
-                filter=Q(education_institution__has_electricity=True, education_institution__has_fiber_optic=False),
+                "related_education_institution",
+                filter=Q(
+                    related_education_institution__has_electricity=True,
+                    related_education_institution__has_fiber_optic=False,
+                ),
             ),
             institutions_fiber_10km=Count(
-                "education_institution",
-                filter=Q(education_institution__fon_distance__lte=10000),
+                "related_education_institution",
+                filter=Q(related_education_institution__fon_distance__lte=10000),
             ),
             institutions_fiber_15km=Count(
-                "education_institution",
-                filter=Q(education_institution__fon_distance__lte=15000),
+                "related_education_institution",
+                filter=Q(related_education_institution__fon_distance__lte=15000),
             ),
             institutions_fiber_20km=Count(
-                "education_institution",
-                filter=Q(education_institution__fon_distance__lte=20000),
+                "related_education_institution",
+                filter=Q(related_education_institution__fon_distance__lte=20000),
             ),
         )
 

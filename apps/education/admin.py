@@ -108,6 +108,12 @@ class InstitutionAdmin(GISModelAdmin, ImportExportModelAdmin):
     search_fields: list[str] = ["name", "code", "id", "uuid"]
 
     #: A list of fields that are displayed as read-only in the admin interface.
-    readonly_fields: list[str] = ["id", "uuid", "created_at", "updated_at"]
+    readonly_fields: list[str] = [
+        "id",
+        "uuid",
+        "related_areas",
+        "created_at",
+        "updated_at",
+    ]
 
     raw_id_fields = ["administrative_area"]

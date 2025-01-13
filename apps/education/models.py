@@ -17,6 +17,7 @@ from typing import Any, Dict, Tuple
 
 from django.contrib.gis.db import models
 from django.core.validators import MinValueValidator
+from django.db import transaction
 from django.db.models.functions import Now
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
@@ -500,6 +501,15 @@ class Institution(models.Model):
     #: Additional arbitrary data related to the institution.
     extras = models.JSONField(_("extras"), blank=True, default=dict)
 
+    related_areas = models.ManyToManyField(
+        "administrative.Area",
+        blank=True,
+        editable=False,
+        related_name="related_education_institutions",
+        related_query_name="related_education_institution",
+        verbose_name=_("related administrative areas"),
+    )
+
     class Meta:
         """
         Meta options for the :class:`Institution` model.
@@ -523,3 +533,16 @@ class Institution(models.Model):
             str: The name of the institution.
         """
         return self.name
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        transaction.on_commit(lambda: self.refresh_related_areas())
+
+    def refresh_related_areas(self):
+        """update related areas based on the institution's administrative area"""
+        if not self.administrative_area:
+            return
+
+        ancestors = self.administrative_area.get_ancestors()
+        self.related_areas.clear()
+        self.related_areas.add(self.administrative_area, *ancestors)
