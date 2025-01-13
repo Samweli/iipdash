@@ -96,15 +96,26 @@ todo_include_todos = False
 # This config value contains the locations and names of other projects that
 # should be linked to in this documentation.
 intersphinx_mapping = {
-    "python": ("https://docs.python.org/3/", None),
+    "argon2": ("https://argon2-cffi.readthedocs.io/en/stable/", None),
+    "celery": ("https://docs.celeryq.dev/en/stable/", None),
+    "debug_toolbar": ("https://django-debug-toolbar.readthedocs.io/en/latest/", None),
     "django": (
         "https://docs.djangoproject.com/en/stable/",
         "https://docs.djangoproject.com/en/stable/_objects/",
     ),
-    "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
-    "psycopg": ("https://www.psycopg.org/psycopg3/docs/", None),
-    "treebeard": ("https://django-treebeard.readthedocs.io/en/latest/", None),
+    # "django_countries": ("https://github.com/SmileyChris/django-countries", None),
+    "django_filters": ("https://django-filter.readthedocs.io/en/stable/", None),
+    "drf_spectacular": ("https://drf-spectacular.readthedocs.io/en/latest/", None),
+    "environ": ("https://django-environ.readthedocs.io/en/latest/", None),
     "import_export": ("https://django-import-export.readthedocs.io/en/latest/", None),
+    "markdown": ("https://python-markdown.github.io/", None),
+    "oauth2_provider": ("https://django-oauth-toolkit.readthedocs.io/en/latest/", None),
+    "psycopg": ("https://www.psycopg.org/psycopg3/docs/", None),
+    "python": ("https://docs.python.org/3/", None),
+    # "rest_framework": ("https://www.django-rest-framework.org/", None),
+    # "rest_framework_gis": ("https://github.com/openwisp/django-rest-framework-gis", None),
+    "sphinx": ("https://www.sphinx-doc.org/en/master/", None),
+    "treebeard": ("https://django-treebeard.readthedocs.io/en/latest/", None),
 }
 
 
