@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
+from rest_framework.pagination import PageNumberPagination
 from rest_framework_gis.pagination import GeoJsonPagination
 
 from ..models import Category, Institution, Ownership
@@ -18,13 +19,19 @@ __all__ = ["CategoryViewSet", "OwnershipViewSet", "InstitutionViewSet"]
 
 @extend_schema_view(
     list=extend_schema(
-        description=_("Retrieve a list of categories, with optional search and ordering."),
-        summary=_("List categories"),
+        description=_(
+            "Retrieve a list of educational institution categories, with"
+            " optional searching, filtering, ordering and pagination."
+        ),
+        summary=_("List educational institution categories"),
         examples=examples.category_list_examples,
+        responses={
+            200: "SuccessfulPaginatedResponse",
+        },
     ),
     retrieve=extend_schema(
-        description=_("Retrieve details of a specific category."),
-        summary=_("Retrieve category"),
+        description=_("Retrieve details of a specific educational institution category."),
+        summary=_("Retrieve educational institution category"),
         examples=examples.category_retrieve_examples,
     ),
 )
@@ -33,23 +40,24 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     A ViewSet for managing :class:`education.models.Category` objects.
 
     This viewset provides endpoints for:
-    - Listing all categories (`list` endpoint).
-    - Retrieving a specific category by UUID (`retrieve` endpoint).
+    - Listing all educational institution categories (`list` endpoint).
+    - Retrieving a specific educational institution category by UUID (`retrieve` endpoint).
     """
 
-    #: A default queryset for retrieving `Category` objects.
-    queryset: QuerySet[Category] = Category.objects.all().order_by("-created_at")
-
-    #: A serializer class for handling `Category` objects.
+    #: A serializer class for converting `Category` objects to JSON format.
     serializer_class: Type[CategorySerializer] = CategorySerializer
 
-    #: A field used to retrieve a specific `Category` object.
+    #: A pagination class to handle JSON format pagination for `Category` objects.
+    pagination_class: Type[PageNumberPagination] = PageNumberPagination
+
+    #: A list of required OAuth2 scopes for accessing the `Category` API endpoints.
     lookup_field: str = "uuid"
 
     #: A list of scope-based permissions required for access.
     required_scopes: List[str] = ["default"]
 
-    #: A list of filters applied to the queryset.
+    #: A list of filter backends for applying search and order filters
+    #: to the queryset of `Category` objects.
     filter_backends: List[Type[BaseFilterBackend]] = [
         SearchFilter,
         OrderingFilter,
@@ -59,11 +67,17 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     #: `Category` objects.
     filterset_class: Type[CategoryFilter] = CategoryFilter
 
-    #: A list of fields that can be searched via query parameters.
+    #: A list of fields that are used for to apply full-text search
+    #: via query parameters to the queryset of `Category` objects
+    #: (i.e., `?q=<term>`).
     search_fields: List[str] = ["name", "code"]
 
-    #: A list of fields that can be used for ordering results.
+    #: A list of fields that are used for ordering the queryset of
+    #: `Category` objects (e.g., `?ordering=<field>`).
     ordering_fields: List[str] = ["name", "created_at", "updated_at"]
+
+    #: A default queryset for retrieving `FiberOptic` objects.
+    queryset: QuerySet[Category] = Category.objects.all().order_by("-created_at")
 
 
 @extend_schema_view(

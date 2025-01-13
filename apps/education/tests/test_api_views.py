@@ -22,59 +22,112 @@ class CategoryAPITestCase(TestCase):
         self.category = CategoryFactory.create()
 
     def test_list_categories(self) -> None:
-        """Test that the `list` endpoint returns the correct list of `Category`."""
+        """Test that the `list` endpoint returns the correct paginated list of `Category`."""
         url = reverse("api:category-list")
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        results = response.data["results"]
-        self.assertEqual(len(results), 1)
-        self.assertIsNotNone(results[0]["uuid"])
-        self.assertIsNotNone(results[0]["name"])
-        self.assertIsNotNone(results[0]["code"])
-        self.assertIsNotNone(results[0]["description"])
-        self.assertIsNotNone(results[0]["created_at"])
-        self.assertIsNotNone(results[0]["updated_at"])
-        self.assertIsNotNone(results[0]["extras"])
-        self.assertEqual(results[0]["uuid"], str(self.category.uuid))
+        self.assertIn("count", response.data)
+        self.assertIn("next", response.data)
+        self.assertIn("previous", response.data)
+        self.assertIn("results", response.data)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertIsNotNone(response.data["results"][0]["uuid"])
+        self.assertIsNotNone(response.data["results"][0]["name"])
+        self.assertIsNotNone(response.data["results"][0]["code"])
+        self.assertIsNotNone(response.data["results"][0]["description"])
+        self.assertIsNotNone(response.data["results"][0]["created_at"])
+        self.assertIsNotNone(response.data["results"][0]["updated_at"])
+        self.assertIsNotNone(response.data["results"][0]["extras"])
+        self.assertEqual(response.data["results"][0]["uuid"], str(self.category.uuid))
 
     def test_list_categories_searching(self) -> None:
-        """Test that the `list` endpoint with search filters returns the correct list of `Category`."""
+        """Test that the `list` endpoint with search filters returns the correct paginated list of `Category`."""
 
         url = reverse("api:category-list")
         response = self.client.get(url, {_search_param: self.category.name})
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        results = response.data["results"]
-        self.assertEqual(len(results), 1)
-        self.assertIsNotNone(results[0]["uuid"])
-        self.assertIsNotNone(results[0]["name"])
-        self.assertIsNotNone(results[0]["code"])
-        self.assertIsNotNone(results[0]["description"])
-        self.assertIsNotNone(results[0]["created_at"])
-        self.assertIsNotNone(results[0]["updated_at"])
-        self.assertIsNotNone(results[0]["extras"])
-        self.assertEqual(results[0]["uuid"], str(self.category.uuid))
+        self.assertIn("count", response.data)
+        self.assertIn("next", response.data)
+        self.assertIn("previous", response.data)
+        self.assertIn("results", response.data)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertIsNotNone(response.data["results"][0]["uuid"])
+        self.assertIsNotNone(response.data["results"][0]["name"])
+        self.assertIsNotNone(response.data["results"][0]["code"])
+        self.assertIsNotNone(response.data["results"][0]["description"])
+        self.assertIsNotNone(response.data["results"][0]["created_at"])
+        self.assertIsNotNone(response.data["results"][0]["updated_at"])
+        self.assertIsNotNone(response.data["results"][0]["extras"])
+        self.assertEqual(response.data["results"][0]["uuid"], str(self.category.uuid))
 
     def test_list_categories_ordering(self) -> None:
-        """Test that the `list` endpoint with ordering filters returns the correct list of `Category`."""
+        """Test that the `list` endpoint with ordering filters returns the correct paginated list of `Category`."""
         url = reverse("api:category-list")
         response = self.client.get(url, {_ordering_param: "name"})
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        results = response.data["results"]
-        self.assertEqual(len(results), 1)
-        self.assertIsNotNone(results[0]["uuid"])
-        self.assertIsNotNone(results[0]["name"])
-        self.assertIsNotNone(results[0]["code"])
-        self.assertIsNotNone(results[0]["description"])
-        self.assertIsNotNone(results[0]["created_at"])
-        self.assertIsNotNone(results[0]["updated_at"])
-        self.assertIsNotNone(results[0]["extras"])
-        self.assertEqual(results[0]["uuid"], str(self.category.uuid))
+        self.assertIn("count", response.data)
+        self.assertIn("next", response.data)
+        self.assertIn("previous", response.data)
+        self.assertIn("results", response.data)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertIsNotNone(response.data["results"][0]["uuid"])
+        self.assertIsNotNone(response.data["results"][0]["name"])
+        self.assertIsNotNone(response.data["results"][0]["code"])
+        self.assertIsNotNone(response.data["results"][0]["description"])
+        self.assertIsNotNone(response.data["results"][0]["created_at"])
+        self.assertIsNotNone(response.data["results"][0]["updated_at"])
+        self.assertIsNotNone(response.data["results"][0]["extras"])
+        self.assertEqual(response.data["results"][0]["uuid"], str(self.category.uuid))
+
+    def test_list_categories_pagination(self) -> None:
+        """Test that the `list` endpoint with pagination filters returns the correct paginated list of `Category`."""
+        url = reverse("api:category-list")
+        response = self.client.get(url, {"page": 1, "page_size": 10})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("count", response.data)
+        self.assertIn("next", response.data)
+        self.assertIn("previous", response.data)
+        self.assertIn("results", response.data)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertIsNotNone(response.data["results"][0]["uuid"])
+        self.assertIsNotNone(response.data["results"][0]["name"])
+        self.assertIsNotNone(response.data["results"][0]["code"])
+        self.assertIsNotNone(response.data["results"][0]["description"])
+        self.assertIsNotNone(response.data["results"][0]["created_at"])
+        self.assertIsNotNone(response.data["results"][0]["updated_at"])
+        self.assertIsNotNone(response.data["results"][0]["extras"])
+        self.assertEqual(response.data["results"][0]["uuid"], str(self.category.uuid))
+
+    def test_list_categories_filtering(self) -> None:
+        """Test that the `list` endpoint with field filters returns the correct paginated list of `Category`."""
+
+        url = reverse("api:category-list")
+        response = self.client.get(url, {"name": self.category.name})
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIn("count", response.data)
+        self.assertIn("next", response.data)
+        self.assertIn("previous", response.data)
+        self.assertIn("results", response.data)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertIsNotNone(response.data["results"][0]["uuid"])
+        self.assertIsNotNone(response.data["results"][0]["name"])
+        self.assertIsNotNone(response.data["results"][0]["code"])
+        self.assertIsNotNone(response.data["results"][0]["description"])
+        self.assertIsNotNone(response.data["results"][0]["created_at"])
+        self.assertIsNotNone(response.data["results"][0]["updated_at"])
+        self.assertIsNotNone(response.data["results"][0]["extras"])
+        self.assertEqual(response.data["results"][0]["uuid"], str(self.category.uuid))
 
     def test_retrieve_category(self) -> None:
         """Test that the `retrieve` endpoint returns the correct `Category`."""
         url = reverse("api:category-detail", kwargs={"uuid": self.category.uuid})
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsNotNone(response.data["uuid"])
         self.assertIsNotNone(response.data["name"])
@@ -89,6 +142,7 @@ class CategoryAPITestCase(TestCase):
         """Test that the `retrieve` endpoint returns 404 error, if `Category` does not exist."""
         url = reverse("api:category-detail", kwargs={"uuid": uuid.uuid4()})
         response = self.client.get(url)
+
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
