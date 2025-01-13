@@ -9,6 +9,7 @@ from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilt
 from rest_framework_gis.pagination import GeoJsonPagination
 
 from ..models import Category, Institution, Ownership
+from .openapi import examples
 from .serializers import CategorySerializer, InstitutionSerializer, OwnershipSerializer
 
 __all__ = ["CategoryViewSet", "OwnershipViewSet", "InstitutionViewSet"]
@@ -18,10 +19,12 @@ __all__ = ["CategoryViewSet", "OwnershipViewSet", "InstitutionViewSet"]
     list=extend_schema(
         description=_("Retrieve a list of categories, with optional search and ordering."),
         summary=_("List categories"),
+        examples=examples.category_list_examples,
     ),
     retrieve=extend_schema(
         description=_("Retrieve details of a specific category."),
         summary=_("Retrieve category"),
+        examples=examples.category_retrieve_examples,
     ),
 )
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
