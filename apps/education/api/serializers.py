@@ -3,7 +3,7 @@ from typing import List, Type
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
-from administrative.models import Area
+from administrative.api.serializers import RelatedAreaSerializer
 
 from ..models import Category, Institution, Ownership
 
@@ -24,14 +24,6 @@ class RelatedOwnershipSerializer(serializers.ModelSerializer):
     class Meta:
         model = Ownership
         fields = ["uuid", "name"]
-
-
-class RelatedAreaSerializer(serializers.ModelSerializer):
-    """A serializer for related administrative areas."""
-
-    class Meta:
-        model = Area
-        fields = ["uuid", "name", "country"]
 
 
 class CategorySerializer(serializers.ModelSerializer):

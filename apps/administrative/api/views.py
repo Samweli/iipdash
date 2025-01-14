@@ -10,7 +10,7 @@ from rest_framework_gis.pagination import GeoJsonPagination
 
 from ..models import Area
 from .filters import AreaFilter
-from .serializer import AreaEducationSerializer, AreaSerializer
+from .serializers import AreaEducationSerializer, AreaSerializer
 
 __all__ = ["AreaViewSet"]
 

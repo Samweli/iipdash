@@ -2,28 +2,10 @@ from typing import List, Type
 
 from rest_framework_gis import serializers
 
-from administrative.models import Area
+from administrative.api.serializers import RelatedAreaSerializer
 from infrastructure.models import CellTower, FiberOptic
 
 __all__ = ["CellTowerSerializer"]
-
-
-class RelatedAreaSerializer(serializers.ModelSerializer):
-    """A related administrative area."""
-
-    class Meta:
-        """Metadata for the :class:`RelatedAreaSerializer`.
-
-        Attributes:
-            model (Type[Area]):
-                The model class that this serializer represents.
-
-            fields (List[str]):
-                The list of fields to be included in the serialized data.
-        """
-
-        model: Type[Area] = Area
-        fields: List[str] = ["uuid", "name", "country"]
 
 
 class CellTowerSerializer(serializers.GeoFeatureModelSerializer):

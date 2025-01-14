@@ -1,9 +1,11 @@
+from typing import List, Type
+
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from ..models import Area
 
-__all__ = ["AreaSerializer", "AreaEducationSerializer"]
+__all__ = ["AreaSerializer", "AreaEducationSerializer", "RelatedAreaSerializer"]
 
 
 class AreaSerializer(GeoFeatureModelSerializer):
@@ -60,3 +62,21 @@ class AreaEducationSerializer(GeoFeatureModelSerializer):
     def get_institutions_fiber_20km(self, obj) -> int:
         """Number of education institutions with nearest fiber optic within 20km."""
         return obj.institutions_fiber_20km
+
+
+class RelatedAreaSerializer(serializers.ModelSerializer):
+    """A related administrative area."""
+
+    class Meta:
+        """Metadata for the :class:`RelatedAreaSerializer`.
+
+        Attributes:
+            model (Type[Area]):
+                The model class that this serializer represents.
+
+            fields (List[str]):
+                The list of fields to be included in the serialized data.
+        """
+
+        model: Type[Area] = Area
+        fields: List[str] = ["uuid", "name", "country"]
