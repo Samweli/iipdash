@@ -38,12 +38,7 @@ category_response_only: Dict[str, Any] = {
 #: OpenAPI example for the list endpoint response (paginated object list).
 category_list_response_only: OpenApiExample = OpenApiExample(
     name="Successful Response",
-    value={
-        "count": 123,
-        "next": "/api/education/catergories/?page=3",
-        "previous": "/api/education/catergories/?page=1",
-        "results": [category_response_only],
-    },
+    value=category_response_only,
     response_only=True,
 )
 

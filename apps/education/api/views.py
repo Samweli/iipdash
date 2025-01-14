@@ -25,9 +25,6 @@ __all__ = ["CategoryViewSet", "OwnershipViewSet", "InstitutionViewSet"]
         ),
         summary=_("List educational institution categories"),
         examples=examples.category_list_examples,
-        responses={
-            200: "SuccessfulPaginatedResponse",
-        },
     ),
     retrieve=extend_schema(
         description=_("Retrieve details of a specific educational institution category."),
@@ -50,10 +47,10 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     #: A pagination class to handle JSON format pagination for `Category` objects.
     pagination_class: Type[PageNumberPagination] = PageNumberPagination
 
-    #: A list of required OAuth2 scopes for accessing the `Category` API endpoints.
+    #: A lookup field used to retrieve a specific `Category` object.
     lookup_field: str = "uuid"
 
-    #: A list of scope-based permissions required for access.
+    #: A list of required OAuth2 scopes for accessing the `Category` API endpoints.
     required_scopes: List[str] = ["default"]
 
     #: A list of filter backends for applying search and order filters
@@ -76,18 +73,23 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     #: `Category` objects (e.g., `?ordering=<field>`).
     ordering_fields: List[str] = ["name", "created_at", "updated_at"]
 
-    #: A default queryset for retrieving `FiberOptic` objects.
+    #: A default queryset for retrieving `Category` objects.
     queryset: QuerySet[Category] = Category.objects.all().order_by("-created_at")
 
 
 @extend_schema_view(
     list=extend_schema(
-        description=_("Retrieve a list of ownerships, with optional search and ordering."),
-        summary=_("List ownerships"),
+        description=_(
+            "Retrieve a list of educational institution ownerships, "
+            "with optional searching, filtering, ordering and pagination."
+        ),
+        summary=_("List educational institution ownerships"),
+        examples=examples.ownership_list_examples,
     ),
     retrieve=extend_schema(
-        description=_("Retrieve details of a specific ownership."),
-        summary=_("Retrieve ownership"),
+        description=_("Retrieve details of a specific educational institution ownership."),
+        summary=_("Retrieve educational institution ownership"),
+        examples=examples.ownership_retrieve_examples,
     ),
 )
 class OwnershipViewSet(viewsets.ReadOnlyModelViewSet):
@@ -95,23 +97,24 @@ class OwnershipViewSet(viewsets.ReadOnlyModelViewSet):
     A ViewSet for managing :class:`education.models.Ownership` objects.
 
     This viewset provides endpoints for:
-    - Listing all ownerships (`list` endpoint).
-    - Retrieving a specific ownership by UUID (`retrieve` endpoint).
+    - Listing all educational institution ownerships (`list` endpoint).
+    - Retrieving a specific educational institution ownership by UUID (`retrieve` endpoint).
     """
 
-    #: A default queryset for retrieving `Ownership` objects.
-    queryset: QuerySet[Ownership] = Ownership.objects.all().order_by("-created_at")
-
-    #: A serializer class for handling `Ownership` objects.
+    #: A serializer class for converting `Ownership` objects to JSON format.
     serializer_class: Type[OwnershipSerializer] = OwnershipSerializer
 
-    #: A field used to retrieve a specific `Ownership` object.
+    #: A pagination class to handle JSON format pagination for `Ownership` objects.
+    pagination_class: Type[PageNumberPagination] = PageNumberPagination
+
+    #: A lookup field used to retrieve a specific `Ownership` object.
     lookup_field: str = "uuid"
 
-    #: A list of scope-based permissions required for access.
+    #: A list of required OAuth2 scopes for accessing the `Ownership` API endpoints.
     required_scopes: List[str] = ["default"]
 
-    #: A list of filters applied to the queryset.
+    #: A list of filter backends for applying search and order filters
+    #: to the queryset of `Ownership` objects.
     filter_backends: List[Type[BaseFilterBackend]] = [
         SearchFilter,
         OrderingFilter,
@@ -121,11 +124,17 @@ class OwnershipViewSet(viewsets.ReadOnlyModelViewSet):
     #: `Ownership` objects.
     filterset_class: Type[OwnershipFilter] = OwnershipFilter
 
-    #: A list of fields that can be searched via query parameters.
+    #: A list of fields that are used for to apply full-text search
+    #: via query parameters to the queryset of `Ownership` objects
+    #: (i.e., `?q=<term>`).
     search_fields: List[str] = ["name", "code"]
 
-    #: A list of fields that can be used for ordering results.
+    #: A list of fields that are used for ordering the queryset of
+    #: `Ownership` objects (e.g., `?ordering=<field>`).
     ordering_fields: List[str] = ["name", "created_at", "updated_at"]
+
+    #: A default queryset for retrieving `Ownership` objects.
+    queryset: QuerySet[Ownership] = Ownership.objects.all().order_by("-created_at")
 
 
 @extend_schema_view(

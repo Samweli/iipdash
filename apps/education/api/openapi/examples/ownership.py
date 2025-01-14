@@ -29,7 +29,7 @@ ownership_response_only: Dict[str, Any] = {
     "uuid": "550e8400-e29b-41d4-a716-446655440000",
     "name": "public",
     "code": "public",
-    "description": "An educational institution operated by local, state, or national governments.",
+    "description": "An educational institution operated by local, state, or national government.",
     "created_at": "2025-01-01T12:00:00Z",
     "updated_at": "2025-01-02T12:00:00Z",
     "extras": {"type": "academic"},
@@ -38,12 +38,7 @@ ownership_response_only: Dict[str, Any] = {
 #: OpenAPI example for the list endpoint response (paginated object list).
 ownership_list_response_only: OpenApiExample = OpenApiExample(
     name="Successful Response",
-    value={
-        "count": 123,
-        "next": "/api/education/ownerships/?page=3",
-        "previous": "/api/education/ownerships/?page=1",
-        "results": [ownership_response_only],
-    },
+    value=ownership_response_only,
     response_only=True,
 )
 
