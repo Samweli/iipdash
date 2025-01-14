@@ -10,7 +10,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework_gis.pagination import GeoJsonPagination
 
 from ..models import Category, Institution, Ownership
-from .filters import CategoryFilter
+from .filters import CategoryFilter, OwnershipFilter
 from .openapi import examples
 from .serializers import CategorySerializer, InstitutionSerializer, OwnershipSerializer
 
@@ -116,6 +116,10 @@ class OwnershipViewSet(viewsets.ReadOnlyModelViewSet):
         SearchFilter,
         OrderingFilter,
     ]
+
+    #: A custom filter for applying complex filters to the queryset of
+    #: `Ownership` objects.
+    filterset_class: Type[OwnershipFilter] = OwnershipFilter
 
     #: A list of fields that can be searched via query parameters.
     search_fields: List[str] = ["name", "code"]
