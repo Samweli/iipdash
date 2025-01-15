@@ -5,7 +5,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from ..models import Area
 
-__all__ = ["AreaSerializer", "AreaEducationSerializer", "RelatedAreaSerializer"]
+__all__ = ["AreaSerializer", "AreaEducationSerializer", "AreaEducationIFONDSerializer", "RelatedAreaSerializer"]
 
 
 class AreaSerializer(GeoFeatureModelSerializer):
@@ -62,6 +62,36 @@ class AreaEducationSerializer(GeoFeatureModelSerializer):
     def get_institutions_fiber_20km(self, obj) -> int:
         """Number of education institutions with nearest fiber optic within 20km."""
         return obj.institutions_fiber_20km
+
+
+class AreaEducationIFONDSerializer(GeoFeatureModelSerializer):
+
+    institutions_count = serializers.SerializerMethodField()
+    institutions_electrified = serializers.SerializerMethodField()
+    institutions_fiber_connected = serializers.SerializerMethodField()
+    institutions_electrified_no_fiber = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Area
+        id_field = "uuid"
+        geo_field = "geometry"
+        exclude = ["id", "depth", "path", "numchild"]
+
+    def get_institutions_count(self, obj) -> int:
+        """Number of education institutions."""
+        return obj.institutions_count
+
+    def get_institutions_electrified(self, obj) -> int:
+        """Number of electrified education institutions"""
+        return obj.institutions_electrified
+
+    def get_institutions_fiber_connected(self, obj) -> int:
+        """Number of education institutions connected to fiber optic."""
+        return obj.institutions_fiber_connected
+
+    def get_institutions_electrified_no_fiber(self, obj) -> int:
+        """Number of electrified education institutions not connected to fiber optic."""
+        return obj.institutions_electrified_no_fiber
 
 
 class RelatedAreaSerializer(serializers.ModelSerializer):
