@@ -57,4 +57,4 @@ class FiberOpticFilter(filters.FilterSet):
         """
 
         model: Type[FiberOptic] = FiberOptic
-        fields: List[str] = ["country", "name"]
+        fields: List[str] = ["country", "name", "status"]

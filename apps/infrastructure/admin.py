@@ -32,15 +32,15 @@ class FiberOpticAdmin(GISModelAdmin, ImportExportModelAdmin):
     export.
     """
 
-    list_display = ["display_name", "country", "administrative_area"]
+    list_display = ["display_name", "country", "administrative_area", "status"]
 
     list_select_related = ["administrative_area"]
 
     #: A list of fields for filtering results in the admin change list view.
-    list_filter = ["country", "created_at", "updated_at"]
+    list_filter = ["country", "status", "created_at", "updated_at"]
 
     #: A list of fields that can be searched in the admin interface.
-    search_fields = ["id", "uuid"]
+    search_fields = ["id", "uuid", "administrative_area__name"]
 
     raw_id_fields = ["administrative_area"]
 

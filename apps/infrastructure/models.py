@@ -68,6 +68,12 @@ class FiberOptic(models.Model):
 
     """
 
+    class FiberOpticStatus(models.TextChoices):
+        OPERATIONAL = "operational", _("Operational")
+        UNDER_CONSTRUCTION = "under-construction", _("Under construction")
+        PLANNED = "planned", _("Planned")
+        PROPOSED = "proposed", _("Proposed")
+
     #: A universally unique identifier (UUID) for the fiber optic network.
     uuid = models.UUIDField(
         _("UUID"),
@@ -120,6 +126,9 @@ class FiberOptic(models.Model):
         verbose_name=_("administrative area"),
         help_text=_("The administrative area to which the fiber optic belongs."),
     )
+
+    #: fiber optic status
+    status = models.CharField(_("status"), choices=FiberOpticStatus, blank=True, max_length=128, db_index=True)
 
     #: The database level timestamp of when the fiber optic network was
     #: created.
