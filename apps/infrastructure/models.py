@@ -130,6 +130,8 @@ class FiberOptic(models.Model):
     #: fiber optic status
     status = models.CharField(_("status"), choices=FiberOpticStatus, blank=True, max_length=128, db_index=True)
 
+    operator_name = models.CharField(_("operator name"), blank=True, max_length=255)
+
     #: The database level timestamp of when the fiber optic network was
     #: created.
     created_at = models.DateTimeField(
@@ -208,10 +210,15 @@ class FiberOptic(models.Model):
             str:
                 A user-friendly display name.
         """
-        return _("Fiber Optic: %(country)s: %(uuid)s") % {
-            "country": self.country,
-            "uuid": self.uuid,
-        }
+        if self.name:
+            return self.name
+        elif self.operator_name:
+            return self.operator_name
+        else:
+            return _("Fiber Optic: %(country)s: %(uuid)s") % {
+                "country": self.country,
+                "uuid": self.uuid,
+            }
 
     def __str__(self):
         """
