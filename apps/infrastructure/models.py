@@ -110,6 +110,17 @@ class FiberOptic(models.Model):
         help_text=_("The spatial/geometric shape of the fiber optic network."),
     )
 
+    administrative_area = models.ForeignKey(
+        "administrative.Area",
+        blank=True,
+        null=True,
+        related_name="fiber_optics",
+        related_query_name="fiber_optic",
+        on_delete=models.SET_NULL,
+        verbose_name=_("administrative area"),
+        help_text=_("The administrative area to which the fiber optic belongs."),
+    )
+
     #: The database level timestamp of when the fiber optic network was
     #: created.
     created_at = models.DateTimeField(

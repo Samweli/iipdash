@@ -118,4 +118,4 @@ class FiberOpticViewSet(viewsets.ReadOnlyModelViewSet):
     ordering_fields: List[str] = ["country", "name", "created_at", "updated_at"]
 
     #: A default queryset for retrieving `FiberOptic` objects.
-    queryset: QuerySet[FiberOptic] = FiberOptic.objects.order_by("-created_at")
+    queryset: QuerySet[FiberOptic] = FiberOptic.objects.select_related("administrative_area").order_by("-created_at")

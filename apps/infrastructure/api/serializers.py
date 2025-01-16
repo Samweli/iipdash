@@ -40,6 +40,8 @@ class CellTowerSerializer(serializers.GeoFeatureModelSerializer):
 class FiberOpticSerializer(serializers.GeoFeatureModelSerializer):
     """A fiber optic network."""
 
+    administrative_area = RelatedAreaSerializer(read_only=True)
+
     class Meta:
         """Metadata for the :class:`FiberOpticSerializer`.
 
