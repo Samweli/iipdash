@@ -3,13 +3,14 @@ from typing import List, Type
 from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
 from rest_framework_gis.pagination import GeoJsonPagination
 
 from ..models import CellTower, FiberOptic
-from .filters import FiberOpticFilter
+from .filters import CellTowerFilter, FiberOpticFilter
 from .openapi import examples
 from .serializers import CellTowerSerializer, FiberOpticSerializer
 
@@ -18,7 +19,9 @@ __all__ = ["CellTowerViewSet"]
 
 @extend_schema_view(
     list=extend_schema(
-        description=_("Retrieve a list of cellular towers, with optional search and ordering."),
+        description=_(
+            "Retrieve a list of cellular towers, w with optional searching, filtering, ordering and pagination."
+        ),
         summary=_("List cellular towers"),
         examples=examples.celltower_list_examples,
     ),
@@ -53,9 +56,14 @@ class CellTowerViewSet(viewsets.ReadOnlyModelViewSet):
 
     #: A list of filters applied to the queryset.
     filter_backends: List[Type[BaseFilterBackend]] = [
+        DjangoFilterBackend,
         SearchFilter,
         OrderingFilter,
     ]
+
+    #: A custom filter for applying complex filters to the queryset of
+    #: `CellTower` objects.
+    filterset_class: Type[CellTowerFilter] = CellTowerFilter
 
     #: A list of fields that can be searched via query parameters.
     search_fields: List[str] = ["network_type", "mcc", "range"]
@@ -100,6 +108,7 @@ class FiberOpticViewSet(viewsets.ReadOnlyModelViewSet):
     #: A list of filter backends for applying search and order filters
     #: to the queryset of `FiberOptic` objects.
     filter_backends: List[Type[BaseFilterBackend]] = [
+        DjangoFilterBackend,
         SearchFilter,
         OrderingFilter,
     ]
