@@ -14,13 +14,13 @@ from .filters import CellTowerFilter, FiberOpticFilter
 from .openapi import examples
 from .serializers import CellTowerSerializer, FiberOpticSerializer
 
-__all__ = ["CellTowerViewSet"]
+__all__ = ["CellTowerViewSet", "FiberOpticViewSet"]
 
 
 @extend_schema_view(
     list=extend_schema(
         description=_(
-            "Retrieve a list of cellular towers, w with optional searching, filtering, ordering and pagination."
+            "Retrieve a list of cellular towers, with optional searching, filtering, ordering and pagination."
         ),
         summary=_("List cellular towers"),
         examples=examples.celltower_list_examples,
@@ -40,21 +40,20 @@ class CellTowerViewSet(viewsets.ReadOnlyModelViewSet):
     - Retrieving a specific cellular tower by UUID (`retrieve` endpoint).
     """
 
-    #: A default queryset for retrieving `CellTower` objects.
-    queryset: QuerySet[CellTower] = CellTower.objects.select_related("administrative_area").order_by("-created_at")
-
-    #: A serializer class for handling `CellTower` objects.
+    #: A serializer class for converting `CellTower` objects to GeoJSON format.
     serializer_class: Type[CellTowerSerializer] = CellTowerSerializer
 
-    pagination_class = GeoJsonPagination
+    #: A pagination class to handle GeoJSON format pagination for `CellTower` objects.
+    pagination_class: Type[GeoJsonPagination] = GeoJsonPagination
 
-    #: A field used to retrieve a specific `CellTower` object.
+    #: A lookup field used to retrieve a specific `CellTower` object.
     lookup_field: str = "uuid"
 
-    #: A list of scope-based permissions required for access.
+    #: A list of required OAuth2 scopes for accessing the `CellTower` API endpoints.
     required_scopes: List[str] = ["default"]
 
-    #: A list of filters applied to the queryset.
+    #: A list of filter backends for applying search and order filters
+    #: to the queryset of `CellTower` objects.
     filter_backends: List[Type[BaseFilterBackend]] = [
         DjangoFilterBackend,
         SearchFilter,
@@ -65,11 +64,17 @@ class CellTowerViewSet(viewsets.ReadOnlyModelViewSet):
     #: `CellTower` objects.
     filterset_class: Type[CellTowerFilter] = CellTowerFilter
 
-    #: A list of fields that can be searched via query parameters.
+    #: A list of fields that are used for to apply full-text search
+    #: via query parameters to the queryset of `CellTower` objects
+    #: (i.e., `?q=<term>`).
     search_fields: List[str] = ["network_type", "mcc", "range"]
 
-    #: A list of fields that can be used for ordering results.
+    #: A list of fields that are used for ordering the queryset of
+    #: `CellTower` objects (e.g., `?ordering=<field>`).
     ordering_fields: List[str] = ["network_type", "mcc", "range", "created_at", "updated_at"]
+
+    #: A default queryset for retrieving `CellTower` objects.
+    queryset: QuerySet[CellTower] = CellTower.objects.select_related("administrative_area").order_by("-created_at")
 
 
 @extend_schema_view(
