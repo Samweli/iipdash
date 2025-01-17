@@ -5,7 +5,7 @@ from rest_framework_gis import serializers
 from administrative.api.serializers import RelatedAreaSerializer
 from infrastructure.models import CellTower, FiberOptic
 
-__all__ = ["CellTowerSerializer"]
+__all__ = ["CellTowerSerializer", "FiberOpticSerializer"]
 
 
 class CellTowerSerializer(serializers.GeoFeatureModelSerializer):
@@ -40,6 +40,7 @@ class CellTowerSerializer(serializers.GeoFeatureModelSerializer):
 class FiberOpticSerializer(serializers.GeoFeatureModelSerializer):
     """A fiber optic network."""
 
+    #: Nested serializer for the related administrative area
     administrative_area = RelatedAreaSerializer(read_only=True)
 
     class Meta:

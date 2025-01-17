@@ -398,10 +398,10 @@ class CellTower(models.Model):
 
         Attributes:
             verbose_name (str):
-                The human-readable name for a single institution.
+                The human-readable name for a single cell tower.
 
             verbose_name_plural (str):
-                The human-readable name for multiple institutions.
+                The human-readable name for multiple cell towers.
         """
 
         verbose_name = _("Cell Tower")
