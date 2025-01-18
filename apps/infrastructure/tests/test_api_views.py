@@ -66,6 +66,20 @@ class CellTowerAPITestCase(TestCase):
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 self.assertAreCellTowers(response.data)
 
+    def test_list_cell_towers_spatial_filtering(self) -> None:
+        """Test that the `list` endpoint with spatial filters returns the correct feature collection of `CellTower`."""
+        test_cases = [
+            {"in_bbox": "-180,-90,180,90"},
+            {"in_tile": "0/0/0"},
+            {"point": f"{self.cell_tower.geometry.x},{self.cell_tower.geometry.y}", "radius": 1000},
+        ]
+        for test_case in test_cases:
+            with self.subTest(**test_case):
+                url = reverse("api:celltower-list")
+                response = self.client.get(url, test_case)
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertAreCellTowers(response.data)
+
     def test_retrieve_cell_tower(self) -> None:
         """Test that the `retrieve` endpoint returns the correct `CellTower` feature."""
         url = reverse("api:celltower-detail", kwargs={"uuid": self.cell_tower.uuid})
@@ -142,6 +156,23 @@ class FiberOpticAPITestCase(TestCase):
         test_cases = [
             {"country": self.fiber_optic.country.code},
             {"name": self.fiber_optic.name},
+        ]
+        for test_case in test_cases:
+            with self.subTest(**test_case):
+                url = reverse("api:fiberoptic-list")
+                response = self.client.get(url, test_case)
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertAreFiberOptics(response.data)
+
+    def test_list_fiber_optics_spatial_filtering(self) -> None:
+        """Test that the `list` endpoint with spatial filters returns the correct feature collection of `FiberOptic`."""  # noqa
+        test_cases = [
+            {"in_bbox": "-180,-90,180,90"},
+            {"in_tile": "0/0/0"},
+            {
+                "point": f"{self.fiber_optic.geometry[-1][-1][0]},{self.fiber_optic.geometry[-1][-1][1]}",
+                "radius": 1000,
+            },
         ]
         for test_case in test_cases:
             with self.subTest(**test_case):

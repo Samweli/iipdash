@@ -9,6 +9,8 @@ from rest_framework import viewsets
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
 from rest_framework_gis.pagination import GeoJsonPagination
 
+from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
+
 from ..models import CellTower, FiberOptic
 from .filters import CellTowerFilter, FiberOpticFilter
 from .openapi import examples
@@ -58,6 +60,9 @@ class CellTowerViewSet(viewsets.ReadOnlyModelViewSet):
         DjangoFilterBackend,
         SearchFilter,
         OrderingFilter,
+        InBBoxFilter,
+        TMSTileFilter,
+        DistanceToPointFilter,
     ]
 
     #: A custom filter for applying complex filters to the queryset of
@@ -72,6 +77,25 @@ class CellTowerViewSet(viewsets.ReadOnlyModelViewSet):
     #: A list of fields that are used for ordering the queryset of
     #: `CellTower` objects (e.g., `?ordering=<field>`).
     ordering_fields: List[str] = ["network_type", "mcc", "range", "created_at", "updated_at"]
+
+    #: A `CellTower` geometry field used in performing bounding box filtering
+    #: on the queryset of `CellTower` objects via query parameters
+    #: (i.e., `?in_bbox=<bbox>`).
+    bbox_filter_field: str = "geometry"
+
+    #: Whether to include `CellTower` objects that overlap the bounding box
+    #: on the queryset.
+    bbox_filter_include_overlapping: bool = False
+
+    #: A `CellTower` geometry field used in filtering queryset of `CellTower`
+    #: objects based on their distance from a specific point via query
+    #: parameters (i.e., `?point=<x,y>&radius=<distance>`).
+    distance_filter_field: str = "geometry"
+
+    #: Whether to convert the distance value to meters before filtering
+    #: queryset of `CellTower` objects based on their distance from a
+    #: specific point
+    distance_filter_convert_meters: bool = True
 
     #: A default queryset for retrieving `CellTower` objects.
     queryset: QuerySet[CellTower] = CellTower.objects.select_related("administrative_area").order_by("-created_at")
@@ -116,6 +140,9 @@ class FiberOpticViewSet(viewsets.ReadOnlyModelViewSet):
         DjangoFilterBackend,
         SearchFilter,
         OrderingFilter,
+        InBBoxFilter,
+        TMSTileFilter,
+        DistanceToPointFilter,
     ]
 
     #: A custom filter for applying complex filters to the queryset of
@@ -130,6 +157,25 @@ class FiberOpticViewSet(viewsets.ReadOnlyModelViewSet):
     #: A list of fields that are used for ordering the queryset of
     #: `FiberOptic` objects (e.g., `?ordering=<field>`).
     ordering_fields: List[str] = ["country", "name", "created_at", "updated_at"]
+
+    #: A `FiberOptic` geometry field used in performing bounding box filtering
+    #: on the queryset of `FiberOptic` objects via query parameters
+    #: (i.e., `?in_bbox=<bbox>`).
+    bbox_filter_field: str = "geometry"
+
+    #: Whether to include `FiberOptic` objects that overlap the bounding box
+    #: on the queryset.
+    bbox_filter_include_overlapping: bool = False
+
+    #: A `FiberOptic` geometry field used in filtering queryset of `FiberOptic`
+    #: objects based on their distance from a specific point via query
+    #: parameters (i.e., `?point=<x,y>&radius=<distance>`).
+    distance_filter_field: str = "geometry"
+
+    #: Whether to convert the distance value to meters before filtering
+    #: queryset of `FiberOptic` objects based on their distance from a
+    #: specific point
+    distance_filter_convert_meters: bool = True
 
     #: A default queryset for retrieving `FiberOptic` objects.
     queryset: QuerySet[FiberOptic] = FiberOptic.objects.select_related("administrative_area").order_by("-created_at")
