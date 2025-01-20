@@ -1,6 +1,7 @@
 import uuid
 from typing import Any, Dict
 
+from django.conf import settings
 from django.test import TestCase
 
 from rest_framework import status
@@ -12,6 +13,10 @@ from .factories import CellTowerFactory, FiberOpticFactory
 
 _search_param = api_settings.SEARCH_PARAM
 _ordering_param = api_settings.ORDERING_PARAM
+_bbox_param = settings.BBOX_PARAM
+_tile_param = settings.TILE_PARAM
+_point_param = settings.POINT_PARAM
+_dist_param = settings.DIST_PARAM
 
 
 class CellTowerAPITestCase(TestCase):
@@ -69,9 +74,9 @@ class CellTowerAPITestCase(TestCase):
     def test_list_cell_towers_spatial_filtering(self) -> None:
         """Test that the `list` endpoint with spatial filters returns the correct feature collection of `CellTower`."""
         test_cases = [
-            {"in_bbox": "-180,-90,180,90"},
-            {"in_tile": "0/0/0"},
-            {"point": f"{self.cell_tower.geometry.x},{self.cell_tower.geometry.y}", "radius": 1000},
+            {_bbox_param: "-180,-90,180,90"},
+            {_tile_param: "0/0/0"},
+            {_point_param: f"{self.cell_tower.geometry.x},{self.cell_tower.geometry.y}", _dist_param: 1000},
         ]
         for test_case in test_cases:
             with self.subTest(**test_case):
@@ -167,11 +172,11 @@ class FiberOpticAPITestCase(TestCase):
     def test_list_fiber_optics_spatial_filtering(self) -> None:
         """Test that the `list` endpoint with spatial filters returns the correct feature collection of `FiberOptic`."""  # noqa
         test_cases = [
-            {"in_bbox": "-180,-90,180,90"},
-            {"in_tile": "0/0/0"},
+            {_bbox_param: "-180,-90,180,90"},
+            {_tile_param: "0/0/0"},
             {
-                "point": f"{self.fiber_optic.geometry[-1][-1][0]},{self.fiber_optic.geometry[-1][-1][1]}",
-                "radius": 1000,
+                _point_param: f"{self.fiber_optic.geometry[-1][-1][0]},{self.fiber_optic.geometry[-1][-1][1]}",
+                _dist_param: 1000,
             },
         ]
         for test_case in test_cases:

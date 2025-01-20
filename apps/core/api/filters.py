@@ -1,5 +1,7 @@
 from typing import Any, Dict, List
 
+from django.conf import settings
+
 from rest_framework.views import View
 from rest_framework_gis import filters as gis_filters
 
@@ -18,7 +20,7 @@ class InBBoxFilter(gis_filters.InBBoxFilter):
     """
 
     #: The URL query parameter which contains the bbox.
-    bbox_param: str = "in_bbox"
+    bbox_param: str = settings.BBOX_PARAM
 
     def get_schema_operation_parameters(self, view: View) -> List[Dict[str, Any]]:
         """Generate schema parameters for API documentation.
@@ -64,7 +66,7 @@ class TMSTileFilter(gis_filters.TMSTileFilter):
     """
 
     #: The URL query parameter which contains the tile address.
-    tile_param: str = "in_tile"
+    tile_param: str = settings.TILE_PARAM
 
     def get_schema_operation_parameters(self, view: View) -> List[Dict[str, Any]]:
         """Generate schema parameters for API documentation.
@@ -109,10 +111,10 @@ class DistanceToPointFilter(gis_filters.DistanceToPointFilter):
     """
 
     #: The URL query parameter which contains the distance in meters.
-    dist_param: str = "radius"
+    dist_param: str = settings.DIST_PARAM
 
     #: The URL query parameter which contains the geographic point.
-    point_param: str = "point"
+    point_param: str = settings.POINT_PARAM
 
     def get_schema_operation_parameters(self, view: View) -> List[Dict[str, Any]]:
         """Generate schema parameters for API documentation.

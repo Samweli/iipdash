@@ -85,6 +85,7 @@ class InstitutionFactory(factory.django.DjangoModelFactory):
     administrative_area: Area = factory.SubFactory(AreaFactory, depth=1)
     has_electricity: bool = factory.Faker("boolean")
     has_fiber_optic: bool = factory.Faker("boolean")
+    fon_distance: float = factory.Faker("pyfloat", left_digits=2, right_digits=2, positive=True)
     osm_id: int = factory.Faker("random_number", digits=10)
     osm_type: str = factory.Iterator(["nodes"], cycle=True)
     extras: typing.Dict[str, typing.Any] = factory.Faker("pydict", value_types=[str, int, bool])

@@ -3,11 +3,14 @@ from typing import List, Type
 from django.db.models import QuerySet
 from django.utils.translation import gettext_lazy as _
 
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_gis.pagination import GeoJsonPagination
+
+from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
 
 from ..models import Category, Institution, Ownership
 from .filters import CategoryFilter, OwnershipFilter
@@ -156,10 +159,19 @@ class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
     pagination_class = GeoJsonPagination
 
     filter_backends = [
+        DjangoFilterBackend,
         SearchFilter,
         OrderingFilter,
+        InBBoxFilter,
+        TMSTileFilter,
+        DistanceToPointFilter,
     ]
     search_fields = ["name"]
     ordering_fields = ["name", "created_at", "updated_at"]
+
+    bbox_filter_field = "geometry"
+    bbox_filter_include_overlapping = False
+    distance_filter_field = "geometry"
+    distance_filter_convert_meters = True
 
     queryset = Institution.objects.select_related("category", "ownership", "administrative_area").order_by("name")

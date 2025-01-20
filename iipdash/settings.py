@@ -234,6 +234,12 @@ REST_FRAMEWORK = {
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
+# REST framework GIS settings
+BBOX_PARAM = env("BBOX_PARAM", default="in_bbox")
+TILE_PARAM = env("TILE_PARAM", default="in_tile")
+POINT_PARAM = env("POINT_PARAM", default="point")
+DIST_PARAM = env("DIST_PARAM", default="radius")
+
 
 SPECTACULAR_SETTINGS = {
     "TITLE": SITE_API_NAME,
