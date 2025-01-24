@@ -1,21 +1,26 @@
+import csv
 from typing import List, Type
 
 from django.db.models import QuerySet
+from django.http import StreamingHttpResponse
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_gis.pagination import GeoJsonPagination
 
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
+from core.utils import PseudoBuffer
 
 from ..models import Category, Institution, Ownership
 from .filters import CategoryFilter, OwnershipFilter
 from .openapi import examples
-from .serializers import CategorySerializer, InstitutionSerializer, OwnershipSerializer
+from .serializers import CategorySerializer, InstitutionCSVSerializer, InstitutionSerializer, OwnershipSerializer
 
 __all__ = ["CategoryViewSet", "OwnershipViewSet", "InstitutionViewSet"]
 
@@ -149,6 +154,7 @@ class OwnershipViewSet(viewsets.ReadOnlyModelViewSet):
         summary=_("Retrieve Education Institution"),
         description=_("Retrieve details of an education institution."),
     ),
+    download=extend_schema(summary=_("Download Education Institutions")),
 )
 class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
     """Education Institutions API endpoint"""
@@ -174,4 +180,41 @@ class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
     distance_filter_field = "geometry"
     distance_filter_convert_meters = True
 
-    queryset = Institution.objects.select_related("category", "ownership", "administrative_area").order_by("name")
+    csv_serializer_class = InstitutionCSVSerializer
+
+    def get_queryset(self):
+        return Institution.objects.select_related("category", "ownership", "administrative_area").order_by("name")
+
+    def stream_csv(self):
+        queryset = self.filter_queryset(self.get_queryset())
+
+        field_names = self.csv_serializer_class().get_fields().keys()
+
+        pseudo_buffer = PseudoBuffer()
+        writer = csv.DictWriter(pseudo_buffer, fieldnames=field_names)
+
+        yield writer.writeheader()
+
+        for row in queryset.iterator():
+            yield writer.writerow(self.csv_serializer_class(row).data)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Education Institution",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Download Education Institutions as CSV file."""
+
+        queryset = self.filter_queryset(self.get_queryset())
+
+        model_name = queryset.model._meta.object_name.lower()
+        file_name = f"{model_name}-{now().date()}.csv"
+
+        return StreamingHttpResponse(
+            self.stream_csv(),
+            content_type="text/csv",
+            headers={"Content-Disposition": f'attachment; filename="{file_name}"'},
+        )
