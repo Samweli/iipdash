@@ -15,3 +15,8 @@ markdown
 django-filter
 django-oauth-toolkit
 drf-spectacular[sidecar]
+
+# TODO: replace with direct "django-vectortiles" eventually
+# PYPI release doesn't include DRF renderers yet
+# https://github.com/submarcos/django-vectortiles/issues/20#issuecomment-1416927523
+django-vectortiles @ git+https://github.com/submarcos/django-vectortiles

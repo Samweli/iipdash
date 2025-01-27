@@ -1,13 +1,19 @@
 from typing import List, Type
 
-from django.db.models import QuerySet
+from django.contrib.gis.db.models import MultiLineStringField
+from django.db.models import F, QuerySet
+from django.db.models.functions import Cast
 from django.utils.translation import gettext_lazy as _
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
+from rest_framework.response import Response
 from rest_framework_gis.pagination import GeoJsonPagination
+from vectortiles.backends.postgis import VectorLayer
+from vectortiles.rest_framework.renderers import MVTRenderer
 
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
 
@@ -103,21 +109,25 @@ class CellTowerViewSet(viewsets.ReadOnlyModelViewSet):
 
 @extend_schema_view(
     list=extend_schema(
-        description=_("Retrieve a list of fiber optics, with optional searching, filtering, ordering and pagination."),
-        summary=_("List fiber optics"),
+        description=_(
+            "Retrieve a list of fiber optics networks, with optional searching, filtering, ordering and pagination."
+        ),
+        summary=_("Fiber optic networks"),
         examples=examples.fiberoptic_list_examples,
     ),
     retrieve=extend_schema(
-        description=_("Retrieve details of a specific fiber optic."),
-        summary=_("Retrieve fiber optic"),
+        description=_("Retrieve details of a specific fiber optic network."),
+        summary=_("Fiber optic network"),
         examples=examples.fiberoptic_retrieve_examples,
     ),
+    tile=extend_schema(summary=_("Fiber optic networks vector tile")),
 )
-class FiberOpticViewSet(viewsets.ReadOnlyModelViewSet):
+class FiberOpticViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
     """
     A ViewSet for managing :class:`infrastructure.models.FiberOptic` objects.
 
     This viewset provides endpoints for:
+
     - Listing all fiber optics (`list` endpoint).
     - Retrieving a specific fiber optic by UUID (`retrieve` endpoint).
     """
@@ -179,3 +189,41 @@ class FiberOpticViewSet(viewsets.ReadOnlyModelViewSet):
 
     #: A default queryset for retrieving `FiberOptic` objects.
     queryset: QuerySet[FiberOptic] = FiberOptic.objects.select_related("administrative_area").order_by("-created_at")
+
+    #: Vector tiles layer ID
+    id = "fiber-optic"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "uuid",
+        "name",
+        "country",
+        "status",
+        "operator_name",
+        "administrative_area_uuid",
+        "administrative_area_name",
+    )
+
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+
+        queryset = self.get_queryset().annotate(
+            geom=Cast("geometry", MultiLineStringField()),
+            administrative_area_uuid=F("administrative_area__uuid"),
+            administrative_area_name=F("administrative_area__name"),
+        )
+
+        queryset = self.filter_queryset(queryset)
+
+        return queryset
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for fiber optic networks"""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
