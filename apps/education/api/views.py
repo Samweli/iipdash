@@ -1,9 +1,6 @@
-import csv
 from typing import List, Type
 
 from django.db.models import QuerySet
-from django.http import StreamingHttpResponse
-from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from django_filters.rest_framework import DjangoFilterBackend
@@ -15,7 +12,7 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework_gis.pagination import GeoJsonPagination
 
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
-from core.utils import PseudoBuffer
+from core.api.mixins import CSVDownloadMixin
 
 from ..models import Category, Institution, Ownership
 from .filters import CategoryFilter, OwnershipFilter
@@ -156,7 +153,7 @@ class OwnershipViewSet(viewsets.ReadOnlyModelViewSet):
     ),
     download=extend_schema(summary=_("Download Education Institutions")),
 )
-class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
+class InstitutionViewSet(CSVDownloadMixin, viewsets.ReadOnlyModelViewSet):
     """Education Institutions API endpoint"""
 
     serializer_class = InstitutionSerializer
@@ -185,19 +182,6 @@ class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         return Institution.objects.select_related("category", "ownership", "administrative_area").order_by("name")
 
-    def stream_csv(self):
-        queryset = self.filter_queryset(self.get_queryset())
-
-        field_names = self.csv_serializer_class().get_fields().keys()
-
-        pseudo_buffer = PseudoBuffer()
-        writer = csv.DictWriter(pseudo_buffer, fieldnames=field_names)
-
-        yield writer.writeheader()
-
-        for row in queryset.iterator():
-            yield writer.writerow(self.csv_serializer_class(row).data)
-
     @action(
         detail=False,
         methods=["get"],
@@ -208,13 +192,4 @@ class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
     def download(self, request, *args, **kwargs):
         """Download Education Institutions as CSV file."""
 
-        queryset = self.filter_queryset(self.get_queryset())
-
-        model_name = queryset.model._meta.object_name.lower()
-        file_name = f"{model_name}-{now().date()}.csv"
-
-        return StreamingHttpResponse(
-            self.stream_csv(),
-            content_type="text/csv",
-            headers={"Content-Disposition": f'attachment; filename="{file_name}"'},
-        )
+        return self.export_csv(request, *args, **kwargs)
