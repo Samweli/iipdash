@@ -5,11 +5,14 @@ from django.utils.timezone import now
 
 from ..utils import PseudoBuffer
 
-__all__ = ['CSVDownloadMixin']
+__all__ = ["CSVDownloadMixin"]
 
 
 class CSVDownloadMixin:
-    """CSV download Mixin. Provides a `download()` method returning streaming CSV response."""
+    """CSV download Mixin. Provides a `export_csv()` method returning streaming CSV response.
+
+    Expected to used with Generic Views and Viewsets from Django Rest Framework.
+    """
 
     #: DRF serializer class used for serializing objects data.
     csv_serializer_class = None

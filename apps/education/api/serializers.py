@@ -101,21 +101,21 @@ class InstitutionSerializer(GeoFeatureModelSerializer):
 
 class InstitutionCSVSerializer(serializers.ModelSerializer):
 
-    category = serializers.SlugRelatedField(slug_field="name", read_only=True)
-    ownership = serializers.SlugRelatedField(slug_field="name", read_only=True)
-    country = serializers.SerializerMethodField()
-    administrative_area = serializers.SlugRelatedField(slug_field="name", read_only=True)
+    category_name = serializers.CharField(source="category.name", read_only=True)
+    ownership_name = serializers.CharField(source="ownership.name", read_only=True)
+    country = serializers.CharField(source="administrative_area.country", read_only=True)
+    administrative_area_name = serializers.CharField(source="administrative_area.name", read_only=True)
     geometry = serializers.CharField()
 
     class Meta:
         model = Institution
         fields = [
             "uuid",
-            "category",
+            "category_name",
             "name",
-            "ownership",
+            "ownership_name",
             "country",
-            "administrative_area",
+            "administrative_area_name",
             "description",
             "code",
             "postal_code",
@@ -137,7 +137,3 @@ class InstitutionCSVSerializer(serializers.ModelSerializer):
         # There might be some performance gains in making fields read only
         # https://hakibenita.com/django-rest-framework-slow#read-only-modelserializer
         read_only_fields = fields
-
-    def get_country(self, obj):
-        if obj.administrative_area:
-            return obj.administrative_area.country

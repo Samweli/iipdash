@@ -185,7 +185,7 @@ class InstitutionViewSet(CSVDownloadMixin, viewsets.ReadOnlyModelViewSet):
     @action(
         detail=False,
         methods=["get"],
-        name="Download Education Institution",
+        name="Download Education Institution CSV",
         url_path="download",
         url_name="list-download",
     )
