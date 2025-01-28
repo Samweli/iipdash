@@ -16,11 +16,12 @@ from vectortiles.backends.postgis import VectorLayer
 from vectortiles.rest_framework.renderers import MVTRenderer
 
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
+from core.api.mixins import CSVDownloadMixin
 
 from ..models import CellTower, FiberOptic
 from .filters import CellTowerFilter, FiberOpticFilter
 from .openapi import examples
-from .serializers import CellTowerSerializer, FiberOpticSerializer
+from .serializers import CellTowerCSVSerializer, CellTowerSerializer, FiberOpticSerializer
 
 __all__ = ["CellTowerViewSet", "FiberOpticViewSet"]
 
@@ -39,7 +40,7 @@ __all__ = ["CellTowerViewSet", "FiberOpticViewSet"]
         examples=examples.celltower_retrieve_examples,
     ),
 )
-class CellTowerViewSet(viewsets.ReadOnlyModelViewSet):
+class CellTowerViewSet(CSVDownloadMixin, viewsets.ReadOnlyModelViewSet):
     """
     A ViewSet for managing :class:`infrastructure.models.CellTower` objects.
 
@@ -105,6 +106,20 @@ class CellTowerViewSet(viewsets.ReadOnlyModelViewSet):
 
     #: A default queryset for retrieving `CellTower` objects.
     queryset: QuerySet[CellTower] = CellTower.objects.select_related("administrative_area").order_by("-created_at")
+
+    csv_serializer_class = CellTowerCSVSerializer
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Cell Towers CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Download Cell Towers as CSV file."""
+
+        return self.export_csv(request, *args, **kwargs)
 
 
 @extend_schema_view(
