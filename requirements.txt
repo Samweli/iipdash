@@ -15,6 +15,7 @@ markdown
 django-filter
 django-oauth-toolkit
 drf-spectacular[sidecar]
+django-cors-headers
 
 # TODO: replace with direct "django-vectortiles" eventually
 # PYPI release doesn't include DRF renderers yet
