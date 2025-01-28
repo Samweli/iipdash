@@ -16,6 +16,7 @@ from ..models import Area
 from .filters import AreaFilter
 from .serializers import (
     AreaEducationCSVSerializer,
+    AreaEducationIFONDCSVSerializer,
     AreaEducationIFONDSerializer,
     AreaEducationSerializer,
     AreaSerializer,
@@ -110,33 +111,35 @@ class AreaEducationViewSet(CSVDownloadMixin, AreaViewSet):
         url_name="list-download",
     )
     def download(self, request, *args, **kwargs):
-        """Download Fiber Optic networks as CSV file."""
+        """Download Areas Education Statistics as CSV."""
 
         return self.export_csv(request, *args, **kwargs)
 
 
 @extend_schema_view(
     list=extend_schema(
-        summary=_("Administrative Areas Education and Fiber Distance"),
+        summary=_("Administrative Areas and Education Institutions Fiber Distance"),
         description=_(
-            "This provides a summary number of Education Institutions within specified "
-            "distance to fiber optic nodes within administrative areas."
+            "Summary Education Institutions within specified distance to "
+            "fiber optic nodes within administrative areas."
         ),
     ),
     retrieve=extend_schema(
         summary=_("Administrative Area Education and Fiber Distance"),
         description=_(
-            "This provides a summary number of Education Institutions within specified "
+            "Summary number of Education Institutions within specified "
             "distance to fiber optic nodes within a specific administrative areas."
         ),
     ),
+    download=extend_schema(summary=_("Administrative Area Education and Fiber Distance CSV")),
 )
-class AreaEducationIFONDViewSet(AreaViewSet):
+class AreaEducationIFONDViewSet(CSVDownloadMixin, AreaViewSet):
     """Summarization of Number of Education Institutions within specified distance to a fiber optic node
     within Administrative Areas."""
 
     serializer_class = AreaEducationIFONDSerializer
     ordering_fields = ["name", "created_at", "updated_at"]
+    csv_serializer_class = AreaEducationIFONDCSVSerializer
 
     def clean_distance(self):
         error_message = _("Invalid distance value")
@@ -187,3 +190,17 @@ class AreaEducationIFONDViewSet(AreaViewSet):
         )
 
         return qs
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Areas Education Statistics CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Returns Summary number of Education Institutions within specified "
+        distance to fiber optic nodes within a specific administrative areas as CSV file.
+        """
+
+        return self.export_csv(request, *args, **kwargs)
