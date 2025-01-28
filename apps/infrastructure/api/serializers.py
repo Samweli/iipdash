@@ -6,7 +6,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 from administrative.api.serializers import RelatedAreaSerializer
 from infrastructure.models import CellTower, FiberOptic
 
-__all__ = ["CellTowerSerializer", "FiberOpticSerializer", "CellTowerCSVSerializer"]
+__all__ = ["CellTowerSerializer", "CellTowerCSVSerializer", "FiberOpticSerializer", "FiberOpticCSVSerializer"]
 
 
 class CellTowerSerializer(GeoFeatureModelSerializer):
@@ -38,6 +38,34 @@ class CellTowerSerializer(GeoFeatureModelSerializer):
         exclude: List[str] = ["id"]
 
 
+class CellTowerCSVSerializer(serializers.ModelSerializer):
+
+    country = serializers.CharField(source="administrative_area.country", read_only=True)
+    administrative_area_name = serializers.CharField(source="administrative_area.name", read_only=True)
+    geometry = serializers.CharField()
+
+    class Meta:
+        model = CellTower
+        fields = [
+            "uuid",
+            "network_type",
+            "mcc",
+            "location_is_approximate",
+            "range",
+            "country",
+            "administrative_area_name",
+            "src_created_at",
+            "src_created_at",
+            "created_at",
+            "updated_at",
+            "geometry",
+        ]
+
+        # There might be some performance gains in making fields read only
+        # https://hakibenita.com/django-rest-framework-slow#read-only-modelserializer
+        read_only_fields = fields
+
+
 class FiberOpticSerializer(GeoFeatureModelSerializer):
     """A fiber optic network."""
 
@@ -67,24 +95,21 @@ class FiberOpticSerializer(GeoFeatureModelSerializer):
         exclude: List[str] = ["id"]
 
 
-class CellTowerCSVSerializer(serializers.ModelSerializer):
+class FiberOpticCSVSerializer(serializers.ModelSerializer):
 
     country = serializers.CharField(source="administrative_area.country", read_only=True)
     administrative_area_name = serializers.CharField(source="administrative_area.name", read_only=True)
     geometry = serializers.CharField()
 
     class Meta:
-        model = CellTower
+        model = FiberOptic
         fields = [
             "uuid",
-            "network_type",
-            "mcc",
-            "location_is_approximate",
-            "range",
+            "name",
+            "status",
             "country",
             "administrative_area_name",
-            "src_created_at",
-            "src_created_at",
+            "operator_name",
             "created_at",
             "updated_at",
             "geometry",

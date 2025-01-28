@@ -21,7 +21,7 @@ from core.api.mixins import CSVDownloadMixin
 from ..models import CellTower, FiberOptic
 from .filters import CellTowerFilter, FiberOpticFilter
 from .openapi import examples
-from .serializers import CellTowerCSVSerializer, CellTowerSerializer, FiberOpticSerializer
+from .serializers import CellTowerCSVSerializer, CellTowerSerializer, FiberOpticCSVSerializer, FiberOpticSerializer
 
 __all__ = ["CellTowerViewSet", "FiberOpticViewSet"]
 
@@ -31,14 +31,15 @@ __all__ = ["CellTowerViewSet", "FiberOpticViewSet"]
         description=_(
             "Retrieve a list of cellular towers, with optional searching, filtering, ordering and pagination."
         ),
-        summary=_("List cellular towers"),
+        summary=_("Cellular towers"),
         examples=examples.celltower_list_examples,
     ),
     retrieve=extend_schema(
         description=_("Retrieve details of a specific cellular tower."),
-        summary=_("Retrieve cellular tower"),
+        summary=_("Cellular tower"),
         examples=examples.celltower_retrieve_examples,
     ),
+    download=extend_schema(summary=_("Cell towers CSV")),
 )
 class CellTowerViewSet(CSVDownloadMixin, viewsets.ReadOnlyModelViewSet):
     """
@@ -136,8 +137,9 @@ class CellTowerViewSet(CSVDownloadMixin, viewsets.ReadOnlyModelViewSet):
         examples=examples.fiberoptic_retrieve_examples,
     ),
     tile=extend_schema(summary=_("Fiber optic networks vector tile")),
+    download=extend_schema(summary=_("Fiber optic networks CSV")),
 )
-class FiberOpticViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
+class FiberOpticViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelViewSet):
     """
     A ViewSet for managing :class:`infrastructure.models.FiberOptic` objects.
 
@@ -219,6 +221,8 @@ class FiberOpticViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
         "administrative_area_name",
     )
 
+    csv_serializer_class = FiberOpticCSVSerializer
+
     def get_vector_tile_queryset(self, *args, **kwargs):
         """Returns a queryset used to generate vector tiles."""
 
@@ -231,6 +235,18 @@ class FiberOpticViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
         queryset = self.filter_queryset(queryset)
 
         return queryset
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Fiber Optic networks CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Download Fiber Optic networks as CSV file."""
+
+        return self.export_csv(request, *args, **kwargs)
 
     @action(
         detail=False,
