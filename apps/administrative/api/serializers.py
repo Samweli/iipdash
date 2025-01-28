@@ -5,21 +5,18 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from ..models import Area
 
-__all__ = ["AreaSerializer", "AreaEducationSerializer", "AreaEducationIFONDSerializer", "RelatedAreaSerializer"]
+__all__ = [
+    "BaseAreaEducationSerializer",
+    "AreaSerializer",
+    "AreaEducationSerializer",
+    "AreaEducationCSVSerializer",
+    "AreaEducationIFONDSerializer",
+    "RelatedAreaSerializer",
+]
 
 
-class AreaSerializer(GeoFeatureModelSerializer):
-    """GeoJSON serializer for administrative areas."""
-
-    class Meta:
-        model = Area
-        id_field = "uuid"
-        geo_field = "geometry"
-        exclude = ["id", "depth", "path", "numchild"]
-
-
-class AreaEducationSerializer(GeoFeatureModelSerializer):
-    """GeoJSON serializer for administrative areas."""
+class BaseAreaEducationSerializer(serializers.ModelSerializer):
+    """Base class for Education summary per administrative areas"""
 
     institutions_count = serializers.SerializerMethodField()
     institutions_electrified = serializers.SerializerMethodField()
@@ -28,12 +25,6 @@ class AreaEducationSerializer(GeoFeatureModelSerializer):
     institutions_fiber_10km = serializers.SerializerMethodField()
     institutions_fiber_15km = serializers.SerializerMethodField()
     institutions_fiber_20km = serializers.SerializerMethodField()
-
-    class Meta:
-        model = Area
-        id_field = "uuid"
-        geo_field = "geometry"
-        exclude = ["id", "depth", "path", "numchild"]
 
     def get_institutions_count(self, obj) -> int:
         """Number of education institutions."""
@@ -62,6 +53,56 @@ class AreaEducationSerializer(GeoFeatureModelSerializer):
     def get_institutions_fiber_20km(self, obj) -> int:
         """Number of education institutions with nearest fiber optic within 20km."""
         return obj.institutions_fiber_20km
+
+
+class AreaSerializer(GeoFeatureModelSerializer):
+    """GeoJSON serializer for administrative areas."""
+
+    class Meta:
+        model = Area
+        id_field = "uuid"
+        geo_field = "geometry"
+        exclude = ["id", "depth", "path", "numchild"]
+
+
+class AreaEducationSerializer(BaseAreaEducationSerializer, GeoFeatureModelSerializer):
+    """GeoJSON serializer for education aggregate statistics in administrative areas."""
+
+    class Meta:
+        model = Area
+        id_field = "uuid"
+        geo_field = "geometry"
+        exclude = ["id", "depth", "path", "numchild"]
+
+
+class AreaEducationCSVSerializer(BaseAreaEducationSerializer):
+    """Serializer for administrative areas and education statistics for CSV export."""
+
+    class Meta:
+        model = Area
+        fields = [
+            "uuid",
+            "type_code",
+            "country",
+            "name",
+            "code",
+            "description",
+            "institutions_count",
+            "institutions_electrified",
+            "institutions_fiber_connected",
+            "institutions_electrified_no_fiber",
+            "institutions_fiber_10km",
+            "institutions_fiber_15km",
+            "institutions_fiber_20km",
+            "population",
+            "population_male",
+            "population_female",
+            "population_year",
+            "area",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = fields
 
 
 class AreaEducationIFONDSerializer(GeoFeatureModelSerializer):

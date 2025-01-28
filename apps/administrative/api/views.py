@@ -4,25 +4,33 @@ from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.renderers import JSONRenderer
 from rest_framework_gis.pagination import GeoJsonPagination
 
+from core.api.mixins import CSVDownloadMixin
+
 from ..models import Area
 from .filters import AreaFilter
-from .serializers import AreaEducationIFONDSerializer, AreaEducationSerializer, AreaSerializer
+from .serializers import (
+    AreaEducationCSVSerializer,
+    AreaEducationIFONDSerializer,
+    AreaEducationSerializer,
+    AreaSerializer,
+)
 
 __all__ = ["AreaViewSet", "AreaEducationViewSet", "AreaEducationIFONDViewSet"]
 
 
 @extend_schema_view(
     list=extend_schema(
-        summary=_("List Administrative Areas"),
+        summary=_("Administrative Areas"),
         description=_("Retrieve a list of administrative areas."),
     ),
     retrieve=extend_schema(
-        summary=_("Retrieve an Administrative Area"),
+        summary=_("Administrative Area"),
         description=_("Retrieve details of an administrative area."),
     ),
 )
@@ -45,19 +53,21 @@ class AreaViewSet(viewsets.ReadOnlyModelViewSet):
 
 @extend_schema_view(
     list=extend_schema(
-        summary=_("List Areas and Education Statistics"),
+        summary=_("Administrative Areas Education Statistics"),
         description=_("Retrieve a list of administrative areas with education statistics."),
     ),
     retrieve=extend_schema(
-        summary=_("Retrieve an Area and Education Statistics"),
+        summary=_("Administrative Area Education Statistics"),
         description=_("Retrieve details of an administrative area with education statistics."),
     ),
+    download=extend_schema(summary=_("Administrative Areas Education Statistics CSV")),
 )
-class AreaEducationViewSet(AreaViewSet):
+class AreaEducationViewSet(CSVDownloadMixin, AreaViewSet):
     """Education Summary for an Administrative Area API endpoint."""
 
     serializer_class = AreaEducationSerializer
     ordering_fields = ["name", "created_at", "updated_at"]
+    csv_serializer_class = AreaEducationCSVSerializer
 
     def get_queryset(self):
 
@@ -92,17 +102,33 @@ class AreaEducationViewSet(AreaViewSet):
 
         return qs
 
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Areas Education Statistics CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Download Fiber Optic networks as CSV file."""
+
+        return self.export_csv(request, *args, **kwargs)
+
 
 @extend_schema_view(
     list=extend_schema(
-        summary=_("List Areas and Education Statistics based on fiber distance."),
+        summary=_("Administrative Areas Education and Fiber Distance"),
         description=_(
-            "This provides a summary of number of Education Institutions within specified "
+            "This provides a summary number of Education Institutions within specified "
             "distance to fiber optic nodes within administrative areas."
         ),
     ),
     retrieve=extend_schema(
-        summary=_("Retrieve and Area and Education Statistics based on fiber distance."),
+        summary=_("Administrative Area Education and Fiber Distance"),
+        description=_(
+            "This provides a summary number of Education Institutions within specified "
+            "distance to fiber optic nodes within a specific administrative areas."
+        ),
     ),
 )
 class AreaEducationIFONDViewSet(AreaViewSet):
