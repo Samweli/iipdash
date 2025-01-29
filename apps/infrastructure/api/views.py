@@ -1,6 +1,6 @@
 from typing import List, Type
 
-from django.contrib.gis.db.models import MultiLineStringField
+from django.contrib.gis.db.models import MultiLineStringField, PointField
 from django.db.models import F, QuerySet
 from django.db.models.functions import Cast
 from django.utils.translation import gettext_lazy as _
@@ -31,17 +31,18 @@ __all__ = ["CellTowerViewSet", "FiberOpticViewSet"]
         description=_(
             "Retrieve a list of cellular towers, with optional searching, filtering, ordering and pagination."
         ),
-        summary=_("Cellular towers"),
+        summary=_("Cellular Towers"),
         examples=examples.celltower_list_examples,
     ),
     retrieve=extend_schema(
         description=_("Retrieve details of a specific cellular tower."),
-        summary=_("Cellular tower"),
+        summary=_("Cellular Tower"),
         examples=examples.celltower_retrieve_examples,
     ),
-    download=extend_schema(summary=_("Cell towers CSV")),
+    download=extend_schema(summary=_("Cellular Towers CSV")),
+    tile=extend_schema(summary=_("Cellular Towers Vector Tiles")),
 )
-class CellTowerViewSet(CSVDownloadMixin, viewsets.ReadOnlyModelViewSet):
+class CellTowerViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelViewSet):
     """
     A ViewSet for managing :class:`infrastructure.models.CellTower` objects.
 
@@ -105,10 +106,39 @@ class CellTowerViewSet(CSVDownloadMixin, viewsets.ReadOnlyModelViewSet):
     #: specific point
     distance_filter_convert_meters: bool = True
 
+    csv_serializer_class = CellTowerCSVSerializer
+
+    #: Vector tiles layer ID
+    id = "cell-towers"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "uuid",
+        "network_type",
+        "mcc",
+        "location_is_approximate",
+        "range",
+        "country",
+        "administrative_area_uuid",
+        "administrative_area_name",
+    )
+
     #: A default queryset for retrieving `CellTower` objects.
     queryset: QuerySet[CellTower] = CellTower.objects.select_related("administrative_area").order_by("-created_at")
 
-    csv_serializer_class = CellTowerCSVSerializer
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+
+        queryset = self.get_queryset().annotate(
+            geom=Cast("geometry", PointField()),
+            country=F("administrative_area__country"),
+            administrative_area_uuid=F("administrative_area__uuid"),
+            administrative_area_name=F("administrative_area__name"),
+        )
+
+        queryset = self.filter_queryset(queryset)
+
+        return queryset
 
     @action(
         detail=False,
@@ -122,22 +152,33 @@ class CellTowerViewSet(CSVDownloadMixin, viewsets.ReadOnlyModelViewSet):
 
         return self.export_csv(request, *args, **kwargs)
 
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for cell towers"""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
+
 
 @extend_schema_view(
     list=extend_schema(
         description=_(
             "Retrieve a list of fiber optics networks, with optional searching, filtering, ordering and pagination."
         ),
-        summary=_("Fiber optic networks"),
+        summary=_("Fiber Optic Networks"),
         examples=examples.fiberoptic_list_examples,
     ),
     retrieve=extend_schema(
         description=_("Retrieve details of a specific fiber optic network."),
-        summary=_("Fiber optic network"),
+        summary=_("Fiber Optic Network"),
         examples=examples.fiberoptic_retrieve_examples,
     ),
-    tile=extend_schema(summary=_("Fiber optic networks vector tile")),
-    download=extend_schema(summary=_("Fiber optic networks CSV")),
+    tile=extend_schema(summary=_("Fiber Optic Networks Vector Tiles")),
+    download=extend_schema(summary=_("Fiber Optic Networks CSV")),
 )
 class FiberOpticViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelViewSet):
     """
@@ -208,7 +249,7 @@ class FiberOpticViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelVie
     queryset: QuerySet[FiberOptic] = FiberOptic.objects.select_related("administrative_area").order_by("-created_at")
 
     #: Vector tiles layer ID
-    id = "fiber-optic"
+    id = "fiber-optics"
 
     #: A tuple of fields to be included in vector tiles data.
     tile_fields = (
