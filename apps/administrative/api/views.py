@@ -1,4 +1,6 @@
+from django.contrib.gis.db.models import MultiPolygonField
 from django.db.models import Count, Q
+from django.db.models.functions import Cast
 from django.utils.translation import gettext_lazy as _
 
 from django_filters.rest_framework import DjangoFilterBackend
@@ -8,7 +10,10 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 from rest_framework_gis.pagination import GeoJsonPagination
+from vectortiles.backends.postgis import VectorLayer
+from vectortiles.rest_framework.renderers import MVTRenderer
 
 from core.api.mixins import CSVDownloadMixin
 
@@ -62,13 +67,39 @@ class AreaViewSet(viewsets.ReadOnlyModelViewSet):
         description=_("Retrieve details of an administrative area with education statistics."),
     ),
     download=extend_schema(summary=_("Administrative Areas Education Statistics CSV")),
+    tile=extend_schema(summary=_("Administrative Areas Education Statistics Vector Tiles")),
 )
-class AreaEducationViewSet(CSVDownloadMixin, AreaViewSet):
+class AreaEducationViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
     """Education Summary for an Administrative Area API endpoint."""
 
     serializer_class = AreaEducationSerializer
     ordering_fields = ["name", "created_at", "updated_at"]
     csv_serializer_class = AreaEducationCSVSerializer
+
+    #: Vector tiles layer ID
+    id = "areas-education"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "uuid",
+        "type_code",
+        "country",
+        "name",
+        "code",
+        "description",
+        "institutions_count",
+        "institutions_electrified",
+        "institutions_fiber_connected",
+        "institutions_electrified_no_fiber",
+        "institutions_fiber_10km",
+        "institutions_fiber_15km",
+        "institutions_fiber_20km",
+        "population",
+        "population_male",
+        "population_female",
+        "population_year",
+        "area",
+    )
 
     def get_queryset(self):
 
@@ -103,6 +134,14 @@ class AreaEducationViewSet(CSVDownloadMixin, AreaViewSet):
 
         return qs
 
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+
+        queryset = self.get_queryset().annotate(geom=Cast("geometry", MultiPolygonField())).order_by()
+        queryset = self.filter_queryset(queryset)
+
+        return queryset
+
     @action(
         detail=False,
         methods=["get"],
@@ -114,6 +153,17 @@ class AreaEducationViewSet(CSVDownloadMixin, AreaViewSet):
         """Download Areas Education Statistics as CSV."""
 
         return self.export_csv(request, *args, **kwargs)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for area education statistics"""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
 
 
 @extend_schema_view(
