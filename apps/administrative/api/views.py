@@ -162,7 +162,7 @@ class AreaEducationViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
         url_name="tile",
     )
     def tile(self, request, *args, **kwargs):
-        """Provides Mapbox Vector Tiles for area education statistics"""
+        """Provides Mapbox Vector Tiles for administrative areas with education statistics"""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
 
 
@@ -182,14 +182,32 @@ class AreaEducationViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
         ),
     ),
     download=extend_schema(summary=_("Administrative Area Education and Fiber Distance CSV")),
+    tile=extend_schema(summary=_("Administrative Area Education and Fiber Distance Vector Tiles")),
 )
-class AreaEducationIFONDViewSet(CSVDownloadMixin, AreaViewSet):
+class AreaEducationIFONDViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
     """Summarization of Number of Education Institutions within specified distance to a fiber optic node
     within Administrative Areas."""
 
     serializer_class = AreaEducationIFONDSerializer
     ordering_fields = ["name", "created_at", "updated_at"]
     csv_serializer_class = AreaEducationIFONDCSVSerializer
+
+    #: Vector tiles layer ID
+    id = "areas-education-ifond"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "uuid",
+        "type_code",
+        "country",
+        "name",
+        "code",
+        "description",
+        "institutions_count",
+        "institutions_electrified",
+        "institutions_fiber_connected",
+        "institutions_electrified_no_fiber",
+    )
 
     def clean_distance(self):
         error_message = _("Invalid distance value")
@@ -241,6 +259,14 @@ class AreaEducationIFONDViewSet(CSVDownloadMixin, AreaViewSet):
 
         return qs
 
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+
+        queryset = self.get_queryset().annotate(geom=Cast("geometry", MultiPolygonField())).order_by()
+        queryset = self.filter_queryset(queryset)
+
+        return queryset
+
     @action(
         detail=False,
         methods=["get"],
@@ -254,3 +280,15 @@ class AreaEducationIFONDViewSet(CSVDownloadMixin, AreaViewSet):
         """
 
         return self.export_csv(request, *args, **kwargs)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for administrative areas with number of education institutions
+        within the specified distance."""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
