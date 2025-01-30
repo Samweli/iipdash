@@ -32,12 +32,12 @@ __all__ = ["CellTowerViewSet", "FiberOpticViewSet"]
             "Retrieve a list of cellular towers, with optional searching, filtering, ordering and pagination."
         ),
         summary=_("Cellular Towers"),
-        examples=examples.celltower_list_examples,
+        examples=examples.cell_tower_list_examples,
     ),
     retrieve=extend_schema(
         description=_("Retrieve details of a specific cellular tower."),
         summary=_("Cellular Tower"),
-        examples=examples.celltower_retrieve_examples,
+        examples=examples.cell_tower_retrieve_examples,
     ),
     download=extend_schema(summary=_("Cellular Towers CSV")),
     tile=extend_schema(summary=_("Cellular Towers Vector Tiles")),
@@ -170,12 +170,12 @@ class CellTowerViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelView
             "Retrieve a list of fiber optics networks, with optional searching, filtering, ordering and pagination."
         ),
         summary=_("Fiber Optic Networks"),
-        examples=examples.fiberoptic_list_examples,
+        examples=examples.fiber_optic_list_examples,
     ),
     retrieve=extend_schema(
         description=_("Retrieve details of a specific fiber optic network."),
         summary=_("Fiber Optic Network"),
-        examples=examples.fiberoptic_retrieve_examples,
+        examples=examples.fiber_optic_retrieve_examples,
     ),
     tile=extend_schema(summary=_("Fiber Optic Networks Vector Tiles")),
     download=extend_schema(summary=_("Fiber Optic Networks CSV")),

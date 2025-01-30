@@ -5,14 +5,14 @@ This module defines reusable OpenAPI examples for documenting the responses of
 cell towers API endpoints using `drf-spectacular`.
 
 Attributes:
-    celltower_response_only (Dict[str, Any]):
+    cell_tower_response_only (Dict[str, Any]):
         A detailed representation of a single cell tower in GeoJSON format.
 
-    celltower_list_response_only (OpenApiExample):
+    cell_tower_list_response_only (OpenApiExample):
         An OpenAPI example for the list endpoint response in GeoJSON
         FeatureCollection format.
 
-    celltower_retrieve_response_only (OpenApiExample):
+    cell_tower_retrieve_response_only (OpenApiExample):
         An OpenAPI example for the retrieve endpoint response in GeoJSON
         Feature format.
 
@@ -25,7 +25,7 @@ from typing import Any, Dict
 from drf_spectacular.utils import OpenApiExample
 
 #: A detailed GeoJSON representation of a single cell tower.
-celltower_response_only: Dict[str, Any] = {
+cell_tower_response_only: Dict[str, Any] = {
     "id": "a5137eb2-c867-42c1-9cda-0809f3306547",
     "type": "Feature",
     "geometry": {"type": "Point", "coordinates": [28.330438, -15.394306]},
@@ -50,18 +50,18 @@ celltower_response_only: Dict[str, Any] = {
 }
 
 #: OpenAPI example for the list endpoint response (FeatureCollection).
-celltower_list_response_only: OpenApiExample = OpenApiExample(
+cell_tower_list_response_only: OpenApiExample = OpenApiExample(
     name="Successful Response",
     value={
         "type": "FeatureCollection",
-        "features": [celltower_response_only],
+        "features": [cell_tower_response_only],
     },
     response_only=True,
 )
 
 #: OpenAPI example for the retrieve endpoint response (single Feature).
-celltower_retrieve_response_only: OpenApiExample = OpenApiExample(
+cell_tower_retrieve_response_only: OpenApiExample = OpenApiExample(
     name="Successful Response",
-    value=celltower_response_only,
+    value=cell_tower_response_only,
     response_only=True,
 )

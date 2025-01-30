@@ -5,14 +5,14 @@ This module defines reusable OpenAPI examples for documenting the responses of
 fiber optics API endpoints using `drf-spectacular`.
 
 Attributes:
-    fiberoptic_response_only (Dict[str, Any]):
+    fiber_optic_response_only (Dict[str, Any]):
         A detailed representation of a single fiber optic in GeoJSON format.
 
-    fiberoptic_list_response_only (OpenApiExample):
+    fiber_optic_list_response_only (OpenApiExample):
         An OpenAPI example for the list endpoint response in GeoJSON
         FeatureCollection format.
 
-    fiberoptic_retrieve_response_only (OpenApiExample):
+    fiber_optic_retrieve_response_only (OpenApiExample):
         An OpenAPI example for the retrieve endpoint response in GeoJSON
         Feature format.
 
@@ -25,7 +25,7 @@ from typing import Any, Dict
 from drf_spectacular.utils import OpenApiExample
 
 #: A detailed GeoJSON representation of a single fiber optic.
-fiberoptic_response_only: Dict[str, Any] = {
+fiber_optic_response_only: Dict[str, Any] = {
     "id": "f29ea7c2-9755-464f-8d18-88a93fa59185",
     "type": "Feature",
     "geometry": {
@@ -97,21 +97,21 @@ fiberoptic_response_only: Dict[str, Any] = {
 
 
 #: OpenAPI example for the list endpoint response (FeatureCollection).
-fiberoptic_list_response_only: OpenApiExample = OpenApiExample(
+fiber_optic_list_response_only: OpenApiExample = OpenApiExample(
     name="Successful Response",
     value={
         "type": "FeatureCollection",
         "count": 123,
-        "next": "/api/infrastructure/fiberoptics/?page=3",
-        "previous": "/api/infrastructure/fiberoptics/?page=1",
-        "features": [fiberoptic_response_only],
+        "next": "/api/infrastructure/fiber-optics/?page=3",
+        "previous": "/api/infrastructure/fiber-optics/?page=1",
+        "features": [fiber_optic_response_only],
     },
     response_only=True,
 )
 
 #: OpenAPI example for the retrieve endpoint response (single Feature).
-fiberoptic_retrieve_response_only: OpenApiExample = OpenApiExample(
+fiber_optic_retrieve_response_only: OpenApiExample = OpenApiExample(
     name="Successful Response",
-    value=fiberoptic_response_only,
+    value=fiber_optic_response_only,
     response_only=True,
 )

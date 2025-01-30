@@ -18,16 +18,16 @@ class CellTowerFilter(filters.FilterSet):
 
     Examples:
         Filtering by network type (exact match, case-insensitive):
-            `/api/infrastructure/celltowers/?network_type=GSM`
+            `/api/infrastructure/cell-towers/?network_type=GSM`
 
         Filtering by mobile country code (exact match):
-            `/api/infrastructure/celltowers/?mcc=645`
+            `/api/infrastructure/cell-towers/?mcc=645`
 
         Filter by estimated coverage range (greater than or equal):
-            `/api/infrastructure/celltowers/?range_gte=5216`
+            `/api/infrastructure/cell-towers/?range_gte=5216`
 
         Filter by estimated coverage range (less than or equal):
-            `/api/infrastructure/celltowers/?range_lte=5216`
+            `/api/infrastructure/cell-towers/?range_lte=5216`
 
     Attributes:
         network_type (:class:`django_filters.rest_framework.filters.CharFilter`):
@@ -100,10 +100,10 @@ class FiberOpticFilter(filters.FilterSet):
 
     Examples:
         Filtering by country (exact match, case-insensitive):
-            `/api/infrastructure/fiberoptics/?country=MW`
+            `/api/infrastructure/fiber-optics/?country=MW`
 
         Filtering by name (partial match, case-insensitive):
-            `/api/infrastructure/fiberoptics/?name=fiber`
+            `/api/infrastructure/fiber-optics/?name=fiber`
 
     Attributes:
         country (:class:`django_filters.rest_framework.filters.CharFilter`):
