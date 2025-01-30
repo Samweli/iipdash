@@ -100,7 +100,19 @@ class AreaEducationSerializer(BaseAreaEducationSerializer, GeoFeatureModelSerial
         model = Area
         id_field = "uuid"
         geo_field = "geometry"
-        exclude = ["id", "depth", "path", "numchild"]
+        exclude = [
+            "id",
+            "depth",
+            "path",
+            "numchild",
+            "population",
+            "population_male",
+            "population_female",
+            "population_year",
+            "area",
+            "created_at",
+            "updated_at",
+        ]
 
 
 class AreaEducationCSVSerializer(BaseAreaEducationSerializer):
@@ -122,13 +134,6 @@ class AreaEducationCSVSerializer(BaseAreaEducationSerializer):
             "institutions_fiber_10km",
             "institutions_fiber_15km",
             "institutions_fiber_20km",
-            "population",
-            "population_male",
-            "population_female",
-            "population_year",
-            "area",
-            "created_at",
-            "updated_at",
         ]
         read_only_fields = fields
 
@@ -141,7 +146,19 @@ class AreaEducationIFONDSerializer(BaseAreaEducationIFONDSerializer, GeoFeatureM
         model = Area
         id_field = "uuid"
         geo_field = "geometry"
-        exclude = ["id", "depth", "path", "numchild"]
+        exclude = [
+            "id",
+            "depth",
+            "path",
+            "numchild",
+            "population",
+            "population_male",
+            "population_female",
+            "population_year",
+            "area",
+            "created_at",
+            "updated_at",
+        ]
 
 
 class AreaEducationIFONDCSVSerializer(BaseAreaEducationSerializer):
@@ -161,8 +178,6 @@ class AreaEducationIFONDCSVSerializer(BaseAreaEducationSerializer):
             "institutions_electrified",
             "institutions_fiber_connected",
             "institutions_electrified_no_fiber",
-            "created_at",
-            "updated_at",
         ]
         read_only_fields = fields
 

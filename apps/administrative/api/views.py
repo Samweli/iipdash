@@ -94,11 +94,6 @@ class AreaEducationViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
         "institutions_fiber_10km",
         "institutions_fiber_15km",
         "institutions_fiber_20km",
-        "population",
-        "population_male",
-        "population_female",
-        "population_year",
-        "area",
     )
 
     def get_queryset(self):
