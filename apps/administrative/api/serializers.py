@@ -20,67 +20,43 @@ __all__ = [
 class BaseAreaEducationSerializer(serializers.ModelSerializer):
     """Base class for Education summary per administrative areas"""
 
-    institutions_count = serializers.SerializerMethodField()
-    institutions_electrified = serializers.SerializerMethodField()
-    institutions_fiber_connected = serializers.SerializerMethodField()
-    institutions_electrified_no_fiber = serializers.SerializerMethodField()
-    institutions_fiber_10km = serializers.SerializerMethodField()
-    institutions_fiber_15km = serializers.SerializerMethodField()
-    institutions_fiber_20km = serializers.SerializerMethodField()
+    #: Number of electrified education institutions.
+    institutions_count = serializers.IntegerField(read_only=True)
 
-    def get_institutions_count(self, obj) -> int:
-        """Number of education institutions."""
-        return obj.institutions_count
+    #: Number of electrified education institutions.
+    institutions_electrified = serializers.IntegerField(read_only=True)
 
-    def get_institutions_electrified(self, obj) -> int:
-        """Number of electrified education institutions"""
-        return obj.institutions_electrified
+    #: Number of education institutions connected to fiber optic.
+    institutions_fiber_connected = serializers.IntegerField(read_only=True)
 
-    def get_institutions_fiber_connected(self, obj) -> int:
-        """Number of education institutions connected to fiber optic."""
-        return obj.institutions_fiber_connected
+    #: Number of electrified education institutions not connected to fiber optic
+    institutions_electrified_no_fiber = serializers.IntegerField(read_only=True)
 
-    def get_institutions_electrified_no_fiber(self, obj) -> int:
-        """Number of electrified education institutions not connected to fiber optic."""
-        return obj.institutions_electrified_no_fiber
+    #: Number of education institutions with nearest fiber optic within 10km.
+    institutions_fiber_10km = serializers.IntegerField(read_only=True)
 
-    def get_institutions_fiber_10km(self, obj) -> int:
-        """Number of education institutions with nearest fiber optic within 10km."""
-        return obj.institutions_fiber_10km
+    #: Number of education institutions with nearest fiber optic within 15km.
+    institutions_fiber_15km = serializers.IntegerField(read_only=True)
 
-    def get_institutions_fiber_15km(self, obj) -> int:
-        """Number of education institutions with nearest fiber optic within 15km."""
-        return obj.institutions_fiber_15km
-
-    def get_institutions_fiber_20km(self, obj) -> int:
-        """Number of education institutions with nearest fiber optic within 20km."""
-        return obj.institutions_fiber_20km
+    #: Number of education institutions with nearest fiber optic within 20km.
+    institutions_fiber_20km = serializers.IntegerField(read_only=True)
 
 
 class BaseAreaEducationIFONDSerializer(serializers.ModelSerializer):
     """Base serializer clas for summary education institutions statistics per administrative areas based on
     Fiber Optic Node/Network Distance."""
 
-    institutions_count = serializers.SerializerMethodField()
-    institutions_electrified = serializers.SerializerMethodField()
-    institutions_fiber_connected = serializers.SerializerMethodField()
-    institutions_electrified_no_fiber = serializers.SerializerMethodField()
+    #: Number of electrified education institutions.
+    institutions_count = serializers.IntegerField(read_only=True)
 
-    def get_institutions_count(self, obj) -> int:
-        """Number of education institutions."""
-        return obj.institutions_count
+    #: Number of electrified education institutions.
+    institutions_electrified = serializers.IntegerField(read_only=True)
 
-    def get_institutions_electrified(self, obj) -> int:
-        """Number of electrified education institutions"""
-        return obj.institutions_electrified
+    #: Number of education institutions connected to fiber optic.
+    institutions_fiber_connected = serializers.IntegerField(read_only=True)
 
-    def get_institutions_fiber_connected(self, obj) -> int:
-        """Number of education institutions connected to fiber optic."""
-        return obj.institutions_fiber_connected
-
-    def get_institutions_electrified_no_fiber(self, obj) -> int:
-        """Number of electrified education institutions not connected to fiber optic."""
-        return obj.institutions_electrified_no_fiber
+    #: Number of electrified education institutions not connected to fiber optic
+    institutions_electrified_no_fiber = serializers.IntegerField(read_only=True)
 
 
 class AreaSerializer(GeoFeatureModelSerializer):
