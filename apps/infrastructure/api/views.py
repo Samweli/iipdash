@@ -220,11 +220,11 @@ class FiberOpticViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelVie
     #: A list of fields that are used for to apply full-text search
     #: via query parameters to the queryset of `FiberOptic` objects
     #: (i.e., `?q=<term>`).
-    search_fields: List[str] = ["country", "name"]
+    search_fields: List[str] = ["name"]
 
     #: A list of fields that are used for ordering the queryset of
     #: `FiberOptic` objects (e.g., `?ordering=<field>`).
-    ordering_fields: List[str] = ["country", "name", "created_at", "updated_at"]
+    ordering_fields: List[str] = ["name", "created_at", "updated_at"]
 
     #: A `FiberOptic` geometry field used in performing bounding box filtering
     #: on the queryset of `FiberOptic` objects via query parameters
@@ -269,6 +269,7 @@ class FiberOpticViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelVie
 
         queryset = self.get_queryset().annotate(
             geom=Cast("geometry", MultiLineStringField()),
+            country=F("administrative_area__country"),
             administrative_area_uuid=F("administrative_area__uuid"),
             administrative_area_name=F("administrative_area__name"),
         )

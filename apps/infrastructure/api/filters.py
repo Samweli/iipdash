@@ -106,19 +106,10 @@ class FiberOpticFilter(filters.FilterSet):
             `/api/infrastructure/fiber-optics/?name=fiber`
 
     Attributes:
-        country (:class:`django_filters.rest_framework.filters.CharFilter`):
-            A filter for matching the `country` field of the `FiberOptic` model
-            using an exact, case-insensitive comparison.
-
         name (:class:`django_filters.rest_framework.filters.CharFilter`):
             A filter for matching the `name` field of the `FiberOptic` model
             using a case-insensitive partial match.
     """
-
-    #: Filter by country (exact match, case-insensitive)
-    country: filters.CharFilter = filters.CharFilter(
-        field_name="country", lookup_expr="iexact", help_text=_("Filter by country.")
-    )
 
     #: Filter by name (partial match, case-insensitive)
     name: filters.CharFilter = filters.CharFilter(
@@ -141,4 +132,4 @@ class FiberOpticFilter(filters.FilterSet):
         """
 
         model: Type[FiberOptic] = FiberOptic
-        fields: List[str] = ["country", "name", "status"]
+        fields: List[str] = ["name", "status"]

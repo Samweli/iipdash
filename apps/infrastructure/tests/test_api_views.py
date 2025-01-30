@@ -138,14 +138,14 @@ class FiberOpticAPITestCase(TestCase):
     def test_list_fiber_optics_searching(self) -> None:
         """Test that the `list` endpoint with search filters returns the correct feature collection of `FiberOptic`."""
         url = reverse("api:fiber-optic-list")
-        response = self.client.get(url, {_search_param: self.fiber_optic.country.code})
+        response = self.client.get(url, {_search_param: self.fiber_optic.name})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertAreFiberOptics(response.data)
 
     def test_list_fiber_optics_ordering(self) -> None:
         """Test that the `list` endpoint with ordering filters returns the correct feature collection of `FiberOptic`."""  # noqa
         url = reverse("api:fiber-optic-list")
-        response = self.client.get(url, {_ordering_param: "country"})
+        response = self.client.get(url, {_ordering_param: "name"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertAreFiberOptics(response.data)
 
@@ -159,7 +159,6 @@ class FiberOpticAPITestCase(TestCase):
     def test_list_fiber_optics_filtering(self) -> None:
         """Test that the `list` endpoint with field filters returns the correct feature collection of `FiberOptic`."""
         test_cases = [
-            {"country": self.fiber_optic.country.code},
             {"name": self.fiber_optic.name},
         ]
         for test_case in test_cases:
@@ -207,7 +206,6 @@ class FiberOpticAPITestCase(TestCase):
     def assertIsFiberOptic(self, data: Dict[str, Any]) -> None:
         """Assert `data` is a correct `FiberOptic` feature."""
         self.assertIsNotNone(data["id"])
-        self.assertIsNotNone(data["properties"]["country"])
         self.assertIsNotNone(data["properties"]["name"])
         self.assertIsNotNone(data["properties"]["description"])
         self.assertIsNotNone(data["geometry"])
