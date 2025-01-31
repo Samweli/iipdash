@@ -29,28 +29,28 @@ class CellTowerAPITestCase(TestCase):
 
     def test_list_cell_towers(self) -> None:
         """Test that the `list` endpoint returns the correct feature collection of `CellTower`."""
-        url = reverse("api:celltower-list")
+        url = reverse("api:cell-tower-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertAreCellTowers(response.data)
 
     def test_list_cell_towers_searching(self) -> None:
         """Test that the `list` endpoint with search filters returns the correct feature collection of `CellTower`."""
-        url = reverse("api:celltower-list")
+        url = reverse("api:cell-tower-list")
         response = self.client.get(url, {_search_param: self.cell_tower.network_type})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertAreCellTowers(response.data)
 
     def test_list_cell_towers_ordering(self) -> None:
         """Test that the `list` endpoint with ordering filters returns the correct feature collection of `CellTower`."""  # noqa
-        url = reverse("api:celltower-list")
+        url = reverse("api:cell-tower-list")
         response = self.client.get(url, {_ordering_param: "network_type"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertAreCellTowers(response.data)
 
     def test_list_cell_towers_pagination(self) -> None:
         """Test that the `list` endpoint with pagination filters returns the correct feature collection of `CellTower`."""  # noqa
-        url = reverse("api:celltower-list")
+        url = reverse("api:cell-tower-list")
         response = self.client.get(url, {"page": 1, "page_size": 10})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertAreCellTowers(response.data)
@@ -66,7 +66,7 @@ class CellTowerAPITestCase(TestCase):
         ]
         for test_case in test_cases:
             with self.subTest(**test_case):
-                url = reverse("api:celltower-list")
+                url = reverse("api:cell-tower-list")
                 response = self.client.get(url, test_case)
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 self.assertAreCellTowers(response.data)
@@ -80,21 +80,21 @@ class CellTowerAPITestCase(TestCase):
         ]
         for test_case in test_cases:
             with self.subTest(**test_case):
-                url = reverse("api:celltower-list")
+                url = reverse("api:cell-tower-list")
                 response = self.client.get(url, test_case)
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 self.assertAreCellTowers(response.data)
 
     def test_retrieve_cell_tower(self) -> None:
         """Test that the `retrieve` endpoint returns the correct `CellTower` feature."""
-        url = reverse("api:celltower-detail", kwargs={"uuid": self.cell_tower.uuid})
+        url = reverse("api:cell-tower-detail", kwargs={"uuid": self.cell_tower.uuid})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsCellTower(response.data)
 
     def test_retrieve_cell_tower_not_found(self) -> None:
         """Test that the `retrieve` endpoint returns 404 error, if `CellTower` does not exist."""
-        url = reverse("api:celltower-detail", kwargs={"uuid": uuid.uuid4()})
+        url = reverse("api:cell-tower-detail", kwargs={"uuid": uuid.uuid4()})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -130,28 +130,28 @@ class FiberOpticAPITestCase(TestCase):
 
     def test_list_fiber_optics(self) -> None:
         """Test that the `list` endpoint returns the correct feature collection of `FiberOptic`."""
-        url = reverse("api:fiberoptic-list")
+        url = reverse("api:fiber-optic-list")
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertAreFiberOptics(response.data)
 
     def test_list_fiber_optics_searching(self) -> None:
         """Test that the `list` endpoint with search filters returns the correct feature collection of `FiberOptic`."""
-        url = reverse("api:fiberoptic-list")
-        response = self.client.get(url, {_search_param: self.fiber_optic.country.code})
+        url = reverse("api:fiber-optic-list")
+        response = self.client.get(url, {_search_param: self.fiber_optic.name})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertAreFiberOptics(response.data)
 
     def test_list_fiber_optics_ordering(self) -> None:
         """Test that the `list` endpoint with ordering filters returns the correct feature collection of `FiberOptic`."""  # noqa
-        url = reverse("api:fiberoptic-list")
-        response = self.client.get(url, {_ordering_param: "country"})
+        url = reverse("api:fiber-optic-list")
+        response = self.client.get(url, {_ordering_param: "name"})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertAreFiberOptics(response.data)
 
     def test_list_fiber_optics_pagination(self) -> None:
         """Test that the `list` endpoint with pagination filters returns the correct feature collection of `FiberOptic`."""  # noqa
-        url = reverse("api:fiberoptic-list")
+        url = reverse("api:fiber-optic-list")
         response = self.client.get(url, {"page": 1, "page_size": 10})
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertAreFiberOptics(response.data)
@@ -159,12 +159,11 @@ class FiberOpticAPITestCase(TestCase):
     def test_list_fiber_optics_filtering(self) -> None:
         """Test that the `list` endpoint with field filters returns the correct feature collection of `FiberOptic`."""
         test_cases = [
-            {"country": self.fiber_optic.country.code},
             {"name": self.fiber_optic.name},
         ]
         for test_case in test_cases:
             with self.subTest(**test_case):
-                url = reverse("api:fiberoptic-list")
+                url = reverse("api:fiber-optic-list")
                 response = self.client.get(url, test_case)
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 self.assertAreFiberOptics(response.data)
@@ -181,21 +180,21 @@ class FiberOpticAPITestCase(TestCase):
         ]
         for test_case in test_cases:
             with self.subTest(**test_case):
-                url = reverse("api:fiberoptic-list")
+                url = reverse("api:fiber-optic-list")
                 response = self.client.get(url, test_case)
                 self.assertEqual(response.status_code, status.HTTP_200_OK)
                 self.assertAreFiberOptics(response.data)
 
     def test_retrieve_fiber_optic(self) -> None:
         """Test that the `retrieve` endpoint returns the correct `FiberOptic` feature."""
-        url = reverse("api:fiberoptic-detail", kwargs={"uuid": self.fiber_optic.uuid})
+        url = reverse("api:fiber-optic-detail", kwargs={"uuid": self.fiber_optic.uuid})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsFiberOptic(response.data)
 
     def test_retrieve_cell_tower_not_found(self) -> None:
         """Test that the `retrieve` endpoint returns 404 error, if `FiberOptic` does not exist."""
-        url = reverse("api:fiberoptic-detail", kwargs={"uuid": uuid.uuid4()})
+        url = reverse("api:fiber-optic-detail", kwargs={"uuid": uuid.uuid4()})
         response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
@@ -207,7 +206,6 @@ class FiberOpticAPITestCase(TestCase):
     def assertIsFiberOptic(self, data: Dict[str, Any]) -> None:
         """Assert `data` is a correct `FiberOptic` feature."""
         self.assertIsNotNone(data["id"])
-        self.assertIsNotNone(data["properties"]["country"])
         self.assertIsNotNone(data["properties"]["name"])
         self.assertIsNotNone(data["properties"]["description"])
         self.assertIsNotNone(data["geometry"])

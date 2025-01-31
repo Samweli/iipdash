@@ -1,20 +1,27 @@
 from typing import List, Type
 
-from django.db.models import QuerySet
+from django.contrib.gis.db.models import MultiLineStringField, PointField
+from django.db.models import F, QuerySet
+from django.db.models.functions import Cast
 from django.utils.translation import gettext_lazy as _
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
+from rest_framework.response import Response
 from rest_framework_gis.pagination import GeoJsonPagination
+from vectortiles.backends.postgis import VectorLayer
+from vectortiles.rest_framework.renderers import MVTRenderer
 
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
+from core.api.mixins import CSVDownloadMixin
 
 from ..models import CellTower, FiberOptic
 from .filters import CellTowerFilter, FiberOpticFilter
 from .openapi import examples
-from .serializers import CellTowerSerializer, FiberOpticSerializer
+from .serializers import CellTowerCSVSerializer, CellTowerSerializer, FiberOpticCSVSerializer, FiberOpticSerializer
 
 __all__ = ["CellTowerViewSet", "FiberOpticViewSet"]
 
@@ -24,16 +31,18 @@ __all__ = ["CellTowerViewSet", "FiberOpticViewSet"]
         description=_(
             "Retrieve a list of cellular towers, with optional searching, filtering, ordering and pagination."
         ),
-        summary=_("List cellular towers"),
-        examples=examples.celltower_list_examples,
+        summary=_("Cellular Towers"),
+        examples=examples.cell_tower_list_examples,
     ),
     retrieve=extend_schema(
         description=_("Retrieve details of a specific cellular tower."),
-        summary=_("Retrieve cellular tower"),
-        examples=examples.celltower_retrieve_examples,
+        summary=_("Cellular Tower"),
+        examples=examples.cell_tower_retrieve_examples,
     ),
+    download=extend_schema(summary=_("Cellular Towers CSV")),
+    tile=extend_schema(summary=_("Cellular Towers Vector Tiles")),
 )
-class CellTowerViewSet(viewsets.ReadOnlyModelViewSet):
+class CellTowerViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelViewSet):
     """
     A ViewSet for managing :class:`infrastructure.models.CellTower` objects.
 
@@ -97,27 +106,86 @@ class CellTowerViewSet(viewsets.ReadOnlyModelViewSet):
     #: specific point
     distance_filter_convert_meters: bool = True
 
+    csv_serializer_class = CellTowerCSVSerializer
+
+    #: Vector tiles layer ID
+    id = "cell-towers"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "uuid",
+        "network_type",
+        "mcc",
+        "location_is_approximate",
+        "range",
+        "country",
+        "administrative_area_uuid",
+        "administrative_area_name",
+    )
+
     #: A default queryset for retrieving `CellTower` objects.
     queryset: QuerySet[CellTower] = CellTower.objects.select_related("administrative_area").order_by("-created_at")
+
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+
+        queryset = self.get_queryset().annotate(
+            geom=Cast("geometry", PointField()),
+            country=F("administrative_area__country"),
+            administrative_area_uuid=F("administrative_area__uuid"),
+            administrative_area_name=F("administrative_area__name"),
+        )
+
+        queryset = self.filter_queryset(queryset)
+
+        return queryset
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Cell Towers CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Download Cell Towers as CSV file."""
+
+        return self.export_csv(request, *args, **kwargs)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for cell towers"""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
 
 
 @extend_schema_view(
     list=extend_schema(
-        description=_("Retrieve a list of fiber optics, with optional searching, filtering, ordering and pagination."),
-        summary=_("List fiber optics"),
-        examples=examples.fiberoptic_list_examples,
+        description=_(
+            "Retrieve a list of fiber optics networks, with optional searching, filtering, ordering and pagination."
+        ),
+        summary=_("Fiber Optic Networks"),
+        examples=examples.fiber_optic_list_examples,
     ),
     retrieve=extend_schema(
-        description=_("Retrieve details of a specific fiber optic."),
-        summary=_("Retrieve fiber optic"),
-        examples=examples.fiberoptic_retrieve_examples,
+        description=_("Retrieve details of a specific fiber optic network."),
+        summary=_("Fiber Optic Network"),
+        examples=examples.fiber_optic_retrieve_examples,
     ),
+    tile=extend_schema(summary=_("Fiber Optic Networks Vector Tiles")),
+    download=extend_schema(summary=_("Fiber Optic Networks CSV")),
 )
-class FiberOpticViewSet(viewsets.ReadOnlyModelViewSet):
+class FiberOpticViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelViewSet):
     """
     A ViewSet for managing :class:`infrastructure.models.FiberOptic` objects.
 
     This viewset provides endpoints for:
+
     - Listing all fiber optics (`list` endpoint).
     - Retrieving a specific fiber optic by UUID (`retrieve` endpoint).
     """
@@ -152,11 +220,11 @@ class FiberOpticViewSet(viewsets.ReadOnlyModelViewSet):
     #: A list of fields that are used for to apply full-text search
     #: via query parameters to the queryset of `FiberOptic` objects
     #: (i.e., `?q=<term>`).
-    search_fields: List[str] = ["country", "name"]
+    search_fields: List[str] = ["name"]
 
     #: A list of fields that are used for ordering the queryset of
     #: `FiberOptic` objects (e.g., `?ordering=<field>`).
-    ordering_fields: List[str] = ["country", "name", "created_at", "updated_at"]
+    ordering_fields: List[str] = ["name", "created_at", "updated_at"]
 
     #: A `FiberOptic` geometry field used in performing bounding box filtering
     #: on the queryset of `FiberOptic` objects via query parameters
@@ -179,3 +247,56 @@ class FiberOpticViewSet(viewsets.ReadOnlyModelViewSet):
 
     #: A default queryset for retrieving `FiberOptic` objects.
     queryset: QuerySet[FiberOptic] = FiberOptic.objects.select_related("administrative_area").order_by("-created_at")
+
+    #: Vector tiles layer ID
+    id = "fiber-optics"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "uuid",
+        "name",
+        "country",
+        "status",
+        "operator_name",
+        "administrative_area_uuid",
+        "administrative_area_name",
+    )
+
+    csv_serializer_class = FiberOpticCSVSerializer
+
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+
+        queryset = self.get_queryset().annotate(
+            geom=Cast("geometry", MultiLineStringField()),
+            country=F("administrative_area__country"),
+            administrative_area_uuid=F("administrative_area__uuid"),
+            administrative_area_name=F("administrative_area__name"),
+        )
+
+        queryset = self.filter_queryset(queryset)
+
+        return queryset
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Fiber Optic networks CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Download Fiber Optic networks as CSV file."""
+
+        return self.export_csv(request, *args, **kwargs)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for fiber optic networks"""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))

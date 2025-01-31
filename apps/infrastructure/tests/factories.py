@@ -17,7 +17,6 @@ fake = Faker()
 
 
 class FiberOpticFactory(factory.django.DjangoModelFactory):
-    country: str = factory.Iterator([code for code, name in countries], cycle=True)
     name: str = factory.Faker("company")
     description: str = factory.Faker("text", max_nb_chars=200)
 

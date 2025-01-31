@@ -1,21 +1,28 @@
 from typing import List, Type
 
-from django.db.models import QuerySet
+from django.contrib.gis.db.models import PointField
+from django.db.models import F, QuerySet
+from django.db.models.functions import Cast
 from django.utils.translation import gettext_lazy as _
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.response import Response
 from rest_framework_gis.pagination import GeoJsonPagination
+from vectortiles.backends.postgis import VectorLayer
+from vectortiles.rest_framework.renderers import MVTRenderer
 
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
+from core.api.mixins import CSVDownloadMixin
 
 from ..models import Category, Institution, Ownership
 from .filters import CategoryFilter, InstitutionFilter, OwnershipFilter
 from .openapi import examples
-from .serializers import CategorySerializer, InstitutionSerializer, OwnershipSerializer
+from .serializers import CategorySerializer, InstitutionCSVSerializer, InstitutionSerializer, OwnershipSerializer
 
 __all__ = ["CategoryViewSet", "OwnershipViewSet", "InstitutionViewSet"]
 
@@ -26,12 +33,12 @@ __all__ = ["CategoryViewSet", "OwnershipViewSet", "InstitutionViewSet"]
             "Retrieve a list of educational institution categories, with"
             " optional searching, filtering, ordering and pagination."
         ),
-        summary=_("List educational institution categories"),
+        summary=_("Education Institutions Categories"),
         examples=examples.category_list_examples,
     ),
     retrieve=extend_schema(
         description=_("Retrieve details of a specific educational institution category."),
-        summary=_("Retrieve educational institution category"),
+        summary=_("Education Institutions Category"),
         examples=examples.category_retrieve_examples,
     ),
 )
@@ -87,12 +94,12 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
             "Retrieve a list of educational institution ownerships, "
             "with optional searching, filtering, ordering and pagination."
         ),
-        summary=_("List educational institution ownerships"),
+        summary=_("Education Institutions Ownerships"),
         examples=examples.ownership_list_examples,
     ),
     retrieve=extend_schema(
         description=_("Retrieve details of a specific educational institution ownership."),
-        summary=_("Retrieve educational institution ownership"),
+        summary=_("Education Institutions Ownership"),
         examples=examples.ownership_retrieve_examples,
     ),
 )
@@ -144,15 +151,17 @@ class OwnershipViewSet(viewsets.ReadOnlyModelViewSet):
 
 @extend_schema_view(
     list=extend_schema(
-        summary=_("List Education Institution"),
+        summary=_("Education Institutions"),
         description=_("Retrieve a list of education institutions."),
     ),
     retrieve=extend_schema(
-        summary=_("Retrieve Education Institution"),
+        summary=_("Education Institution"),
         description=_("Retrieve details of an education institution."),
     ),
+    download=extend_schema(summary=_("Education Institutions CSV")),
+    tile=extend_schema(summary=_("Education Institutions Vector Tiles")),
 )
-class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
+class InstitutionViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelViewSet):
     """Education Institutions API endpoint"""
 
     serializer_class = InstitutionSerializer
@@ -177,4 +186,66 @@ class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
     distance_filter_field = "geometry"
     distance_filter_convert_meters = True
 
-    queryset = Institution.objects.select_related("category", "ownership", "administrative_area").order_by("name")
+    csv_serializer_class = InstitutionCSVSerializer
+
+    #: Vector tiles layer ID
+    id = "education-institutions"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "uuid",
+        "category_name",
+        "name",
+        "code",
+        "ownership_name",
+        "country",
+        "has_electricity",
+        "has_fiber_optic",
+        "fon_distance",
+        "administrative_area_uuid",
+        "administrative_area_name",
+    )
+
+    def get_queryset(self):
+        return Institution.objects.select_related("category", "ownership", "administrative_area").order_by("name")
+
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+
+        queryset = self.get_queryset().annotate(
+            geom=Cast("geometry", PointField()),
+            category_uuid=F("category__uuid"),
+            category_name=F("category__name"),
+            ownership_uuid=F("ownership__uuid"),
+            ownership_name=F("ownership__name"),
+            country=F("administrative_area__country"),
+            administrative_area_uuid=F("administrative_area__uuid"),
+            administrative_area_name=F("administrative_area__name"),
+        )
+
+        queryset = self.filter_queryset(queryset)
+
+        return queryset
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Education Institution CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Download Education Institutions as CSV file."""
+
+        return self.export_csv(request, *args, **kwargs)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for eduction institutions"""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))

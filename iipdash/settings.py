@@ -16,6 +16,7 @@ from pathlib import Path
 from django.utils.translation import gettext_lazy as _
 
 import environ
+from corsheaders.defaults import default_headers as cors_default_headers
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
     "oauth2_provider",
     "drf_spectacular",
     "drf_spectacular_sidecar",
+    "corsheaders",
     "users",
     "administrative",
     "education",
@@ -69,6 +71,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -259,3 +263,18 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_DIST": "SIDECAR",
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
 }
+
+
+# CORS
+
+CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=[])
+
+CORS_ALLOWED_ORIGIN_REGEXES = env.list("CORS_ALLOWED_ORIGIN_REGEXES", default=[])
+
+CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS", default=DEBUG)
+
+CORS_ALLOW_HEADERS = env.list("CORS_ALLOW_HEADERS", default=cors_default_headers)
+
+# Administrative
+
+ADMINISTRATIVE_AREAS_SIMPLIFICATION_TOLERANCE = env.float("ADMINISTRATIVE_AREAS_SIMPLIFICATION_TOLERANCE", default=1.0)

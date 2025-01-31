@@ -7,7 +7,7 @@ from administrative.api.serializers import RelatedAreaSerializer
 
 from ..models import Category, Institution, Ownership
 
-__all__ = ["CategorySerializer", "OwnershipSerializer"]
+__all__ = ["CategorySerializer", "OwnershipSerializer", "InstitutionSerializer", "InstitutionCSVSerializer"]
 
 
 class RelatedCategorySerializer(serializers.ModelSerializer):
@@ -96,4 +96,44 @@ class InstitutionSerializer(GeoFeatureModelSerializer):
         model = Institution
         id_field = "uuid"
         geo_field = "geometry"
-        exclude = ["id"]
+        exclude = ["id", "related_areas"]
+
+
+class InstitutionCSVSerializer(serializers.ModelSerializer):
+
+    category_name = serializers.CharField(source="category.name", read_only=True)
+    ownership_name = serializers.CharField(source="ownership.name", read_only=True)
+    country = serializers.CharField(source="administrative_area.country", read_only=True)
+    administrative_area_name = serializers.CharField(source="administrative_area.name", read_only=True)
+    geometry = serializers.CharField()
+
+    class Meta:
+        model = Institution
+        fields = [
+            "uuid",
+            "category_name",
+            "name",
+            "ownership_name",
+            "country",
+            "administrative_area_name",
+            "description",
+            "code",
+            "postal_code",
+            "address",
+            "phone",
+            "fax",
+            "email",
+            "website",
+            "has_electricity",
+            "has_fiber_optic",
+            "fon_distance",
+            "osm_id",
+            "osm_type",
+            "created_at",
+            "updated_at",
+            "geometry",
+        ]
+
+        # There might be some performance gains in making fields read only
+        # https://hakibenita.com/django-rest-framework-slow#read-only-modelserializer
+        read_only_fields = fields

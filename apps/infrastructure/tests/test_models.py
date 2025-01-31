@@ -17,7 +17,6 @@ class FiberOpticModelTestCase(TestCase):
 
         self.assertIsNotNone(fiber_optic.id)
         self.assertIsNotNone(fiber_optic.uuid)
-        self.assertIsNotNone(fiber_optic.country)
         self.assertIsNotNone(fiber_optic.name)
         self.assertIsNotNone(fiber_optic.description)
         self.assertIsNotNone(fiber_optic.geometry)

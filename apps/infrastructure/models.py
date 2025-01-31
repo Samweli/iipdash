@@ -24,8 +24,6 @@ from django.core.validators import MinValueValidator
 from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
 
-from django_countries.fields import CountryField
-
 
 class FiberOptic(models.Model):
     """A fiber optic network.
@@ -42,9 +40,6 @@ class FiberOptic(models.Model):
             A universally unique identifier (UUID) for the fiber optic
             network, generated using :func:`uuid.uuid4`. This field is
             non-editable, unique, and set by default.
-
-        country (:class:`django_countries.fields.CountryField`):
-            The country to which the fiber optic network belongs.
 
         name (:class:`django.db.models.CharField`):
             A human-readable name of the fiber optic network.
@@ -81,14 +76,6 @@ class FiberOptic(models.Model):
         editable=False,
         unique=True,
         help_text=_("A universally unique identifier (UUID) for the fiber optic network"),
-    )
-
-    #: The country to which the fiber optic network belongs.
-    country = CountryField(
-        _("country"),
-        blank=True,
-        db_index=True,
-        help_text=_("The country to which the fiber optic network belongs."),
     )
 
     #: A human-readable name of the fiber optic network.

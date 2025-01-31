@@ -4,25 +4,37 @@ from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import viewsets
+from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
 from rest_framework_gis.pagination import GeoJsonPagination
+from vectortiles.backends.postgis import VectorLayer
+from vectortiles.rest_framework.renderers import MVTRenderer
+
+from core.api.mixins import CSVDownloadMixin
 
 from ..models import Area
 from .filters import AreaFilter
-from .serializers import AreaEducationIFONDSerializer, AreaEducationSerializer, AreaSerializer
+from .serializers import (
+    AreaEducationCSVSerializer,
+    AreaEducationIFONDCSVSerializer,
+    AreaEducationIFONDSerializer,
+    AreaEducationSerializer,
+    AreaSerializer,
+)
 
 __all__ = ["AreaViewSet", "AreaEducationViewSet", "AreaEducationIFONDViewSet"]
 
 
 @extend_schema_view(
     list=extend_schema(
-        summary=_("List Administrative Areas"),
+        summary=_("Administrative Areas"),
         description=_("Retrieve a list of administrative areas."),
     ),
     retrieve=extend_schema(
-        summary=_("Retrieve an Administrative Area"),
+        summary=_("Administrative Area"),
         description=_("Retrieve details of an administrative area."),
     ),
 )
@@ -45,19 +57,42 @@ class AreaViewSet(viewsets.ReadOnlyModelViewSet):
 
 @extend_schema_view(
     list=extend_schema(
-        summary=_("List Areas and Education Statistics"),
+        summary=_("Administrative Areas Education Statistics"),
         description=_("Retrieve a list of administrative areas with education statistics."),
     ),
     retrieve=extend_schema(
-        summary=_("Retrieve an Area and Education Statistics"),
+        summary=_("Administrative Area Education Statistics"),
         description=_("Retrieve details of an administrative area with education statistics."),
     ),
+    download=extend_schema(summary=_("Administrative Areas Education Statistics CSV")),
+    tile=extend_schema(summary=_("Administrative Areas Education Statistics Vector Tiles")),
 )
-class AreaEducationViewSet(AreaViewSet):
+class AreaEducationViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
     """Education Summary for an Administrative Area API endpoint."""
 
     serializer_class = AreaEducationSerializer
     ordering_fields = ["name", "created_at", "updated_at"]
+    csv_serializer_class = AreaEducationCSVSerializer
+
+    #: Vector tiles layer ID
+    id = "areas-education"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "uuid",
+        "type_code",
+        "country",
+        "name",
+        "code",
+        "description",
+        "institutions_count",
+        "institutions_electrified",
+        "institutions_fiber_connected",
+        "institutions_electrified_no_fiber",
+        "institutions_fiber_10km",
+        "institutions_fiber_15km",
+        "institutions_fiber_20km",
+    )
 
     def get_queryset(self):
 
@@ -92,25 +127,80 @@ class AreaEducationViewSet(AreaViewSet):
 
         return qs
 
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+
+        queryset = self.get_queryset().order_by()
+        queryset = self.filter_queryset(queryset)
+
+        return queryset
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Areas Education Statistics CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Download Areas Education Statistics as CSV."""
+
+        return self.export_csv(request, *args, **kwargs)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for administrative areas with education statistics"""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
+
 
 @extend_schema_view(
     list=extend_schema(
-        summary=_("List Areas and Education Statistics based on fiber distance."),
+        summary=_("Administrative Areas and Education Institutions Fiber Distance"),
         description=_(
-            "This provides a summary of number of Education Institutions within specified "
-            "distance to fiber optic nodes within administrative areas."
+            "Summary Education Institutions within specified distance to "
+            "fiber optic nodes within administrative areas."
         ),
     ),
     retrieve=extend_schema(
-        summary=_("Retrieve and Area and Education Statistics based on fiber distance."),
+        summary=_("Administrative Area Education and Fiber Distance"),
+        description=_(
+            "Summary number of Education Institutions within specified "
+            "distance to fiber optic nodes within a specific administrative areas."
+        ),
     ),
+    download=extend_schema(summary=_("Administrative Area Education and Fiber Distance CSV")),
+    tile=extend_schema(summary=_("Administrative Area Education and Fiber Distance Vector Tiles")),
 )
-class AreaEducationIFONDViewSet(AreaViewSet):
+class AreaEducationIFONDViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
     """Summarization of Number of Education Institutions within specified distance to a fiber optic node
     within Administrative Areas."""
 
     serializer_class = AreaEducationIFONDSerializer
     ordering_fields = ["name", "created_at", "updated_at"]
+    csv_serializer_class = AreaEducationIFONDCSVSerializer
+
+    #: Vector tiles layer ID
+    id = "areas-education-ifond"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "uuid",
+        "type_code",
+        "country",
+        "name",
+        "code",
+        "description",
+        "institutions_count",
+        "institutions_electrified",
+        "institutions_fiber_connected",
+        "institutions_electrified_no_fiber",
+    )
 
     def clean_distance(self):
         error_message = _("Invalid distance value")
@@ -161,3 +251,37 @@ class AreaEducationIFONDViewSet(AreaViewSet):
         )
 
         return qs
+
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+
+        queryset = self.get_queryset().order_by()
+        queryset = self.filter_queryset(queryset)
+
+        return queryset
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Areas Education Statistics CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Returns Summary number of Education Institutions within specified "
+        distance to fiber optic nodes within a specific administrative areas as CSV file.
+        """
+
+        return self.export_csv(request, *args, **kwargs)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for administrative areas with number of education institutions
+        within the specified distance."""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
