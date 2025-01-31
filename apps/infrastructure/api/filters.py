@@ -117,7 +117,9 @@ class FiberOpticFilter(filters.FilterSet):
 
     #: Filter by country (exact match, case-insensitive)
     country: filters.CharFilter = filters.CharFilter(
-        field_name="country", lookup_expr="iexact", help_text=_("Filter by country.")
+        field_name="country",
+        lookup_expr="iexact",
+        help_text=_("Filter by country."),
     )
 
     #: Filter by name (partial match, case-insensitive)

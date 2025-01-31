@@ -13,7 +13,7 @@ from rest_framework_gis.pagination import GeoJsonPagination
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
 
 from ..models import Category, Institution, Ownership
-from .filters import CategoryFilter, OwnershipFilter
+from .filters import CategoryFilter, InstitutionFilter, OwnershipFilter
 from .openapi import examples
 from .serializers import CategorySerializer, InstitutionSerializer, OwnershipSerializer
 
@@ -59,6 +59,7 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
     #: A list of filter backends for applying search and order filters
     #: to the queryset of `Category` objects.
     filter_backends: List[Type[BaseFilterBackend]] = [
+        DjangoFilterBackend,
         SearchFilter,
         OrderingFilter,
     ]
@@ -119,6 +120,7 @@ class OwnershipViewSet(viewsets.ReadOnlyModelViewSet):
     #: A list of filter backends for applying search and order filters
     #: to the queryset of `Ownership` objects.
     filter_backends: List[Type[BaseFilterBackend]] = [
+        DjangoFilterBackend,
         SearchFilter,
         OrderingFilter,
     ]
@@ -166,6 +168,7 @@ class InstitutionViewSet(viewsets.ReadOnlyModelViewSet):
         TMSTileFilter,
         DistanceToPointFilter,
     ]
+    filterset_class = InstitutionFilter
     search_fields = ["name"]
     ordering_fields = ["name", "created_at", "updated_at"]
 
