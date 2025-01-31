@@ -66,7 +66,7 @@ class AreaSerializer(GeoFeatureModelSerializer):
         model = Area
         id_field = "uuid"
         geo_field = "geometry"
-        exclude = ["id", "depth", "path", "numchild"]
+        exclude = ["id", "depth", "path", "numchild", "geom"]
 
 
 class AreaEducationSerializer(BaseAreaEducationSerializer, GeoFeatureModelSerializer):
@@ -81,7 +81,7 @@ class AreaEducationSerializer(BaseAreaEducationSerializer, GeoFeatureModelSerial
             "depth",
             "path",
             "numchild",
-            "population",
+            "geom" "population",
             "population_male",
             "population_female",
             "population_year",
@@ -127,6 +127,7 @@ class AreaEducationIFONDSerializer(BaseAreaEducationIFONDSerializer, GeoFeatureM
             "depth",
             "path",
             "numchild",
+            "geom",
             "population",
             "population_male",
             "population_female",

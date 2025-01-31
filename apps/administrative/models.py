@@ -20,8 +20,9 @@ See Also:
 import uuid
 from typing import Any, Dict, Tuple
 
-from django.contrib.gis import geos
+from django.conf import settings
 from django.contrib.gis.db import models
+from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.core.validators import MinValueValidator
 from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
@@ -170,6 +171,9 @@ class Area(MP_Node):
         srid=4326,
     )
 
+    #: A version of geometry optimized for performant rendering.
+    geom = models.MultiPolygonField(_("geom"), geography=False, blank=True, null=True, srid=3857, editable=False)
+
     #: The total area of the `area` in square meters.
     area = models.FloatField(
         _("area (square meters)"),
@@ -235,8 +239,12 @@ class Area(MP_Node):
         Returns:
             None
         """
-        if self.geometry and isinstance(self.geometry, geos.Polygon):
-            self.geometry = geos.MultiPolygon(self.geometry)
+
+        if isinstance(self.geometry, Polygon):
+            self.geometry = MultiPolygon(self.geometry)
+
+        self.geom = self.geometry2geom()
+
         super().save(*args, **kwargs)
 
     def __str__(self):
@@ -247,3 +255,16 @@ class Area(MP_Node):
             str: The name of the area.
         """
         return self.name
+
+    def geometry2geom(self):
+        """Transform geometry to simplified EPSG:3857"""
+
+        if self.geometry:
+            tolerance = settings.ADMINISTRATIVE_AREAS_SIMPLIFICATION_TOLERANCE
+            geom = self.geometry.transform(3857, clone=True)
+            geom = geom.simplify(tolerance, preserve_topology=True)
+
+            if isinstance(geom, Polygon):
+                geom = MultiPolygon(geom)
+
+            return geom

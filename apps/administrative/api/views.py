@@ -1,6 +1,4 @@
-from django.contrib.gis.db.models import MultiPolygonField
 from django.db.models import Count, Q
-from django.db.models.functions import Cast
 from django.utils.translation import gettext_lazy as _
 
 from django_filters.rest_framework import DjangoFilterBackend
@@ -132,7 +130,7 @@ class AreaEducationViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
     def get_vector_tile_queryset(self, *args, **kwargs):
         """Returns a queryset used to generate vector tiles."""
 
-        queryset = self.get_queryset().annotate(geom=Cast("geometry", MultiPolygonField())).order_by()
+        queryset = self.get_queryset().order_by()
         queryset = self.filter_queryset(queryset)
 
         return queryset
@@ -257,7 +255,7 @@ class AreaEducationIFONDViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
     def get_vector_tile_queryset(self, *args, **kwargs):
         """Returns a queryset used to generate vector tiles."""
 
-        queryset = self.get_queryset().annotate(geom=Cast("geometry", MultiPolygonField())).order_by()
+        queryset = self.get_queryset().order_by()
         queryset = self.filter_queryset(queryset)
 
         return queryset
