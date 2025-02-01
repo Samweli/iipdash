@@ -35,7 +35,7 @@ class Area(MP_Node):
     """
     Administrative area model extending :class:`treebeard.mp_tree.MP_Node`.
 
-    It represents administrative areas in a hierarchical structure and
+    This model stores administrative areas in a hierarchical structure and
     provides a way to manage and represent country administrative areas
     e.g. `states`, `provinces`, `regions`, `districts` etc.
 
@@ -49,7 +49,7 @@ class Area(MP_Node):
             using :func:`uuid.uuid4`. This field is non-editable, unique, and set by default.
 
         type_code (:class:`django.db.models.SlugField`):
-            A hierarchy level name of the area, e.g., `ADM1`, `ADM2`, etc.
+            A hierarchy level name of the area, e.g., `province`, `district`, etc.
 
         country (:class:`django_countries.fields.CountryField`):
             The country to which the area belongs.
@@ -104,34 +104,54 @@ class Area(MP_Node):
         default=uuid.uuid4,
         editable=False,
         unique=True,
+        help_text=_("A universally unique identifier (UUID) for the area."),
     )
 
-    #: A hierarchy level name of the area, e.g., `ADM1`, `ADM2`, etc.
+    #: A hierarchy level name of the area, e.g., `province`, `district`, etc.
     type_code = models.SlugField(
         _("area type"),
         blank=True,
         max_length=255,
         db_index=True,
+        help_text=_("A hierarchy level name of the area, e.g., `province`, `district`, etc."),
     )
 
     #: The country to which the area belongs.
-    country = CountryField(_("country"), blank=True, db_index=True)
+    country = CountryField(
+        _("country"),
+        blank=True,
+        db_index=True,
+        help_text=_("The country to which the area belongs."),
+    )
 
     #: A human-readable name of the area.
-    name = models.CharField(_("name"), max_length=255)
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        help_text=_("A human-readable name of the area."),
+    )
 
     #: A unique short code or census code of the area.
-    code = models.CharField(_("code"), max_length=50, blank=True)
+    code = models.CharField(
+        _("code"),
+        max_length=50,
+        blank=True,
+        help_text=_("A unique short code or census code of the area."),
+    )
 
     #: A long-form description of the area.
-    description = models.TextField(_("description"), blank=True)
+    description = models.TextField(
+        _("description"),
+        blank=True,
+        help_text=_("A long-form description of the area."),
+    )
 
     #: The full name of the area, automatically generated.
     full_name = models.CharField(
         _("full name"),
         max_length=255,
         blank=True,
-        help_text=_("automatically generated"),
+        help_text=_("The full name of the area, automatically generated."),
     )
 
     #: The total population of the area.
@@ -139,6 +159,7 @@ class Area(MP_Node):
         _("population"),
         blank=True,
         null=True,
+        help_text=_("The total population of the area."),
     )
 
     #: The male population of the area.
@@ -146,6 +167,7 @@ class Area(MP_Node):
         _("male population"),
         blank=True,
         null=True,
+        help_text=_("The male population of the area."),
     )
 
     #: The female population of the area.
@@ -153,6 +175,7 @@ class Area(MP_Node):
         _("female population"),
         blank=True,
         null=True,
+        help_text=_("The female population of the area."),
     )
 
     #: The year for the population data e.g., 2020.
@@ -160,6 +183,7 @@ class Area(MP_Node):
         _("population year"),
         blank=True,
         null=True,
+        help_text=_("The year for the population data e.g., 2020."),
     )
 
     #: The spatial/geometric shape of the area.
@@ -169,10 +193,19 @@ class Area(MP_Node):
         blank=True,
         null=True,
         srid=4326,
+        help_text=_("The spatial/geometric shape of the area."),
     )
 
     #: A version of geometry optimized for performant rendering.
-    geom = models.MultiPolygonField(_("geom"), geography=False, blank=True, null=True, srid=3857, editable=False)
+    geom = models.MultiPolygonField(
+        _("geom"),
+        geography=False,
+        blank=True,
+        null=True,
+        srid=3857,
+        editable=False,
+        help_text=_("A version of geometry optimized for performant rendering."),
+    )
 
     #: The total area of the `area` in square meters.
     area = models.FloatField(
@@ -180,6 +213,7 @@ class Area(MP_Node):
         validators=[MinValueValidator(0)],
         blank=True,
         null=True,
+        help_text=_("The total area of the `area` in square meters."),
     )
 
     #: The database level timestamp of when the area was created.
@@ -187,6 +221,7 @@ class Area(MP_Node):
         "created at",
         auto_now_add=True,
         db_default=Now(),
+        help_text=_("The database level timestamp of when the area was created."),
     )
 
     #: The database level timestamp of when the area was latest modified.
@@ -195,10 +230,16 @@ class Area(MP_Node):
         auto_now=True,
         null=True,
         blank=True,
+        help_text=_("The database level timestamp of when the area was latest modified."),
     )
 
     #: Additional arbitrary data related to the area.
-    extras = models.JSONField(_("extras"), blank=True, default=dict)
+    extras = models.JSONField(
+        _("extras"),
+        blank=True,
+        default=dict,
+        help_text=_("Additional arbitrary data related to the area."),
+    )
 
     #: List of area fields that will be used for hierarchy ordering.
     #: It overrides :attr:`treebeard.mp_tree.MP_Node.node_order_by`.

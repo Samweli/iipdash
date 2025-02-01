@@ -1,15 +1,16 @@
 """
 Educational institution models.
 
-This module defines Django models that represent the structure and data
-relationships for educational institutions.
+This module defines the :class:`Category`, :class:`Ownership` and :class:`Institution` models,
+that represent the structure and data relationships for educational institutions.
 
 References:
     - :class:`django.contrib.gis.db.models.PointField`
+    - :class:`django.db.models.Model`
 
 See Also:
-    - https://docs.djangoproject.com/en/stable/ref/contrib/gis/
-
+    - `Django GIS Documentation <https://docs.djangoproject.com/en/stable/ref/contrib/gis/>`_
+    - `django-countries GitHub <https://github.com/SmileyChris/django-countries/>`_
 """
 
 import uuid
@@ -196,7 +197,6 @@ class Ownership(models.Model):
 
         extras (:class:`django.db.models.JSONField`):
             Additional arbitrary data related to the ownership.
-
     """
 
     #: A universally unique identifier (UUID) for the ownership.
@@ -305,8 +305,9 @@ class Ownership(models.Model):
 class Institution(models.Model):
     """An educational institution.
 
-    It represents an educational institution, with associated category,
-    ownership, and additional details.
+    This model stores information about an educational institution,
+    including its category, ownership, geographical location, and
+    additional metadata.
 
     Attributes:
         id (:class:`django.db.models.BigAutoField`):
@@ -350,11 +351,11 @@ class Institution(models.Model):
         website (:class:`django.db.models.URLField`):
             A website URL of the institution.
 
-        geometry (:class:`django.contrib.gis.db.models.PointField`):
-            The spatial location of the institution.
-
         administrative_area (:class:`django.db.models.ForeignKey`):
             The adminstrative area to which the institution belongs.
+
+        geometry (:class:`django.contrib.gis.db.models.PointField`):
+            The spatial location of the institution.
 
         has_electricity (:class:`django.db.models.BooleanField`):
             Whether the institution is connected to electricity or not.
@@ -381,14 +382,17 @@ class Institution(models.Model):
         extras (:class:`django.db.models.JSONField`):
             Additional arbitrary data related to the institution.
 
+        related_areas (:class:`django.db.models.ManyToManyField`):
+            A set of administrative areas related to this institution.
     """
 
-    #: A universally unique identifier (UUID) for the institution
+    #: A universally unique identifier (UUID) for the institution.
     uuid = models.UUIDField(
         _("UUID"),
         default=uuid.uuid4,
         editable=False,
         unique=True,
+        help_text=_("A universally unique identifier (UUID) for the institution."),
     )
 
     #: The category to which the institution belongs.
@@ -400,10 +404,17 @@ class Institution(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+        help_text=_("The category to which the institution belongs."),
     )
 
     #: A human-readable name of the institution.
-    name = models.CharField(_("name"), max_length=255, blank=True, db_index=True)
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        blank=True,
+        db_index=True,
+        help_text=_("A human-readable name of the institution."),
+    )
 
     #: The ownership to which the institution belongs.
     ownership = models.ForeignKey(
@@ -414,31 +425,70 @@ class Institution(models.Model):
         on_delete=models.SET_NULL,
         blank=True,
         null=True,
+        help_text=_("The ownership to which the institution belongs."),
     )
 
     #: A long-form description of the institution.
-    description = models.TextField(_("description"), blank=True)
+    description = models.TextField(
+        _("description"),
+        blank=True,
+        help_text=_("A long-form description of the institution."),
+    )
 
     #: A unique code for the institution.
-    code = models.CharField(_("code"), max_length=50, blank=True)
+    code = models.CharField(
+        _("code"),
+        max_length=50,
+        blank=True,
+        help_text=_("A unique code for the institution."),
+    )
 
     #: A postal code for the institution's address.
-    postal_code = models.CharField(_("postal code"), max_length=50, blank=True)
+    postal_code = models.CharField(
+        _("postal code"),
+        max_length=50,
+        blank=True,
+        help_text=_("A postal code for the institution's address."),
+    )
 
     #: A physical address of the institution.
-    address = models.CharField(_("address"), max_length=255, blank=True)
+    address = models.CharField(
+        _("address"),
+        max_length=255,
+        blank=True,
+        help_text=_("A physical address of the institution."),
+    )
 
     #: A phone number of the institution.
-    phone = models.CharField(_("phone number"), max_length=50, blank=True)
+    phone = models.CharField(
+        _("phone number"),
+        max_length=50,
+        blank=True,
+        help_text=_("A phone number of the institution."),
+    )
 
     #: A fax number of the institution.
-    fax = models.CharField(_("fax"), max_length=50, blank=True)
+    fax = models.CharField(
+        _("fax"),
+        max_length=50,
+        blank=True,
+        help_text=_("A fax number of the institution."),
+    )
 
     #: An email address of the institution.
-    email = models.EmailField(_("email"), blank=True)
+    email = models.EmailField(
+        _("email"),
+        blank=True,
+        help_text=_("An email address of the institution."),
+    )
 
     #: A website URL of the institution.
-    website = models.URLField(_("website"), blank=True, null=True)
+    website = models.URLField(
+        _("website"),
+        blank=True,
+        null=True,
+        help_text=_("A website URL of the institution."),
+    )
 
     #: The administrative area to which the institution belongs.
     administrative_area = models.ForeignKey(
@@ -449,6 +499,7 @@ class Institution(models.Model):
         related_query_name="education_institution",
         on_delete=models.SET_NULL,
         verbose_name=_("administrative area"),
+        help_text=_("The administrative area to which the institution belongs."),
     )
 
     #: The spatial location of the institution.
@@ -458,13 +509,24 @@ class Institution(models.Model):
         blank=True,
         null=True,
         srid=4326,
+        help_text=_("The spatial location of the institution."),
     )
 
-    #: Whether the institution is connected to electricity or not
-    has_electricity = models.BooleanField(_("has electricity"), blank=True, null=True)
+    #: Whether the institution is connected to electricity or not.
+    has_electricity = models.BooleanField(
+        _("has electricity"),
+        blank=True,
+        null=True,
+        help_text=_("Whether the institution is connected to electricity or not."),
+    )
 
-    #: Whether the institution is connected to fiber optic or not
-    has_fiber_optic = models.BooleanField(_("connected to fiber optic"), blank=True, null=True)
+    #: Whether the institution is connected to fiber optic or not.
+    has_fiber_optic = models.BooleanField(
+        _("connected to fiber optic"),
+        blank=True,
+        null=True,
+        help_text=_("Whether the institution is connected to fiber optic or not."),
+    )
 
     #: The distance to the nearest fiber optic node (meters).
     fon_distance = models.FloatField(
@@ -472,14 +534,24 @@ class Institution(models.Model):
         blank=True,
         null=True,
         validators=[MinValueValidator(0.0)],
-        help_text=_("distance to the nearest fiber optic node (meters)"),
+        help_text=_("The distance to the nearest fiber optic node (meters)."),
     )
 
     #: OpenStreetMap ID of the institution.
-    osm_id = models.BigIntegerField(_("OSM id"), blank=True, null=True)
+    osm_id = models.BigIntegerField(
+        _("OSM id"),
+        blank=True,
+        null=True,
+        help_text=_("OpenStreetMap ID of the institution."),
+    )
 
     #: OpenStreetMap type of the institution.
-    osm_type = models.CharField(_("OSM type"), max_length=255, blank=True)
+    osm_type = models.CharField(
+        _("OSM type"),
+        max_length=255,
+        blank=True,
+        help_text=_("OpenStreetMap type of the institution."),
+    )
 
     #: The database level timestamp of when the institution was created.
     created_at = models.DateTimeField(
@@ -487,6 +559,7 @@ class Institution(models.Model):
         auto_now_add=True,
         db_default=Now(),
         db_index=True,
+        help_text=_("The database level timestamp of when the institution was created."),
     )
 
     #: The database level timestamp of when the institution was latest
@@ -496,11 +569,18 @@ class Institution(models.Model):
         auto_now=True,
         null=True,
         blank=True,
+        help_text=_("The database level timestamp of when the institution was latest modified."),
     )
 
     #: Additional arbitrary data related to the institution.
-    extras = models.JSONField(_("extras"), blank=True, default=dict)
+    extras = models.JSONField(
+        _("extras"),
+        blank=True,
+        default=dict,
+        help_text=_("Additional arbitrary data related to the institution."),
+    )
 
+    #: A set of administrative areas related to this institution.
     related_areas = models.ManyToManyField(
         "administrative.Area",
         blank=True,
@@ -508,6 +588,7 @@ class Institution(models.Model):
         related_name="related_education_institutions",
         related_query_name="related_education_institution",
         verbose_name=_("related administrative areas"),
+        help_text=_("A set of administrative areas related to this institution."),
     )
 
     class Meta:
@@ -539,7 +620,15 @@ class Institution(models.Model):
         transaction.on_commit(lambda: self.refresh_related_areas())
 
     def refresh_related_areas(self):
-        """update related areas based on the institution's administrative area"""
+        """
+        Updates related administrative areas based on the institution's administrative area.
+
+        If the institution has an associated administrative area, this method retrieves
+        its ancestors and updates the `related_areas` field accordingly.
+
+        Returns:
+            None
+        """
         if not self.administrative_area:
             return
 

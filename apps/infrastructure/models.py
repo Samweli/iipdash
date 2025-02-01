@@ -1,18 +1,19 @@
 """
-Infrastructure models.
+Infrastructure models
 
-This module defines a :class:`FiberOptic` and :class:`CellTower` models,
-which represents fiber optic networks and cellular towers.
+This module defines the :class:`FiberOptic` and :class:`CellTower` models,
+which represent fiber optic networks and cellular towers.
+
+These models store geographical and operational data for telecommunication
+infrastructure, supporting GIS capabilities.
 
 References:
     - :class:`django.contrib.gis.db.models.MultiLineStringField`
     - :class:`django.contrib.gis.db.models.PointField`
-    - :class:`django_countries.fields.CountryField`
+    - :class:`django.db.models.Model`
 
 See Also:
-    - https://github.com/SmileyChris/django-countries/
-    - https://docs.djangoproject.com/en/stable/ref/contrib/gis/
-
+    - `Django GIS Documentation <https://docs.djangoproject.com/en/stable/ref/contrib/gis/>`_
 """
 
 import uuid
@@ -28,8 +29,8 @@ from django.utils.translation import gettext_lazy as _
 class FiberOptic(models.Model):
     """A fiber optic network.
 
-    It represents an fiber optic network country, spatial geometry,
-    and additional information.
+    This model stores details about fiber optic networks, including their
+    spatial geometry, operational status, and administrative area.
 
     Attributes:
         id (:class:`django.db.models.BigAutoField`):
@@ -53,6 +54,12 @@ class FiberOptic(models.Model):
         administrative_area (:class:`django.db.models.ForeignKey`):
             The adminstrative area to which the fiber optic network belongs.
 
+        status (:class:`django.db.models.CharField`):
+            The operational status of the fiber optic network.
+
+        operator_name (:class:`django.db.models.CharField`):
+            The name of the network operator managing the fiber optic network.
+
         created_at (:class:`django.db.models.DateTimeField`):
             The database level timestamp of when the fiber optic network was
             created.
@@ -63,10 +70,11 @@ class FiberOptic(models.Model):
 
         extras (:class:`django.db.models.JSONField`):
             Additional arbitrary data related to the fiber optic network.
-
     """
 
     class FiberOpticStatus(models.TextChoices):
+        """Operational statuses for a fiber optic network."""
+
         OPERATIONAL = "operational", _("Operational")
         UNDER_CONSTRUCTION = "under-construction", _("Under construction")
         PLANNED = "planned", _("Planned")
@@ -118,10 +126,23 @@ class FiberOptic(models.Model):
         help_text=_("The administrative area to which the fiber optic network belongs."),
     )
 
-    #: fiber optic status
-    status = models.CharField(_("status"), choices=FiberOpticStatus, blank=True, max_length=128, db_index=True)
+    #: The operational status of the fiber optic network.
+    status = models.CharField(
+        _("status"),
+        choices=FiberOpticStatus,
+        blank=True,
+        max_length=128,
+        db_index=True,
+        help_text=_("The operational status of the fiber optic network."),
+    )
 
-    operator_name = models.CharField(_("operator name"), blank=True, max_length=255)
+    #: The name of the network operator managing the fiber optic network.
+    operator_name = models.CharField(
+        _("operator name"),
+        blank=True,
+        max_length=255,
+        help_text=_("The name of the network operator managing the fiber optic network."),
+    )
 
     #: The database level timestamp of when the fiber optic network was
     #: created.
@@ -226,8 +247,8 @@ class FiberOptic(models.Model):
 class CellTower(models.Model):
     """A cellular tower.
 
-    It represents a cellular tower country, spatial location, coverage, and
-    additional information.
+    This model stores details about cellular towers, including their
+    spatial geometry, network type, coverage range, and administrative area.
 
     Attributes:
         id (:class:`django.db.models.BigAutoField`):

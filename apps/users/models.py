@@ -95,6 +95,7 @@ class User(AbstractUser):
         editable=False,
         unique=True,
         default=uuid.uuid4,
+        help_text=_("A universally unique identifier (UUID) for the user."),
     )
 
     @cached_property
