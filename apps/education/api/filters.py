@@ -127,7 +127,7 @@ class InstitutionFilter(filters.FilterSet):
     based on specific fields.
 
     Examples:
-        Filter by multiple country codes:
+        Filter by multiple country codes (in comparison):
             `/api/education/institutions/?country_in=MW,ZM`
 
         Filtering by name (partial match, case-insensitive):

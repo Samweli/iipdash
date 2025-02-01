@@ -33,6 +33,9 @@ class CellTowerFilter(filters.FilterSet):
             `/api/infrastructure/cell-towers/?administrative_area_in=04bcbe53-
             98da-4ff5-96a8-d626c6da45cc,032ffe37-67d6-40d4-a65d-144f12bbd493`
 
+        Filter by multiple country codes (in comparison):
+            `/api/infrastructure/cell-towers/?country_in=MW,ZM`
+
     Attributes:
         network_type (:class:`django_filters.rest_framework.filters.CharFilter`):
             A filter for matching the `network_type` field of the `CellTower`
@@ -53,6 +56,10 @@ class CellTowerFilter(filters.FilterSet):
         administrative_area_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
             A filter for matching multiple `administrative_area__uuid` field of
             the `CellTower` model using `in` comparison.
+
+        country_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
+            A filter for matching multiple `administrative_area__country` field
+            of the `CellTower` model using `in` comparison.
     """
 
     #: Filter by network_type (exact match, case-insensitive)
@@ -86,6 +93,12 @@ class CellTowerFilter(filters.FilterSet):
     administrative_area_in: filters.BaseInFilter = filters.BaseInFilter(
         field_name="administrative_area__uuid",
         help_text=_("Filter by multiple administrative area UUIDs."),
+    )
+
+    #: Filter by multiple country codes
+    country_in: filters.BaseInFilter = filters.BaseInFilter(
+        field_name="administrative_area__country",
+        help_text=_("Filter by multiple country codes."),
     )
 
     class Meta:
@@ -129,6 +142,9 @@ class FiberOpticFilter(filters.FilterSet):
             `/api/infrastructure/fiber-optics/?administrative_area_in=04bcbe53-
             98da-4ff5-96a8-d626c6da45cc,032ffe37-67d6-40d4-a65d-144f12bbd493`
 
+        Filter by multiple country codes (in comparison):
+            `/api/infrastructure/fiber-optics/?country_in=MW,ZM`
+
     Attributes:
         name (:class:`django_filters.rest_framework.filters.CharFilter`):
             A filter for matching the `name` field of the `FiberOptic` model
@@ -137,6 +153,10 @@ class FiberOpticFilter(filters.FilterSet):
         administrative_area_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
             A filter for matching multiple `administrative_area__uuid` field of
             the `FiberOptic` model using `in` comparison.
+
+        country_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
+            A filter for matching multiple `administrative_area__country` field
+            of the `FiberOptic` model using `in` comparison.
     """
 
     #: Filter by name (partial match, case-insensitive)
@@ -150,6 +170,12 @@ class FiberOpticFilter(filters.FilterSet):
     administrative_area_in: filters.BaseInFilter = filters.BaseInFilter(
         field_name="administrative_area__uuid",
         help_text=_("Filter by multiple administrative area UUIDs."),
+    )
+
+    #: Filter by multiple country codes
+    country_in: filters.BaseInFilter = filters.BaseInFilter(
+        field_name="administrative_area__country",
+        help_text=_("Filter by multiple country codes."),
     )
 
     class Meta:
@@ -166,4 +192,4 @@ class FiberOpticFilter(filters.FilterSet):
         """
 
         model: Type[FiberOptic] = FiberOptic
-        fields: List[str] = ["name", "administrative_area_in", "status"]
+        fields: List[str] = ["name", "administrative_area_in", "country_in", "status"]
