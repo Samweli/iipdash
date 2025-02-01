@@ -29,6 +29,10 @@ class CellTowerFilter(filters.FilterSet):
         Filter by estimated coverage range (less than or equal):
             `/api/infrastructure/cell-towers/?range_lte=5216`
 
+        Filter by multiple administrative area UUIDs (in comparison):
+            `/api/infrastructure/cell-towers/?administrative_area_in=04bcbe53-
+            98da-4ff5-96a8-d626c6da45cc,032ffe37-67d6-40d4-a65d-144f12bbd493`
+
     Attributes:
         network_type (:class:`django_filters.rest_framework.filters.CharFilter`):
             A filter for matching the `network_type` field of the `CellTower`
@@ -45,6 +49,10 @@ class CellTowerFilter(filters.FilterSet):
         range_lte (:class:`django_filters.rest_framework.filters.NumberFilter`):
             A filter for matching the `range` field of the `CellTower`
             model using `lte` comparison.
+
+        administrative_area_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
+            A filter for matching multiple `administrative_area__uuid` field of
+            the `CellTower` model using `in` comparison.
     """
 
     #: Filter by network_type (exact match, case-insensitive)
@@ -74,6 +82,12 @@ class CellTowerFilter(filters.FilterSet):
         help_text=_("Filter by estimated coverage range less than or equal i.e `<=`."),
     )
 
+    #: Filter by multiple administrative area UUIDs
+    administrative_area_in: filters.BaseInFilter = filters.BaseInFilter(
+        field_name="administrative_area__uuid",
+        help_text=_("Filter by multiple administrative area UUIDs."),
+    )
+
     class Meta:
         """
         Metadata for the :class:`CellTowerFilter`.
@@ -88,7 +102,13 @@ class CellTowerFilter(filters.FilterSet):
         """
 
         model: Type[CellTower] = CellTower
-        fields: List[str] = ["network_type", "mcc", "range_gte", "range_lte"]
+        fields: List[str] = [
+            "network_type",
+            "mcc",
+            "range_gte",
+            "range_lte",
+            "administrative_area_in",
+        ]
 
 
 class FiberOpticFilter(filters.FilterSet):
@@ -105,10 +125,18 @@ class FiberOpticFilter(filters.FilterSet):
         Filtering by name (partial match, case-insensitive):
             `/api/infrastructure/fiber-optics/?name=fiber`
 
+        Filter by multiple administrative area UUIDs (in comparison):
+            `/api/infrastructure/fiber-optics/?administrative_area_in=04bcbe53-
+            98da-4ff5-96a8-d626c6da45cc,032ffe37-67d6-40d4-a65d-144f12bbd493`
+
     Attributes:
         name (:class:`django_filters.rest_framework.filters.CharFilter`):
             A filter for matching the `name` field of the `FiberOptic` model
             using a case-insensitive partial match.
+
+        administrative_area_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
+            A filter for matching multiple `administrative_area__uuid` field of
+            the `FiberOptic` model using `in` comparison.
     """
 
     #: Filter by name (partial match, case-insensitive)
@@ -116,6 +144,12 @@ class FiberOpticFilter(filters.FilterSet):
         field_name="name",
         lookup_expr="icontains",
         help_text=_("Filter by name."),
+    )
+
+    #: Filter by multiple administrative area UUIDs
+    administrative_area_in: filters.BaseInFilter = filters.BaseInFilter(
+        field_name="administrative_area__uuid",
+        help_text=_("Filter by multiple administrative area UUIDs."),
     )
 
     class Meta:
@@ -132,4 +166,4 @@ class FiberOpticFilter(filters.FilterSet):
         """
 
         model: Type[FiberOptic] = FiberOptic
-        fields: List[str] = ["name", "status"]
+        fields: List[str] = ["name", "administrative_area_in", "status"]

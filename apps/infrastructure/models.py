@@ -50,6 +50,9 @@ class FiberOptic(models.Model):
         geometry (:class:`django.contrib.gis.db.models.MultiLineStringField`):
             The spatial/geometric shape of the fiber optic network.
 
+        administrative_area (:class:`django.db.models.ForeignKey`):
+            The adminstrative area to which the fiber optic network belongs.
+
         created_at (:class:`django.db.models.DateTimeField`):
             The database level timestamp of when the fiber optic network was
             created.
@@ -103,6 +106,7 @@ class FiberOptic(models.Model):
         help_text=_("The spatial/geometric shape of the fiber optic network."),
     )
 
+    #: The adminstrative area to which the fiber optic network belongs.
     administrative_area = models.ForeignKey(
         "administrative.Area",
         blank=True,
@@ -111,7 +115,7 @@ class FiberOptic(models.Model):
         related_query_name="fiber_optic",
         on_delete=models.SET_NULL,
         verbose_name=_("administrative area"),
-        help_text=_("The administrative area to which the fiber optic belongs."),
+        help_text=_("The administrative area to which the fiber optic network belongs."),
     )
 
     #: fiber optic status

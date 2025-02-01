@@ -127,7 +127,7 @@ class InstitutionFilter(filters.FilterSet):
     based on specific fields.
 
     Examples:
-        Filtering multiple country codes:
+        Filter by multiple country codes:
             `/api/education/institutions/?country_in=MW,ZM`
 
         Filtering by name (partial match, case-insensitive):
@@ -135,6 +135,10 @@ class InstitutionFilter(filters.FilterSet):
 
         Filtering by code (exact match, case-insensitive):
             `/api/education/institutions/?code=UMCM`
+
+        Filter by multiple administrative area UUIDs (in comparison):
+            `/api/education/institutions/?administrative_area_in=04bcbe53-98da-
+            4ff5-96a8-d626c6da45cc,032ffe37-67d6-40d4-a65d-144f12bbd493`
 
         Filter by whether connected to electricity or not:
             `/api/education/institutions/?has_electricity=true`
