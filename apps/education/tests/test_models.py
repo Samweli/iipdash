@@ -109,6 +109,7 @@ class InstitutionModelTestCase(TestCase):
         self.assertIsNotNone(institution.created_at)
         self.assertIsNotNone(institution.updated_at)
         self.assertIsNotNone(institution.extras)
+        self.assertIsNotNone(institution.related_areas)
         self.assertEqual(str(institution), institution.name)
 
     def test_institution_with_null_foreign_keys(self) -> None:

@@ -226,9 +226,13 @@ class FiberOptic(models.Model):
             return self.name
         elif self.operator_name:
             return self.operator_name
-        else:
+        elif self.administrative_area and hasattr(self.administrative_area, "country"):
             return _("Fiber Optic: %(country)s: %(uuid)s") % {
-                "country": self.country,
+                "country": self.administrative_area.country,
+                "uuid": self.uuid,
+            }
+        else:
+            return _("Fiber Optic: %(uuid)s") % {
                 "uuid": self.uuid,
             }
 

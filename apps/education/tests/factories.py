@@ -68,6 +68,7 @@ class InstitutionFactory(factory.django.DjangoModelFactory):
     fax: str = factory.Faker("phone_number")
     email: str = factory.Faker("email")
     website: str = factory.Faker("url")
+    administrative_area: Area = factory.SubFactory(AreaFactory, depth=1)
 
     @factory.lazy_attribute
     def geometry(self) -> geos.Point:
@@ -82,7 +83,6 @@ class InstitutionFactory(factory.django.DjangoModelFactory):
 
         return geos.Point(float(latlong[1]), float(latlong[0]))
 
-    administrative_area: Area = factory.SubFactory(AreaFactory, depth=1)
     has_electricity: bool = factory.Faker("boolean")
     has_fiber_optic: bool = factory.Faker("boolean")
     fon_distance: float = factory.Faker("pyfloat", left_digits=2, right_digits=2, positive=True)

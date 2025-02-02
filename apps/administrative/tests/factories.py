@@ -10,7 +10,7 @@ from ..models import Area
 
 
 class AreaFactory(factory.django.DjangoModelFactory):
-    type_code: str = factory.Iterator(["ADM0", "ADM1"], cycle=True)
+    type_code: str = factory.Iterator(["country", "province", "district"], cycle=True)
     country: str = factory.Iterator([code for code, name in countries], cycle=True)
     name: str = factory.Faker("city")
     code: str = factory.Faker("postcode")

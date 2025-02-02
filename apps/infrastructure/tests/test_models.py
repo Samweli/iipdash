@@ -20,6 +20,9 @@ class FiberOpticModelTestCase(TestCase):
         self.assertIsNotNone(fiber_optic.name)
         self.assertIsNotNone(fiber_optic.description)
         self.assertIsNotNone(fiber_optic.geometry)
+        self.assertIsNotNone(fiber_optic.administrative_area)
+        self.assertIsNotNone(fiber_optic.status)
+        self.assertIsNotNone(fiber_optic.operator_name)
         self.assertIsNotNone(fiber_optic.created_at)
         self.assertIsNotNone(fiber_optic.updated_at)
         self.assertIsNotNone(fiber_optic.extras)
@@ -29,6 +32,37 @@ class FiberOpticModelTestCase(TestCase):
         """Test that invalid geometry raises a validation error."""
         with self.assertRaises(ValueError):
             FiberOpticFactory.create(geometry="Invalid Geometry")
+
+    def test_fiber_optic_display_name(self) -> None:
+        """Test the display name of the FiberOptic instance."""
+        fiber_optic: FiberOptic = FiberOpticFactory.build()
+        self.assertIsNotNone(fiber_optic.name)
+        self.assertEqual(fiber_optic.display_name, fiber_optic.name)
+
+        fiber_optic: FiberOptic = FiberOpticFactory.build(name=None)
+        self.assertIsNone(fiber_optic.name)
+        self.assertIsNotNone(fiber_optic.operator_name)
+        self.assertEqual(fiber_optic.display_name, fiber_optic.operator_name)
+
+        fiber_optic: FiberOptic = FiberOpticFactory.build(name=None, operator_name=None)
+        self.assertIsNone(fiber_optic.name)
+        self.assertIsNone(fiber_optic.operator_name)
+        self.assertIsNotNone(fiber_optic.uuid)
+        self.assertIsNotNone(fiber_optic.administrative_area)
+        self.assertEqual(
+            fiber_optic.display_name,
+            f"Fiber Optic: {fiber_optic.administrative_area.country}: {fiber_optic.uuid}",
+        )
+
+        fiber_optic: FiberOptic = FiberOpticFactory.build(name=None, operator_name=None, administrative_area=None)
+        self.assertIsNone(fiber_optic.name)
+        self.assertIsNone(fiber_optic.operator_name)
+        self.assertIsNone(fiber_optic.administrative_area)
+        self.assertIsNotNone(fiber_optic.uuid)
+        self.assertEqual(
+            fiber_optic.display_name,
+            f"Fiber Optic: {fiber_optic.uuid}",
+        )
 
 
 class CellTowerModelTestCase(TestCase):
@@ -72,3 +106,13 @@ class CellTowerModelTestCase(TestCase):
         with self.assertRaises(ValidationError):
             cell_tower: CellTower = CellTowerFactory.create(range=-100)
             cell_tower.full_clean()
+
+    def test_cell_tower_display_name(self) -> None:
+        """Test the display name of the CellTower instance."""
+        cell_tower: CellTower = CellTowerFactory.build()
+        self.assertIsNotNone(cell_tower.network_type)
+        self.assertIsNotNone(cell_tower.uuid)
+        self.assertEqual(
+            cell_tower.display_name,
+            f"{cell_tower.network_type} cell tower: {cell_tower.uuid}",
+        )

@@ -29,6 +29,9 @@ class FiberOpticFactory(factory.django.DjangoModelFactory):
             ]
         )
 
+    administrative_area: Area = factory.SubFactory(AreaFactory, depth=1)
+    status: str = factory.Iterator([choice[0] for choice in FiberOptic.FiberOpticStatus.choices], cycle=True)
+    operator_name: str = factory.Faker("company")
     extras: typing.Dict[str, typing.Any] = factory.Faker("pydict", value_types=[str, int, bool])
 
     class Meta:

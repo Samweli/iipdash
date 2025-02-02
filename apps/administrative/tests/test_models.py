@@ -28,6 +28,7 @@ class AreaModelTestCase(TestCase):
         self.assertIsNotNone(area.population_female)
         self.assertIsNotNone(area.population_year)
         self.assertIsNotNone(area.geometry)
+        self.assertIsNotNone(area.geom)
         self.assertIsNotNone(area.area)
         self.assertIsNotNone(area.created_at)
         self.assertIsNotNone(area.updated_at)
