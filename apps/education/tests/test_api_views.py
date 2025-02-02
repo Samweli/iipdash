@@ -210,6 +210,28 @@ class InstitutionAPITestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertAreInstitutions(response.data)
 
+    def test_list_institutions_filtering(self) -> None:
+        """Test that the `list` endpoint with field filters returns the correct feature collection of `Institution`."""
+        test_cases = [
+            {"country_in": self.institution.administrative_area.country.code},
+            {"category_in": self.institution.category.uuid},
+            {"name": self.institution.name},
+            {"ownership_in": self.institution.ownership.uuid},
+            {"code": self.institution.code},
+            {"administrative_area_in": self.institution.administrative_area.uuid},
+            {"has_electricity": self.institution.has_electricity},
+            {"has_fiber_optic": self.institution.has_fiber_optic},
+            {"fon_distance_gte": self.institution.fon_distance},
+            {"fon_distance_lte": self.institution.fon_distance},
+            {"fon_distance_gte": self.institution.fon_distance, "fon_distance_lte": self.institution.fon_distance},
+        ]
+        for test_case in test_cases:
+            with self.subTest(**test_case):
+                url = reverse("api:institution-list")
+                response = self.client.get(url, test_case)
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+                self.assertAreInstitutions(response.data)
+
     def test_list_institutions_spatial_filtering(self) -> None:
         """Test that the `list` endpoint with spatial filters returns the correct feature collection of `Institution`."""  # noqa
         test_cases = [

@@ -63,6 +63,8 @@ class CellTowerAPITestCase(TestCase):
             {"range_gte": self.cell_tower.range},
             {"range_lte": self.cell_tower.range},
             {"range_gte": self.cell_tower.range, "range_lte": self.cell_tower.range},
+            {"administrative_area_in": self.cell_tower.administrative_area.uuid},
+            {"country_in": self.cell_tower.administrative_area.country.code},
         ]
         for test_case in test_cases:
             with self.subTest(**test_case):
@@ -160,6 +162,9 @@ class FiberOpticAPITestCase(TestCase):
         """Test that the `list` endpoint with field filters returns the correct feature collection of `FiberOptic`."""
         test_cases = [
             {"name": self.fiber_optic.name},
+            {"administrative_area_in": self.fiber_optic.administrative_area.uuid},
+            {"country_in": self.fiber_optic.administrative_area.country.code},
+            {"status": self.fiber_optic.status},
         ]
         for test_case in test_cases:
             with self.subTest(**test_case):
@@ -192,7 +197,7 @@ class FiberOpticAPITestCase(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsFiberOptic(response.data)
 
-    def test_retrieve_cell_tower_not_found(self) -> None:
+    def test_retrieve_fiber_optic_not_found(self) -> None:
         """Test that the `retrieve` endpoint returns 404 error, if `FiberOptic` does not exist."""
         url = reverse("api:fiber-optic-detail", kwargs={"uuid": uuid.uuid4()})
         response = self.client.get(url)

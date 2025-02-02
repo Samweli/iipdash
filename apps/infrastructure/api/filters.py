@@ -145,6 +145,9 @@ class FiberOpticFilter(filters.FilterSet):
         Filter by multiple country codes (in comparison):
             `/api/infrastructure/fiber-optics/?country_in=MW,ZM`
 
+        Filtering by network type (exact match, case-insensitive):
+            `/api/infrastructure/fiber-optics/?status=operational`
+
     Attributes:
         name (:class:`django_filters.rest_framework.filters.CharFilter`):
             A filter for matching the `name` field of the `FiberOptic` model
@@ -157,6 +160,10 @@ class FiberOpticFilter(filters.FilterSet):
         country_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
             A filter for matching multiple `administrative_area__country` field
             of the `FiberOptic` model using `in` comparison.
+
+        status (:class:`django_filters.rest_framework.filters.CharFilter`):
+            A filter for matching the `status` field of the `FiberOptic`
+            model using an exact, case-insensitive comparison.
     """
 
     #: Filter by name (partial match, case-insensitive)
@@ -176,6 +183,14 @@ class FiberOpticFilter(filters.FilterSet):
     country_in: filters.BaseInFilter = filters.BaseInFilter(
         field_name="administrative_area__country",
         help_text=_("Filter by multiple country codes."),
+    )
+
+    #: Filter by operational status (exact match, case-insensitive)
+    status: filters.ChoiceFilter = filters.ChoiceFilter(
+        field_name="status",
+        choices=FiberOptic.FiberOpticStatus.choices,
+        lookup_expr="iexact",
+        help_text=_("Filter by operational status."),
     )
 
     class Meta:
