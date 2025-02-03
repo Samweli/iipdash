@@ -130,6 +130,18 @@ DATABASES = {
     }
 }
 
+# Cache
+
+CACHES = {
+    "default": {
+        "BACKEND": env("CACHE_DEFAULT_BACKEND", default="django.core.cache.backends.redis.RedisCache"),
+        "LOCATION": env("CACHE_DEFAULT_LOCATION", default="redis://127.0.0.1:6379"),
+        "KEY_PREFIX": env("CACHE_DEFAULT_KEY_PREFIX", default="iipdash"),
+        "TIMEOUT": env.int("CACHE_DEFAULT_TIMEOUT", default=300),
+        "VERSION": env.int("CACHE_DEFAULT_VERSION", default=1),
+    }
+}
+
 # Auth
 
 AUTH_USER_MODEL = "users.User"
