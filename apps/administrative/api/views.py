@@ -45,8 +45,9 @@ MVT_CACHE_TIMEOUT = settings.CACHE_TIMEOUTS["mvt"]
         description=_("Retrieve details of an administrative area."),
     ),
     download=extend_schema(summary=_("Administrative Areas CSV")),
+    tile=extend_schema(summary=_("Administrative Areas Vector Tiles")),
 )
-class AreaViewSet(CSVDownloadMixin, ReadOnlyModelViewSet):
+class AreaViewSet(CSVDownloadMixin, VectorLayer, ReadOnlyModelViewSet):
     """Administrative Area API endpoint."""
 
     serializer_class = AreaSerializer
@@ -62,7 +63,31 @@ class AreaViewSet(CSVDownloadMixin, ReadOnlyModelViewSet):
 
     csv_serializer_class = AreaCSVSerializer
 
+    #: Vector tiles layer ID
+    id = "administrative-areas"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "uuid",
+        "type_code",
+        "country",
+        "name",
+        "code",
+        "description",
+        "area",
+        "population",
+        "population_year",
+    )
+
     queryset = Area.objects.all()
+
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+
+        queryset = self.get_queryset().order_by()
+        queryset = self.filter_queryset(queryset)
+
+        return queryset
 
     @action(
         detail=False,
@@ -74,6 +99,18 @@ class AreaViewSet(CSVDownloadMixin, ReadOnlyModelViewSet):
     def download(self, request, *args, **kwargs):
         """Returns Administrative Areas CSV"""
         return self.export_csv(request, *args, **kwargs)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT))
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for administrative areas."""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
 
 
 @extend_schema_view(
@@ -88,7 +125,7 @@ class AreaViewSet(CSVDownloadMixin, ReadOnlyModelViewSet):
     download=extend_schema(summary=_("Administrative Areas Education Statistics CSV")),
     tile=extend_schema(summary=_("Administrative Areas Education Statistics Vector Tiles")),
 )
-class AreaEducationViewSet(VectorLayer, AreaViewSet):
+class AreaEducationViewSet(AreaViewSet):
     """Education Summary for an Administrative Area API endpoint."""
 
     serializer_class = AreaEducationSerializer
@@ -199,7 +236,7 @@ class AreaEducationViewSet(VectorLayer, AreaViewSet):
     download=extend_schema(summary=_("Administrative Area Education and Fiber Distance CSV")),
     tile=extend_schema(summary=_("Administrative Area Education and Fiber Distance Vector Tiles")),
 )
-class AreaEducationIFONDViewSet(VectorLayer, AreaViewSet):
+class AreaEducationIFONDViewSet(AreaViewSet):
     """Summarization of Number of Education Institutions within specified distance to a fiber optic node
     within Administrative Areas."""
 
