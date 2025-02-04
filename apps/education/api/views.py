@@ -29,6 +29,7 @@ from .serializers import CategorySerializer, InstitutionCSVSerializer, Instituti
 
 __all__ = ["CategoryViewSet", "OwnershipViewSet", "InstitutionViewSet"]
 
+MVT_CACHE_ALIAS = settings.CACHE_MVT_ALIAS
 MVT_CACHE_TIMEOUT = settings.CACHE_TIMEOUTS["mvt"]
 
 
@@ -251,7 +252,7 @@ class InstitutionViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelVi
         url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
         url_name="tile",
     )
-    @method_decorator(cache_page(MVT_CACHE_TIMEOUT))
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:education-institutions", cache=MVT_CACHE_ALIAS))
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for eduction institutions"""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))

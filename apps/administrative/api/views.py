@@ -32,6 +32,7 @@ from .serializers import (
 __all__ = ["AreaViewSet", "AreaEducationViewSet", "AreaEducationIFONDViewSet"]
 
 
+MVT_CACHE_ALIAS = settings.CACHE_MVT_ALIAS
 MVT_CACHE_TIMEOUT = settings.CACHE_TIMEOUTS["mvt"]
 
 
@@ -107,7 +108,7 @@ class AreaViewSet(CSVDownloadMixin, VectorLayer, ReadOnlyModelViewSet):
         url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
         url_name="tile",
     )
-    @method_decorator(cache_page(MVT_CACHE_TIMEOUT))
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:administrative-areas", cache=MVT_CACHE_ALIAS))
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for administrative areas."""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
@@ -185,14 +186,6 @@ class AreaEducationViewSet(AreaViewSet):
 
         return qs
 
-    def get_vector_tile_queryset(self, *args, **kwargs):
-        """Returns a queryset used to generate vector tiles."""
-
-        queryset = self.get_queryset().order_by()
-        queryset = self.filter_queryset(queryset)
-
-        return queryset
-
     @action(
         detail=False,
         methods=["get"],
@@ -212,7 +205,7 @@ class AreaEducationViewSet(AreaViewSet):
         url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
         url_name="tile",
     )
-    @method_decorator(cache_page(MVT_CACHE_TIMEOUT))
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:areas-education", cache=MVT_CACHE_ALIAS))
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for administrative areas with education statistics"""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
@@ -311,14 +304,6 @@ class AreaEducationIFONDViewSet(AreaViewSet):
 
         return qs
 
-    def get_vector_tile_queryset(self, *args, **kwargs):
-        """Returns a queryset used to generate vector tiles."""
-
-        queryset = self.get_queryset().order_by()
-        queryset = self.filter_queryset(queryset)
-
-        return queryset
-
     @action(
         detail=False,
         methods=["get"],
@@ -340,7 +325,7 @@ class AreaEducationIFONDViewSet(AreaViewSet):
         url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
         url_name="tile",
     )
-    @method_decorator(cache_page(MVT_CACHE_TIMEOUT))
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:areas-education-ifond", cache=MVT_CACHE_ALIAS))
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for administrative areas with number of education institutions
         within the specified distance."""

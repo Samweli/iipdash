@@ -142,10 +142,14 @@ CACHES = {
     }
 }
 
+#: Timeouts for various of cache categories
 CACHE_TIMEOUTS = {
     "default": env.int("CACHE_TIMEOUT_DEFAULT", default=60 * 5),  # 5 minutes
     "mvt": env.int("CACHE_TIMEOUT_MVT", default=60 * 60 * 24),  # 1 day
 }
+
+#: Name of cache to be used for vector tiles
+CACHE_MVT_ALIAS = env("CACHE_MVT_ALIAS", default="default")
 
 # Auth
 
