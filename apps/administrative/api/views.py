@@ -6,12 +6,12 @@ from django.views.decorators.cache import cache_page
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework_gis.pagination import GeoJsonPagination
 from vectortiles.backends.postgis import VectorLayer
 from vectortiles.rest_framework.renderers import MVTRenderer
@@ -21,6 +21,7 @@ from core.api.mixins import CSVDownloadMixin
 from ..models import Area
 from .filters import AreaFilter
 from .serializers import (
+    AreaCSVSerializer,
     AreaEducationCSVSerializer,
     AreaEducationIFONDCSVSerializer,
     AreaEducationIFONDSerializer,
@@ -43,8 +44,9 @@ MVT_CACHE_TIMEOUT = settings.CACHE_TIMEOUTS["mvt"]
         summary=_("Administrative Area"),
         description=_("Retrieve details of an administrative area."),
     ),
+    download=extend_schema(summary=_("Administrative Areas CSV")),
 )
-class AreaViewSet(viewsets.ReadOnlyModelViewSet):
+class AreaViewSet(CSVDownloadMixin, ReadOnlyModelViewSet):
     """Administrative Area API endpoint."""
 
     serializer_class = AreaSerializer
@@ -58,7 +60,20 @@ class AreaViewSet(viewsets.ReadOnlyModelViewSet):
     search_fields = ["name"]
     ordering_fields = ["name", "created_at", "updated_at"]
 
+    csv_serializer_class = AreaCSVSerializer
+
     queryset = Area.objects.all()
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Administrative Areas CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Returns Administrative Areas CSV"""
+        return self.export_csv(request, *args, **kwargs)
 
 
 @extend_schema_view(
@@ -73,7 +88,7 @@ class AreaViewSet(viewsets.ReadOnlyModelViewSet):
     download=extend_schema(summary=_("Administrative Areas Education Statistics CSV")),
     tile=extend_schema(summary=_("Administrative Areas Education Statistics Vector Tiles")),
 )
-class AreaEducationViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
+class AreaEducationViewSet(VectorLayer, AreaViewSet):
     """Education Summary for an Administrative Area API endpoint."""
 
     serializer_class = AreaEducationSerializer
@@ -184,7 +199,7 @@ class AreaEducationViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
     download=extend_schema(summary=_("Administrative Area Education and Fiber Distance CSV")),
     tile=extend_schema(summary=_("Administrative Area Education and Fiber Distance Vector Tiles")),
 )
-class AreaEducationIFONDViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
+class AreaEducationIFONDViewSet(VectorLayer, AreaViewSet):
     """Summarization of Number of Education Institutions within specified distance to a fiber optic node
     within Administrative Areas."""
 

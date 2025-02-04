@@ -9,6 +9,7 @@ __all__ = [
     "BaseAreaEducationSerializer",
     "BaseAreaEducationIFONDSerializer",
     "AreaSerializer",
+    "AreaCSVSerializer",
     "AreaEducationSerializer",
     "AreaEducationCSVSerializer",
     "AreaEducationIFONDSerializer",
@@ -67,6 +68,27 @@ class AreaSerializer(GeoFeatureModelSerializer):
         id_field = "uuid"
         geo_field = "geometry"
         exclude = ["id", "depth", "path", "numchild", "geom"]
+
+
+class AreaCSVSerializer(serializers.ModelSerializer):
+    """Serializer for administrative areas for CSV export."""
+
+    class Meta:
+        model = Area
+        fields = [
+            "uuid",
+            "type_code",
+            "country",
+            "name",
+            "code",
+            "description",
+            "area",
+            "population",
+            "population_year",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = fields
 
 
 class AreaEducationSerializer(BaseAreaEducationSerializer, GeoFeatureModelSerializer):
