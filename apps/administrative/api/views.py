@@ -1,5 +1,8 @@
+from django.conf import settings
 from django.db.models import Count, Q
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import cache_page
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -26,6 +29,9 @@ from .serializers import (
 )
 
 __all__ = ["AreaViewSet", "AreaEducationViewSet", "AreaEducationIFONDViewSet"]
+
+
+MVT_CACHE_TIMEOUT = settings.CACHE_TIMEOUTS["mvt"]
 
 
 @extend_schema_view(
@@ -154,6 +160,7 @@ class AreaEducationViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
         url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
         url_name="tile",
     )
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT))
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for administrative areas with education statistics"""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
@@ -281,6 +288,7 @@ class AreaEducationIFONDViewSet(CSVDownloadMixin, VectorLayer, AreaViewSet):
         url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
         url_name="tile",
     )
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT))
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for administrative areas with number of education institutions
         within the specified distance."""

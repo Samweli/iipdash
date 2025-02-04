@@ -1,9 +1,12 @@
 from typing import List, Type
 
+from django.conf import settings
 from django.contrib.gis.db.models import PointField
 from django.db.models import F, QuerySet
 from django.db.models.functions import Cast
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
+from django.views.decorators.cache import cache_page
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
@@ -25,6 +28,8 @@ from .openapi import examples
 from .serializers import CategorySerializer, InstitutionCSVSerializer, InstitutionSerializer, OwnershipSerializer
 
 __all__ = ["CategoryViewSet", "OwnershipViewSet", "InstitutionViewSet"]
+
+MVT_CACHE_TIMEOUT = settings.CACHE_TIMEOUTS["mvt"]
 
 
 @extend_schema_view(
@@ -246,6 +251,7 @@ class InstitutionViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelVi
         url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
         url_name="tile",
     )
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT))
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for eduction institutions"""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))

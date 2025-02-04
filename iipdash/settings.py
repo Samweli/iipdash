@@ -142,6 +142,11 @@ CACHES = {
     }
 }
 
+CACHE_TIMEOUTS = {
+    "default": env.int("CACHE_TIMEOUT_DEFAULT", default=60 * 5),  # 5 minutes
+    "mvt": env.int("CACHE_TIMEOUT_MVT", default=60 * 60 * 24),  # 1 day
+}
+
 # Auth
 
 AUTH_USER_MODEL = "users.User"
