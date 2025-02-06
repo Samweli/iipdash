@@ -231,9 +231,11 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SITE_NAME = env("SITE_NAME", default="IIP dashboard")
 
+SITE_TAGLINE = env("SITE_TAGLINE", default="Integrated Infrastructure Planning (IIP) Dashboard")
+
 SITE_API_NAME = env("SITE_API_NAME", default=f"{SITE_NAME} API")
 
-SITE_API_URL = env("SITE_API_URL", default="")
+SITE_API_URL = env("SITE_API_URL", default="/api")
 
 # Admin site
 

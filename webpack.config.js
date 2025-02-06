@@ -3,99 +3,103 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-    entry: {
-        main: ['./assets/js/main.js', './assets/scss/main.scss'],
-    },
-    output: {
-        path: path.resolve('./assets/dist/'),
-        filename: '[name].js',
-    },
+  entry: {
+    main: ['./assets/js/main.js', './assets/scss/main.scss'],
+    vendor: ['./assets/vendor/vendor.css'],
+  },
+  output: {
+    path: path.resolve('./assets/dist/'),
+    filename: '[name].js',
+  },
 
-    plugins: [
-        new MiniCssExtractPlugin({
-            filename: '[name].css',
-            chunkFilename: '[id].css',
-        }),
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].css',
+      chunkFilename: '[id].css',
+    }),
 
-        new CopyPlugin({
-            patterns: [
-                {
-                    from: 'assets/images',
-                    to: 'images',
-                },
-            ],
-        }),
-    ],
+    new CopyPlugin({
+      patterns: [
+        {
+          from: 'assets/images',
+          to: 'images',
+        },
+      ],
+    }),
+  ],
 
-    module: {
-        rules: [
-            {
-                test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
-                type: 'asset/resource',
-                generator: {
-                    filename: 'fonts/[name][ext]',
-                },
-            },
-            {
-                test: /\.(jpg|png|gif|svg)(\?v=\d+\.\d+\.\d+)?$/,
-                type: 'asset/resource',
-                generator: {
-                    filename: 'images/[name][ext]',
-                },
-            },
-            {
-                test: /\.css$/,
-                use: [
-                    {
-                        // Extract CSS into separate files.
-                        loader: MiniCssExtractPlugin.loader,
-                    },
-                    {
-                        loader: 'css-loader',
-                    },
-                ],
-            },
-            {
-                test: /\.s[ac]ss$/i,
-                use: [
-                    {
-                        // Extract CSS into separate files.
-                        loader: MiniCssExtractPlugin.loader,
-                    },
-                    {
-                        // Translates CSS into CommonJS
-                        loader: 'css-loader',
-                    },
-                    {
-                        // Run post css actions
-                        loader: 'postcss-loader',
-                        options: {
-                            postcssOptions: {
-                                plugins: function () {
-                                    // post css plugins, can be exported to
-                                    // postcss.config.js
-                                    return [
-                                        require('precss'),
-                                        require('autoprefixer'),
-                                    ];
-                                },
-                            },
-                        },
-                    },
-                    {
-                        // Compiles Sass to CSS
-                        loader: 'sass-loader',
-                    },
-                ],
-            },
-            // See: https://webpack.js.org/loaders/expose-loader/
-            {
-                test: require.resolve('jquery'),
-                loader: 'expose-loader',
-                options: {
-                    exposes: ['$', 'jQuery'],
-                },
-            },
+  module: {
+    rules: [
+      {
+        test: /\.(woff(2)?|ttf|eot)(\?v=\d+\.\d+\.\d+)?$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]',
+        },
+      },
+      {
+        test: /\.(jpg|png|gif|svg)(\?v=\d+\.\d+\.\d+)?$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][ext]',
+        },
+      },
+      {
+        test: /\.css$/,
+        use: [
+          {
+            // Extract CSS into separate files.
+            loader: MiniCssExtractPlugin.loader,
+          },
+          {
+            loader: 'css-loader',
+          },
         ],
+      },
+      {
+        test: /\.s[ac]ss$/i,
+        use: [
+          {
+            // Extract CSS into separate files.
+            loader: MiniCssExtractPlugin.loader,
+          },
+          {
+            // Translates CSS into CommonJS
+            loader: 'css-loader',
+          },
+          {
+            // Run post css actions
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: function () {
+                  // post css plugins, can be exported to
+                  // postcss.config.js
+                  return [require('precss'), require('autoprefixer')];
+                },
+              },
+            },
+          },
+          {
+            // Compiles Sass to CSS
+            loader: 'sass-loader',
+          },
+        ],
+      },
+      // See: https://webpack.js.org/loaders/expose-loader/
+      {
+        test: require.resolve('jquery'),
+        loader: 'expose-loader',
+        options: {
+          exposes: ['$', 'jQuery'],
+        },
+      },
+    ],
+  },
+
+  resolve: {
+    alias: {
+      vue: 'vue/dist/vue.esm-bundler.js',
     },
+  },
 };
