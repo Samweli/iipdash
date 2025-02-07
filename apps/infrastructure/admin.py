@@ -17,7 +17,7 @@ from django.contrib.gis.admin import GISModelAdmin
 
 from import_export.admin import ImportExportModelAdmin
 
-from .models import CellTower, FiberOptic
+from .models import CellTower, FiberOptic, MobileCoverage, NetworkGeneration
 
 
 @admin.register(FiberOptic)
@@ -73,4 +73,21 @@ class CellTowerAdmin(GISModelAdmin, ImportExportModelAdmin):
     search_fields = ["id", "uuid"]
 
     #: A list of fields that are displayed as read-only in the admin interface.
+    readonly_fields = ["id", "uuid", "created_at", "updated_at"]
+
+
+@admin.register(NetworkGeneration)
+class NetworkGenerationAdmin(ImportExportModelAdmin):
+    prepopulated_fields = {"code": ["name"]}
+    search_fields = ["id", "uuid", "name", "code"]
+    readonly_fields = ["id", "uuid", "created_at", "updated_at"]
+
+
+@admin.register(MobileCoverage)
+class MobileCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
+    search_fields = ["id", "uuid"]
+    list_display = ["network_generation", "administrative_area", "population_covered"]
+    list_display_links = ["network_generation", "administrative_area"]
+    list_select_related = ["network_generation", "administrative_area"]
+    list_filter = ["network_generation", "created_at", "updated_at"]
     readonly_fields = ["id", "uuid", "created_at", "updated_at"]

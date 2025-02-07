@@ -60,6 +60,7 @@ and enable the PostGIS plugin.
     CREATE USER iipdash WITH PASSWORD 'iipdash';
     GRANT ALL PRIVILEGES ON DATABASE iipdash TO iipdash;
     CREATE EXTENSION postgis;
+    CREATE EXTENSION postgis_raster;
     exit;
 
 
