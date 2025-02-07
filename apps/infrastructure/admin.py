@@ -17,7 +17,7 @@ from django.contrib.gis.admin import GISModelAdmin
 
 from import_export.admin import ImportExportModelAdmin
 
-from .models import CellTower, FiberOptic, MobileCoverage, NetworkGeneration
+from .models import CellTower, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
 
 
 @admin.register(FiberOptic)
@@ -45,6 +45,27 @@ class FiberOpticAdmin(GISModelAdmin, ImportExportModelAdmin):
     raw_id_fields = ["administrative_area"]
 
     #: A list of fields that are displayed as read-only in the admin interface.
+    readonly_fields = ["id", "uuid", "created_at", "updated_at"]
+
+
+@admin.register(FiberOpticNode)
+class FiberOpticNodeAdmin(GISModelAdmin, ImportExportModelAdmin):
+
+    list_filter = [
+        "node_type",
+        "administrative_area__country",
+        "created_at",
+        "updated_at",
+    ]
+    list_select_related = ["administrative_area"]
+    search_fields = ["id", "uuid", "administrative_area__name"]
+    readonly_fields = ["id", "uuid", "created_at", "updated_at"]
+
+
+@admin.register(NetworkGeneration)
+class NetworkGenerationAdmin(ImportExportModelAdmin):
+    prepopulated_fields = {"code": ["name"]}
+    search_fields = ["id", "uuid", "name", "code"]
     readonly_fields = ["id", "uuid", "created_at", "updated_at"]
 
 
@@ -76,18 +97,11 @@ class CellTowerAdmin(GISModelAdmin, ImportExportModelAdmin):
     readonly_fields = ["id", "uuid", "created_at", "updated_at"]
 
 
-@admin.register(NetworkGeneration)
-class NetworkGenerationAdmin(ImportExportModelAdmin):
-    prepopulated_fields = {"code": ["name"]}
-    search_fields = ["id", "uuid", "name", "code"]
-    readonly_fields = ["id", "uuid", "created_at", "updated_at"]
-
-
 @admin.register(MobileCoverage)
 class MobileCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
-    search_fields = ["id", "uuid"]
-    list_display = ["network_generation", "administrative_area", "population_covered"]
+    list_display = ["network_generation", "administrative_area", "administrative_area__country", "population_covered"]
     list_display_links = ["network_generation", "administrative_area"]
     list_select_related = ["network_generation", "administrative_area"]
-    list_filter = ["network_generation", "created_at", "updated_at"]
+    list_filter = ["network_generation", "administrative_area__country", "created_at", "updated_at"]
+    search_fields = ["id", "uuid", "administrative_area__name"]
     readonly_fields = ["id", "uuid", "created_at", "updated_at"]

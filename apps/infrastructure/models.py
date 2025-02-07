@@ -29,60 +29,6 @@ from django.utils.translation import gettext_lazy as _
 from .files import mobile_coverage_tiff_path
 
 
-class NetworkGeneration(models.Model):
-    """A mobile network generation."""
-
-    uuid = models.UUIDField(
-        _("UUID"),
-        default=uuid.uuid4,
-        editable=False,
-        unique=True,
-    )
-
-    name = models.CharField(
-        _("name"),
-        max_length=255,
-        db_index=True,
-    )
-
-    code = models.SlugField(
-        _("code"),
-        blank=True,
-        null=True,
-        max_length=50,
-        unique=True,
-    )
-
-    description = models.TextField(_("description"), blank=True, help_text=_("A long-form description."))
-
-    created_at = models.DateTimeField(
-        "created at",
-        auto_now_add=True,
-        db_default=Now(),
-        db_index=True,
-    )
-
-    updated_at = models.DateTimeField(
-        _("updated at"),
-        auto_now=True,
-        null=True,
-        blank=True,
-    )
-
-    extras = models.JSONField(
-        _("extras"),
-        blank=True,
-        default=dict,
-    )
-
-    class Meta:
-        verbose_name = _("Mobile Network Generation")
-        verbose_name_plural = _("Mobile Network Generations")
-
-    def __str__(self):
-        return self.name
-
-
 class FiberOptic(models.Model):
     """A fiber optic network.
 
@@ -303,6 +249,128 @@ class FiberOptic(models.Model):
                 with the country and UUID.
         """
         return self.name or self.display_name
+
+
+class FiberOpticNode(models.Model):
+    """A Mobile network Node."""
+
+    uuid = models.UUIDField(
+        _("UUID"),
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+    )
+
+    administrative_area = models.ForeignKey(
+        "administrative.Area",
+        blank=True,
+        null=True,
+        related_name="fiber_optic_nodes",
+        related_query_name="fiber_optic_node",
+        on_delete=models.SET_NULL,
+        verbose_name=_("administrative area"),
+    )
+
+    node_type = models.CharField(_("node type"), max_length=255, blank=True, null=True, db_index=True)
+
+    #: Spatial location of the fiber node.
+    geometry = models.PointField(
+        _("location"),
+        geography=True,
+        blank=True,
+        null=True,
+        srid=4326,
+    )
+
+    created_at = models.DateTimeField(
+        _("created at"),
+        auto_now_add=True,
+        db_default=Now(),
+        db_index=True,
+    )
+
+    updated_at = models.DateTimeField(
+        _("updated at"),
+        auto_now=True,
+        null=True,
+        blank=True,
+    )
+
+    extras = models.JSONField(
+        _("extras"),
+        blank=True,
+        default=dict,
+    )
+
+    class Meta:
+        verbose_name = _("Fiber Optic Node")
+        verbose_name_plural = _("Fiber Optic Nodes")
+
+    def __str__(self):
+        return self.display_name
+
+    @property
+    def display_name(self):
+        if self.node_type:
+            return f"{self.node_type}: {self.administrative_area}"
+        else:
+            return _("fiber optic node: %(administrative_area)s") % {
+                "administrative_area": str(self.administrative_area)
+            }
+
+
+class NetworkGeneration(models.Model):
+    """A mobile network generation."""
+
+    uuid = models.UUIDField(
+        _("UUID"),
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+    )
+
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        db_index=True,
+    )
+
+    code = models.SlugField(
+        _("code"),
+        blank=True,
+        null=True,
+        max_length=50,
+        unique=True,
+    )
+
+    description = models.TextField(_("description"), blank=True, help_text=_("A long-form description."))
+
+    created_at = models.DateTimeField(
+        "created at",
+        auto_now_add=True,
+        db_default=Now(),
+        db_index=True,
+    )
+
+    updated_at = models.DateTimeField(
+        _("updated at"),
+        auto_now=True,
+        null=True,
+        blank=True,
+    )
+
+    extras = models.JSONField(
+        _("extras"),
+        blank=True,
+        default=dict,
+    )
+
+    class Meta:
+        verbose_name = _("Mobile Network Generation")
+        verbose_name_plural = _("Mobile Network Generations")
+
+    def __str__(self):
+        return self.name
 
 
 class CellTower(models.Model):
