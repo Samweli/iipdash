@@ -5,7 +5,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from administrative.api.serializers import RelatedAreaSerializer
 
-from ..models import CellTower, FiberOptic, NetworkGeneration
+from ..models import CellTower, FiberOptic, FiberOpticNode, NetworkGeneration
 
 __all__ = [
     "NetworkGenerationSerializer",
@@ -13,6 +13,8 @@ __all__ = [
     "CellTowerCSVSerializer",
     "FiberOpticSerializer",
     "FiberOpticCSVSerializer",
+    "FiberOpticNodeSerializer",
+    "FiberOpticNodeCSVSerializer",
 ]
 
 
@@ -111,6 +113,7 @@ class FiberOpticSerializer(GeoFeatureModelSerializer):
 
 
 class FiberOpticCSVSerializer(serializers.ModelSerializer):
+    """Fiber Optic Network CSV serializer."""
 
     country = serializers.CharField(source="administrative_area.country", read_only=True)
     administrative_area_name = serializers.CharField(source="administrative_area.name", read_only=True)
@@ -132,4 +135,37 @@ class FiberOpticCSVSerializer(serializers.ModelSerializer):
 
         # There might be some performance gains in making fields read only
         # https://hakibenita.com/django-rest-framework-slow#read-only-modelserializer
+        read_only_fields = fields
+
+
+class FiberOpticNodeSerializer(GeoFeatureModelSerializer):
+    """Fiber Optic Node GeoJSON serializer."""
+
+    administrative_area = RelatedAreaSerializer(read_only=True)
+
+    class Meta:
+        model = FiberOpticNode
+        id_field = "uuid"
+        geo_field = "geometry"
+        exclude = ["id"]
+
+
+class FiberOpticNodeCSVSerializer(serializers.ModelSerializer):
+    """Fiber Optic Node CSV serializer."""
+
+    country = serializers.CharField(source="administrative_area.country", read_only=True)
+    administrative_area_name = serializers.CharField(source="administrative_area.name", read_only=True)
+    geometry = serializers.CharField()
+
+    class Meta:
+        model = FiberOpticNode
+        fields = [
+            "uuid",
+            "node_type",
+            "country",
+            "administrative_area_name",
+            "created_at",
+            "updated_at",
+            "geometry",
+        ]
         read_only_fields = fields

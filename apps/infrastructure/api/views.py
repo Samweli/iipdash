@@ -21,13 +21,15 @@ from vectortiles.rest_framework.renderers import MVTRenderer
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
 from core.api.mixins import CSVDownloadMixin
 
-from ..models import CellTower, FiberOptic, NetworkGeneration
+from ..models import CellTower, FiberOptic, FiberOpticNode, NetworkGeneration
 from .filters import CellTowerFilter, FiberOpticFilter
 from .openapi import examples
 from .serializers import (
     CellTowerCSVSerializer,
     CellTowerSerializer,
     FiberOpticCSVSerializer,
+    FiberOpticNodeCSVSerializer,
+    FiberOpticNodeSerializer,
     FiberOpticSerializer,
     NetworkGenerationSerializer,
 )
@@ -332,4 +334,105 @@ class FiberOpticViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelVie
     @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:fiber-optics", cache=MVT_CACHE_ALIAS))
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for fiber optic networks"""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary=_("Fiber Optic Nodes"),
+        description=_("Retrieve a list of fiber optics nodes."),
+    ),
+    retrieve=extend_schema(
+        summary=_("Fiber Optic Node"),
+        description=_("Retrieve details of a specific fiber optic network."),
+    ),
+    tile=extend_schema(summary=_("Fiber Optic Node Vector Tiles")),
+    download=extend_schema(summary=_("Fiber Optic Node CSV")),
+)
+class FiberOpticNodeViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelViewSet):
+    """Fiber Optic Node endpoint"""
+
+    serializer_class = FiberOpticNodeSerializer
+    pagination_class = GeoJsonPagination
+    lookup_field = "uuid"
+    required_scopes = ["default"]
+
+    #: A list of filter backends for applying search and order filters
+    #: to the queryset of `FiberOptic` objects.
+    filter_backends: List[Type[BaseFilterBackend]] = [
+        DjangoFilterBackend,
+        SearchFilter,
+        OrderingFilter,
+        InBBoxFilter,
+        TMSTileFilter,
+        DistanceToPointFilter,
+    ]
+
+    filter_fields = ["node_type", "administrative_area"]
+
+    #: A `FiberOptic` geometry field used in performing bounding box filtering
+    #: on the queryset of `FiberOptic` objects via query parameters
+    #: (i.e., `?in_bbox=<bbox>`).
+    bbox_filter_field: str = "geometry"
+    bbox_filter_include_overlapping: bool = False
+
+    #: A `FiberOptic` geometry field used in filtering queryset of `FiberOptic`
+    #: objects based on their distance from a specific point via query
+    #: parameters (i.e., `?point=<x,y>&radius=<distance>`).
+    distance_filter_field = "geometry"
+    distance_filter_convert_meters = True
+
+    queryset = FiberOpticNode.objects.select_related("administrative_area").order_by("-created_at")
+
+    #: Vector tiles layer ID
+    id = "fiber-nodes"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "uuid",
+        "name",
+        "node_type",
+        "country",
+        "administrative_area_uuid",
+        "administrative_area_name",
+    )
+
+    csv_serializer_class = FiberOpticNodeCSVSerializer
+
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+
+        queryset = self.get_queryset().annotate(
+            geom=Cast("geometry", MultiLineStringField()),
+            country=F("administrative_area__country"),
+            administrative_area_uuid=F("administrative_area__uuid"),
+            administrative_area_name=F("administrative_area__name"),
+        )
+
+        queryset = self.filter_queryset(queryset)
+
+        return queryset
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download Fiber Optic nodes CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Download Fiber Optic nodes as CSV file."""
+
+        return self.export_csv(request, *args, **kwargs)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:fiber-nodes", cache=MVT_CACHE_ALIAS))
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for fiber optic nodes"""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
