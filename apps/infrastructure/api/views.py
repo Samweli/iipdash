@@ -21,15 +21,40 @@ from vectortiles.rest_framework.renderers import MVTRenderer
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
 from core.api.mixins import CSVDownloadMixin
 
-from ..models import CellTower, FiberOptic
+from ..models import CellTower, FiberOptic, NetworkGeneration
 from .filters import CellTowerFilter, FiberOpticFilter
 from .openapi import examples
-from .serializers import CellTowerCSVSerializer, CellTowerSerializer, FiberOpticCSVSerializer, FiberOpticSerializer
+from .serializers import (
+    CellTowerCSVSerializer,
+    CellTowerSerializer,
+    FiberOpticCSVSerializer,
+    FiberOpticSerializer,
+    NetworkGenerationSerializer,
+)
 
 __all__ = ["CellTowerViewSet", "FiberOpticViewSet"]
 
 MVT_CACHE_ALIAS = settings.CACHE_MVT_ALIAS
 MVT_CACHE_TIMEOUT = settings.CACHE_TIMEOUTS["mvt"]
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary=_("Mobile Network Generations"),
+        description=_("Retrieve a list of mobile network generations."),
+    ),
+    retrieve=extend_schema(
+        summary=_("Mobile Network Generation"),
+        description=_("Retrieve details of a specific mobile network generation."),
+    ),
+)
+class NetworkGenerationViewSet(viewsets.ReadOnlyModelViewSet):
+    """Mobile Network Generations endpoint."""
+
+    serializer_class = NetworkGenerationSerializer
+    lookup_field: str = "uuid"
+    required_scopes: List[str] = ["default"]
+    queryset = NetworkGeneration.objects.all().order_by("id")
 
 
 @extend_schema_view(

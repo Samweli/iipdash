@@ -4,9 +4,24 @@ from rest_framework import serializers
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from administrative.api.serializers import RelatedAreaSerializer
-from infrastructure.models import CellTower, FiberOptic
 
-__all__ = ["CellTowerSerializer", "CellTowerCSVSerializer", "FiberOpticSerializer", "FiberOpticCSVSerializer"]
+from ..models import CellTower, FiberOptic, NetworkGeneration
+
+__all__ = [
+    "NetworkGenerationSerializer",
+    "CellTowerSerializer",
+    "CellTowerCSVSerializer",
+    "FiberOpticSerializer",
+    "FiberOpticCSVSerializer",
+]
+
+
+class NetworkGenerationSerializer(serializers.ModelSerializer):
+    """mobile network generation"""
+
+    class Meta:
+        model = NetworkGeneration
+        exclude = ["id"]
 
 
 class CellTowerSerializer(GeoFeatureModelSerializer):
