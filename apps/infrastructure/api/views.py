@@ -21,7 +21,7 @@ from vectortiles.rest_framework.renderers import MVTRenderer
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
 from core.api.mixins import CSVDownloadMixin
 
-from ..models import CellTower, FiberOptic, FiberOpticNode, NetworkGeneration
+from ..models import CellTower, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
 from .filters import CellTowerFilter, FiberOpticFilter
 from .openapi import examples
 from .serializers import (
@@ -31,10 +31,11 @@ from .serializers import (
     FiberOpticNodeCSVSerializer,
     FiberOpticNodeSerializer,
     FiberOpticSerializer,
+    MobileCoverageSerializer,
     NetworkGenerationSerializer,
 )
 
-__all__ = ["CellTowerViewSet", "FiberOpticViewSet"]
+__all__ = ["NetworkGenerationViewSet", "CellTowerViewSet", "FiberOpticViewSet", "FiberOpticNodeViewSet"]
 
 MVT_CACHE_ALIAS = settings.CACHE_MVT_ALIAS
 MVT_CACHE_TIMEOUT = settings.CACHE_TIMEOUTS["mvt"]
@@ -54,9 +55,28 @@ class NetworkGenerationViewSet(viewsets.ReadOnlyModelViewSet):
     """Mobile Network Generations endpoint."""
 
     serializer_class = NetworkGenerationSerializer
-    lookup_field: str = "uuid"
-    required_scopes: List[str] = ["default"]
+    lookup_field = "uuid"
+    required_scopes = ["default"]
     queryset = NetworkGeneration.objects.all().order_by("id")
+
+
+@extend_schema_view(
+    list=extend_schema(
+        summary=_("Mobile Network Coverages"),
+        description=_("Retrieve a list of mobile network coverage."),
+    ),
+    retrieve=extend_schema(
+        summary=_("Mobile Network Coverage"),
+        description=_("Retrieve details of a specific mobile network coverage."),
+    ),
+)
+class MobileCoverageViewSet(viewsets.ReadOnlyModelViewSet):
+    """Mobile Network Coverage endpoint."""
+
+    serializer_class = MobileCoverageSerializer
+    lookup_field = "uuid"
+    required_scopes = ["default"]
+    queryset = MobileCoverage.objects.all().order_by("id")
 
 
 @extend_schema_view(

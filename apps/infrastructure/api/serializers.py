@@ -5,12 +5,14 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from administrative.api.serializers import RelatedAreaSerializer
 
-from ..models import CellTower, FiberOptic, FiberOpticNode, NetworkGeneration
+from ..models import CellTower, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
 
 __all__ = [
     "NetworkGenerationSerializer",
+    "RelatedNetworkGenerationSerializer",
     "CellTowerSerializer",
     "CellTowerCSVSerializer",
+    "MobileCoverageSerializer",
     "FiberOpticSerializer",
     "FiberOpticCSVSerializer",
     "FiberOpticNodeSerializer",
@@ -24,6 +26,14 @@ class NetworkGenerationSerializer(serializers.ModelSerializer):
     class Meta:
         model = NetworkGeneration
         exclude = ["id"]
+
+
+class RelatedNetworkGenerationSerializer(serializers.ModelSerializer):
+    """mobile network generation"""
+
+    class Meta:
+        model = NetworkGeneration
+        fields = ["uuid", "name", "code"]
 
 
 class CellTowerSerializer(GeoFeatureModelSerializer):
@@ -81,6 +91,17 @@ class CellTowerCSVSerializer(serializers.ModelSerializer):
         # There might be some performance gains in making fields read only
         # https://hakibenita.com/django-rest-framework-slow#read-only-modelserializer
         read_only_fields = fields
+
+
+class MobileCoverageSerializer(serializers.ModelSerializer):
+    """Mobile Coverage serializer."""
+
+    administrative_area = RelatedAreaSerializer(read_only=True)
+    network_generation = RelatedNetworkGenerationSerializer(read_only=True)
+
+    class Meta:
+        model = MobileCoverage
+        exclude = ["id", "raster"]
 
 
 class FiberOpticSerializer(GeoFeatureModelSerializer):
