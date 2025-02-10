@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 
 import sys
 from pathlib import Path
+from urllib.parse import urljoin
 
 from django.utils.translation import gettext_lazy as _
 
@@ -316,3 +317,11 @@ CORS_ALLOW_HEADERS = env.list("CORS_ALLOW_HEADERS", default=cors_default_headers
 # Administrative
 
 ADMINISTRATIVE_AREAS_SIMPLIFICATION_TOLERANCE = env.float("ADMINISTRATIVE_AREAS_SIMPLIFICATION_TOLERANCE", default=1.0)
+
+# Raster tiles
+
+TILES_ROOT = env("TILES_ROOT", default=str(Path(MEDIA_ROOT) / "tiles"))
+
+TILES_URL = env("TILES_URL", default=urljoin(MEDIA_URL, "tiles/"))
+
+GDAL2TILES_PROCESSES = env.int("GDAL2TILES_PROCESSES", default=1)

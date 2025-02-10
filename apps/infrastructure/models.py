@@ -17,14 +17,20 @@ See Also:
 """
 
 import uuid
+from pathlib import Path
 from typing import Any, Dict, Tuple
+from urllib.parse import urljoin
 
+from django.conf import settings
 from django.contrib.gis import geos
 from django.contrib.gis.db import models
 from django.contrib.gis.gdal import GDALRaster
 from django.core.validators import MinValueValidator
 from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
+
+import gdal2tiles
+import rasterio
 
 from .files import mobile_coverage_tiff_path
 
@@ -662,6 +668,18 @@ class MobileCoverage(models.Model):
             "area": str(self.administrative_area),
         }
 
+    @property
+    def tiles_dir(self):
+        return Path(f"mobile-coverage/{self.uuid}/")
+
+    @property
+    def tiles_root(self):
+        return Path(settings.TILES_ROOT) / self.tiles_dir
+
+    @property
+    def tms_url(self):
+        return urljoin(settings.TILES_URL, f"{self.tiles_dir}/{{z}}/{{x}}/{{y}}.png")
+
     def set_raster(self):
         """Set raster attribute data based on assigned GeoTIFF file."""
         if not self.tiff:
@@ -674,3 +692,57 @@ class MobileCoverage(models.Model):
             raster = raster.transform(raster_srid)
 
         self.raster = raster
+
+    def gdal2tiles(self, **kwargs):
+        """Generate tiles for using web maps from TIFF file."""
+
+        if not self.tiff:
+            return
+
+        rgb_tiff = self.band2rgb()
+
+        kwargs = {
+            "webviewer": "none",
+            "nb_processes": settings.GDAL2TILES_PROCESSES,
+            "profile": "mercator",
+            "tile_size": 256,
+            "tmscompatible": True,
+            "zoom": (1, 15),
+            **kwargs,
+        }
+        gdal2tiles.generate_tiles(str(rgb_tiff), str(self.tiles_root), **kwargs)
+
+    def band2rgb(self):
+        """Converts a single band coverage GeoTIFF to RGBA format.
+
+        Returns:
+            Path: Path to the created RGBA GeoTIFF.
+        """
+        dataset = rasterio.open(self.tiff.open())
+        band = dataset.read(1)
+        band = band * 127.5
+        band = band.astype("uint8")
+        alpha_band = dataset.read_masks(1)
+
+        og_file_name = Path(self.tiff.name).name
+        rgb_rel_path = f"infrastructure/mobile-coverage/{self.uuid}/tiff-rgb/{og_file_name}"
+        rgb_path = Path(settings.MEDIA_ROOT) / rgb_rel_path
+        Path.mkdir(rgb_path.parent, parents=True, exist_ok=True)
+
+        with rasterio.open(
+            str(rgb_path),
+            mode="w",
+            driver="GTiff",
+            width=dataset.shape[1],
+            height=dataset.shape[0],
+            count=4,
+            crs=dataset.crs,
+            transform=dataset.transform,
+            dtype=band.dtype,
+        ) as dst:
+            dst.write(band, 1)
+            dst.write(band, 2)
+            dst.write(band, 3)
+            dst.write(alpha_band, 4)
+
+        return rgb_path

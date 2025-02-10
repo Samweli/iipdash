@@ -98,6 +98,7 @@ class MobileCoverageSerializer(serializers.ModelSerializer):
 
     administrative_area = RelatedAreaSerializer(read_only=True)
     network_generation = RelatedNetworkGenerationSerializer(read_only=True)
+    tms_url = serializers.CharField(read_only=True)
 
     class Meta:
         model = MobileCoverage
