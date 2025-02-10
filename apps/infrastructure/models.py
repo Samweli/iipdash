@@ -477,16 +477,16 @@ class CellTower(models.Model):
         help_text=_("The estimated coverage range in meters of the cell tower."),
     )
 
-    #: The adminstrative area to which the cell tower belongs.
+    #: The administrative area to which the cell tower belongs.
     administrative_area = models.ForeignKey(
         "administrative.Area",
         blank=True,
         null=True,
-        related_name="infrastructure_cell_towers",
-        related_query_name="infrastructure_cell_tower",
+        related_name="cell_towers",
+        related_query_name="cell_tower",
         on_delete=models.SET_NULL,
         verbose_name=_("administrative area"),
-        help_text=_("The adminstrative area to which the cell tower belongs."),
+        help_text=_("The administrative area to which the cell tower belongs."),
     )
 
     #: The data source level timestamp of when the cell tower was created.
@@ -586,8 +586,8 @@ class MobileCoverage(models.Model):
         "administrative.Area",
         blank=True,
         null=True,
-        related_name="infrastructure_mobile_coverages",
-        related_query_name="infrastructure_mobile_coverage",
+        related_name="mobile_coverages",
+        related_query_name="mobile_coverage",
         on_delete=models.SET_NULL,
         verbose_name=_("administrative area"),
     )
