@@ -104,4 +104,4 @@ class MobileCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
     list_select_related = ["network_generation", "administrative_area"]
     list_filter = ["network_generation", "administrative_area__country", "created_at", "updated_at"]
     search_fields = ["id", "uuid", "administrative_area__name"]
-    readonly_fields = ["id", "uuid", "created_at", "updated_at"]
+    readonly_fields = ["id", "uuid", "tms_url", "created_at", "updated_at"]

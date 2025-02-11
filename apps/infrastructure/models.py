@@ -614,7 +614,13 @@ class MobileCoverage(models.Model):
     population_covered = models.PositiveIntegerField(_("population covered"), blank=True, null=True)
     population_covered_percent = models.FloatField(_("population covered percentage"), blank=True, null=True)
 
-    tiff = models.FileField(_("coverage GeoTIFF"), upload_to=mobile_coverage_tiff_path, max_length=510, blank=True)
+    tiff = models.FileField(
+        _("coverage GeoTIFF"),
+        upload_to=mobile_coverage_tiff_path,
+        max_length=510,
+        blank=True,
+        help_text=_("The file is expected to contain one band."),
+    )
 
     #: PostGIS raster
     raster = models.RasterField(
