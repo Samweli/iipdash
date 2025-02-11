@@ -54,6 +54,8 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.gis",
+    "django_celery_results",
+    "django_celery_beat",
     "treebeard",
     "django_countries",
     "import_export",
@@ -313,6 +315,34 @@ CORS_ALLOWED_ORIGIN_REGEXES = env.list("CORS_ALLOWED_ORIGIN_REGEXES", default=[]
 CORS_ALLOW_ALL_ORIGINS = env.bool("CORS_ALLOW_ALL_ORIGINS", default=DEBUG)
 
 CORS_ALLOW_HEADERS = env.list("CORS_ALLOW_HEADERS", default=cors_default_headers)
+
+
+# celery
+
+CELERY_TIMEZONE = env("CELERY_TIMEZONE", default=TIME_ZONE)
+
+CELERY_BROKER_URL = env("CELERY_BROKER_URL", default="redis://")
+
+CELERY_BROKER_CONNECTION_MAX_RETRIES = env.int("CELERY_BROKER_CONNECTION_MAX_RETRIES", default=5)
+
+CELERY_ACCEPT_CONTENT = env.list("CELERY_ACCEPT_CONTENT", default=["json"])
+
+CELERY_TASK_SERIALIZER = env("CELERY_TASK_SERIALIZER", default="json")
+
+CELERY_RESULT_SERIALIZER = env("CELERY_RESULT_SERIALIZER", default="json")
+
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default="django-db")
+
+CELERY_RESULT_EXTENDED = env.bool("CELERY_RESULT_EXTENDED", default=True)
+
+# https://docs.celeryq.dev/en/v5.4.0/userguide/configuration.html#result-expires
+CELERY_RESULT_EXPIRES = env.int("CELERY_RESULT_EXPIRES", default=60 * 60 * 24 * 30)  # defaults 1 month
+
+CELERY_TASK_TRACK_STARTED = env.bool("CELERY_TASK_TRACK_STARTED", default=True)
+
+CELERY_BEAT_SCHEDULER = env("CELERY_BEAT_SCHEDULER", default="django_celery_beat.schedulers:DatabaseScheduler")
+
+CELERY_FLOWER_BASIC_AUTH = env("CELERY_FLOWER_BASIC_AUTH", default=None)
 
 # Administrative
 

@@ -27,3 +27,9 @@ numpy<2.0
 # PYPI release doesn't include DRF renderers yet
 # https://github.com/submarcos/django-vectortiles/issues/20#issuecomment-1416927523
 django-vectortiles @ git+https://github.com/submarcos/django-vectortiles
+
+
+celery
+flower
+django-celery-results
+django-celery-beat
