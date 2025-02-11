@@ -26,6 +26,7 @@ from django.contrib.gis import geos
 from django.contrib.gis.db import models
 from django.contrib.gis.gdal import GDALRaster
 from django.core.validators import MinValueValidator
+from django.db import transaction
 from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
 
@@ -33,6 +34,7 @@ import gdal2tiles
 import rasterio
 
 from .files import mobile_coverage_tiff_path
+from .tasks import generate_mobile_coverage_tiles, update_mobile_coverage_raster
 
 
 class FiberOptic(models.Model):
@@ -658,8 +660,9 @@ class MobileCoverage(models.Model):
         return self.display_name
 
     def save(self, *args, **kwargs):
-        self.set_raster()
         super().save(*args, **kwargs)
+
+        transaction.on_commit(self.process_tiff)
 
     @property
     def display_name(self):
@@ -680,6 +683,19 @@ class MobileCoverage(models.Model):
     def tms_url(self):
         return urljoin(settings.TILES_URL, f"{self.tiles_dir}/{{z}}/{{x}}/{{y}}.png")
 
+    def process_tiff(self):
+        """Process the TIFF in the background.
+
+        This involves
+         - Ingesting the raster data into the database.
+         - Generation of raster tiles for utilization iin various applications
+        """
+        if not self.tiff:
+            return
+
+        update_mobile_coverage_raster.delay(pk=self.pk)
+        generate_mobile_coverage_tiles.delay(pk=self.pk)
+
     def set_raster(self):
         """Set raster attribute data based on assigned GeoTIFF file."""
         if not self.tiff:
@@ -693,13 +709,13 @@ class MobileCoverage(models.Model):
 
         self.raster = raster
 
-    def gdal2tiles(self, **kwargs):
+    def generate_tiles(self, **kwargs):
         """Generate tiles for using web maps from TIFF file."""
 
         if not self.tiff:
             return
 
-        rgb_tiff = self.band2rgb()
+        rgb_tiff = self.band2rgba()
 
         kwargs = {
             "webviewer": "none",
@@ -712,11 +728,11 @@ class MobileCoverage(models.Model):
         }
         gdal2tiles.generate_tiles(str(rgb_tiff), str(self.tiles_root), **kwargs)
 
-    def band2rgb(self):
+    def band2rgba(self):
         """Converts a single band coverage GeoTIFF to RGBA format.
 
         Returns:
-            Path: Path to the created RGBA GeoTIFF.
+            Path: Path to the created RGBA GeoTIFF file.
         """
         dataset = rasterio.open(self.tiff.open())
         band = dataset.read(1)
@@ -725,7 +741,7 @@ class MobileCoverage(models.Model):
         alpha_band = dataset.read_masks(1)
 
         og_file_name = Path(self.tiff.name).name
-        rgb_rel_path = f"infrastructure/mobile-coverage/{self.uuid}/tiff-rgb/{og_file_name}"
+        rgb_rel_path = f"infrastructure/mobile-coverage/{self.uuid}/tiff-rgba/{og_file_name}"
         rgb_path = Path(settings.MEDIA_ROOT) / rgb_rel_path
         Path.mkdir(rgb_path.parent, parents=True, exist_ok=True)
 
