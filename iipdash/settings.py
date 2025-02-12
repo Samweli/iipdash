@@ -355,3 +355,7 @@ TILES_ROOT = env("TILES_ROOT", default=str(Path(MEDIA_ROOT) / "tiles"))
 TILES_URL = env("TILES_URL", default=urljoin(MEDIA_URL, "tiles/"))
 
 GDAL2TILES_PROCESSES = env.int("GDAL2TILES_PROCESSES", default=1)
+
+# Mapbox
+MAPBOX_STYLE_ID = env("MAPBOX_STYLE_ID", default="mapbox/light-v11")
+MAPBOX_ACCESS_TOKEN = env("MAPBOX_ACCESS_TOKEN", default="")
