@@ -52,6 +52,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic.base import TemplateView
 
 from debug_toolbar.toolbar import debug_toolbar_urls
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
@@ -59,6 +60,8 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from .api_urls import router as api_router
 
 urlpatterns = [
+    path("", TemplateView.as_view(template_name="about/home.html"), name="home"),
+    path("about/", TemplateView.as_view(template_name="about/about.html"), name="about"),
     path("admin/", admin.site.urls),
     path("api/auth/", include("rest_framework.urls")),
     path("api/oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),

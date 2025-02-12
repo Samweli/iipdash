@@ -301,3 +301,8 @@ CORS_ALLOW_HEADERS = env.list("CORS_ALLOW_HEADERS", default=cors_default_headers
 # Administrative
 
 ADMINISTRATIVE_AREAS_SIMPLIFICATION_TOLERANCE = env.float("ADMINISTRATIVE_AREAS_SIMPLIFICATION_TOLERANCE", default=1.0)
+
+
+# Mapbox
+MAPBOX_STYLE_ID = env("MAPBOX_STYLE_ID", default="mapbox/light-v11")
+MAPBOX_ACCESS_TOKEN = env("MAPBOX_ACCESS_TOKEN", default="")
