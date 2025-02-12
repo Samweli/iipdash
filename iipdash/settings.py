@@ -65,6 +65,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "drf_spectacular_sidecar",
     "corsheaders",
+    "core",
     "users",
     "administrative",
     "education",
@@ -239,6 +240,9 @@ STORAGES = {
     },
 }
 
+PROTECTED_MEDIA_URL = env("PROTECTED_MEDIA_URL", default="/x-media/")
+
+_MEDIA_IS_PROTECTED = STORAGES["default"]["BACKEND"] == "core.files.ProtectedFileSystemStorage"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -352,7 +356,12 @@ ADMINISTRATIVE_AREAS_SIMPLIFICATION_TOLERANCE = env.float("ADMINISTRATIVE_AREAS_
 
 TILES_ROOT = env("TILES_ROOT", default=str(Path(MEDIA_ROOT) / "tiles"))
 
-TILES_URL = env("TILES_URL", default=urljoin(MEDIA_URL, "tiles/"))
+if _MEDIA_IS_PROTECTED:
+    _TILES_DEFAULT_BASE_URL = PROTECTED_MEDIA_URL
+else:
+    _TILES_DEFAULT_BASE_URL = MEDIA_URL
+
+TILES_URL = env("TILES_URL", default=urljoin(_TILES_DEFAULT_BASE_URL, "tiles/"))
 
 GDAL2TILES_PROCESSES = env.int("GDAL2TILES_PROCESSES", default=1)
 
