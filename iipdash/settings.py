@@ -240,7 +240,11 @@ STORAGES = {
     },
 }
 
-PROTECTED_MEDIA_URL = env("PROTECTED_MEDIA_URL", default="/i-media/")
+#: A URL path prefix for media files if ``ProtectedFileSystemStorage`` is used.
+MEDIA_PROTECTED_URL = env("MEDIA_PROTECTED_URL", default="/x-media/")
+
+#: A URL for handling internal redirects in nginx if ``ProtectedFileSystemStorage`` is used.
+MEDIA_INTERNAL_URL = env("MEDIA_INTERNAL_URL", default="/media/")
 
 _MEDIA_IS_PROTECTED = STORAGES["default"]["BACKEND"] == "core.files.ProtectedFileSystemStorage"
 
@@ -357,7 +361,7 @@ ADMINISTRATIVE_AREAS_SIMPLIFICATION_TOLERANCE = env.float("ADMINISTRATIVE_AREAS_
 TILES_ROOT = env("TILES_ROOT", default=str(Path(MEDIA_ROOT) / "tiles"))
 
 if _MEDIA_IS_PROTECTED:
-    _TILES_DEFAULT_BASE_URL = PROTECTED_MEDIA_URL
+    _TILES_DEFAULT_BASE_URL = MEDIA_PROTECTED_URL
 else:
     _TILES_DEFAULT_BASE_URL = MEDIA_URL
 

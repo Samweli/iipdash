@@ -16,7 +16,7 @@ class MediaXAccelRedirectView(View, LoginRequiredMixin):
         path = Path(path)
 
         response = HttpResponse()
-        response["X-Accel-Redirect"] = protected_filesystem_storage.url(path)
+        response["X-Accel-Redirect"] = protected_filesystem_storage.internal_url(path)
         response["Content-Type"] = ""
         response["Content-Disposition"] = f'attachment; filename="{path.name}"'
         return response
