@@ -35,7 +35,7 @@ RUN addgroup --system iipdash \
 # Install Python requirements
 COPY requirements* .
 RUN pip install --upgrade pip
-RUN pip install -r ./requirements-production.txt
+RUN pip install -r ./requirements_production.txt
 
 COPY --chown=iipdash:iipdash ./docker/production/django/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint
