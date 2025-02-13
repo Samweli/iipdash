@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 import sys
+from email.utils import getaddresses
 from pathlib import Path
 from urllib.parse import urljoin
 
@@ -271,6 +272,51 @@ ADMIN_SITE_HEADER = env("ADMIN_SITE_HEADER", default=SITE_NAME)
 
 ADMIN_INDEX_TITLE = env("ADMIN_INDEX_TITLE", default="Administration")
 
+
+# Email
+
+EMAIL_USE_TLS = env.bool("EMAIL_USE_TLS", default=True)
+
+EMAIL_BACKEND = env("EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
+
+EMAIL_FILE_PATH = env("EMAIL_FILE_PATH", default=None)
+
+EMAIL_HOST = env("EMAIL_HOST", default="localhost")
+
+EMAIL_PORT = env.int("EMAIL_PORT", default=25)
+
+EMAIL_HOST_USER = env("EMAIL_HOST_USER", default="")
+
+EMAIL_HOST_PASSWORD = env("EMAIL_HOST_PASSWORD", default="")
+
+EMAIL_TIMEOUT = env.int("EMAIL_TIMEOUT", default=30)
+
+DEFAULT_FROM_EMAIL = env("DEFAULT_FROM_EMAIL", default="")
+
+SERVER_EMAIL = env("SERVER_EMAIL", default="")
+
+ADMINS = getaddresses([env("ADMINS", default="")])
+
+
+# SSL & Security middleware
+
+if env("SECURE_PROXY_SSL_HEADER", default=None):
+    SECURE_PROXY_SSL_HEADER = env("SECURE_PROXY_SSL_HEADER").split()[:2]
+
+if env("SECURE_SSL_REDIRECT", default=None):
+    SECURE_SSL_REDIRECT = env.bool("SECURE_SSL_REDIRECT")
+
+if env("CSRF_COOKIE_SECURE", default=None):
+    CSRF_COOKIE_SECURE = env.bool("CSRF_COOKIE_SECURE")
+
+CSRF_TRUSTED_ORIGINS = env.list("CSRF_TRUSTED_ORIGINS", default=[])
+
+if env("SECURE_HSTS_SECONDS", default=None):
+    SECURE_HSTS_SECONDS = env.int("SECURE_HSTS_SECONDS")
+
+SECURE_REFERRER_POLICY = env("SECURE_REFERRER_POLICY", default="strict-origin-when-cross-origin")
+
+
 # REST framework settings
 
 REST_FRAMEWORK = {
@@ -372,3 +418,58 @@ GDAL2TILES_PROCESSES = env.int("GDAL2TILES_PROCESSES", default=1)
 # Mapbox
 MAPBOX_STYLE_ID = env("MAPBOX_STYLE_ID", default="mapbox/light-v11")
 MAPBOX_ACCESS_TOKEN = env("MAPBOX_ACCESS_TOKEN", default="")
+
+
+# Logging
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "filters": {
+        "require_debug_false": {
+            "()": "django.utils.log.RequireDebugFalse",
+        },
+        "require_debug_true": {
+            "()": "django.utils.log.RequireDebugTrue",
+        },
+    },
+    "formatters": {
+        "django.server": {
+            "()": "django.utils.log.ServerFormatter",
+            "format": "[%(server_time)s] %(message)s",
+        }
+    },
+    "handlers": {
+        "console": {
+            "level": "INFO",
+            "filters": ["require_debug_true"],
+            "class": "logging.StreamHandler",
+        },
+        "console_debug_false": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "logging.StreamHandler",
+        },
+        "django.server": {
+            "level": "INFO",
+            "class": "logging.StreamHandler",
+            "formatter": "django.server",
+        },
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+    },
+    "loggers": {
+        "django": {
+            "handlers": ["console", "console_debug_false", "mail_admins"],
+            "level": "INFO",
+        },
+        "django.server": {
+            "handlers": ["django.server"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
