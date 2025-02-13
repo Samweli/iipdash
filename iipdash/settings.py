@@ -240,7 +240,7 @@ STORAGES = {
     },
 }
 
-PROTECTED_MEDIA_URL = env("PROTECTED_MEDIA_URL", default="/x-media/")
+PROTECTED_MEDIA_URL = env("PROTECTED_MEDIA_URL", default="/i-media/")
 
 _MEDIA_IS_PROTECTED = STORAGES["default"]["BACKEND"] == "core.files.ProtectedFileSystemStorage"
 
