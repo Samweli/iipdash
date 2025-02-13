@@ -4,7 +4,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponse
 from django.views import View
 
-from .files import protected_filesystem_storage
+from ..files import protected_filesystem_storage
 
 
 class MediaXAccelRedirectView(View, LoginRequiredMixin):
@@ -16,7 +16,7 @@ class MediaXAccelRedirectView(View, LoginRequiredMixin):
         path = Path(path)
 
         response = HttpResponse()
-        response["X-Accel-Redirect"] = protected_filesystem_storage.redirect_url(path)
+        response["X-Accel-Redirect"] = protected_filesystem_storage.url(path)
         response["Content-Type"] = ""
         response["Content-Disposition"] = f'attachment; filename="{path.name}"'
         return response

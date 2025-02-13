@@ -10,8 +10,5 @@ class ProtectedFileSystemStorage(FileSystemStorage):
 
         return reverse("x-accel-redirect", kwargs={"path": name})
 
-    def redirect_url(self, name):
-        return super().url(name)
-
 
 protected_filesystem_storage = ProtectedFileSystemStorage()
