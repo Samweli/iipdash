@@ -18,11 +18,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="mobilecoverage",
             name="population_uncovered_percent",
-            field=models.FloatField(blank=True, null=True, verbose_name="population not covered in percentage"),
+            field=models.FloatField(blank=True, null=True, verbose_name="population not covered (percentage)"),
         ),
         migrations.AlterField(
             model_name="mobilecoverage",
             name="population_covered_percent",
-            field=models.FloatField(blank=True, null=True, verbose_name="population covered in percentage"),
+            field=models.FloatField(blank=True, null=True, verbose_name="population covered (percentage)"),
         ),
     ]

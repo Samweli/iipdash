@@ -611,11 +611,11 @@ class MobileCoverage(models.Model):
         verbose_name=_("mobile network generation"),
     )
 
-    population_uncovered = models.PositiveIntegerField(_("population not covered"), blank=True, null=True)
-    population_uncovered_percent = models.FloatField(_("population not covered in percentage"), blank=True, null=True)
-
     population_covered = models.PositiveIntegerField(_("population covered"), blank=True, null=True)
-    population_covered_percent = models.FloatField(_("population covered in percentage"), blank=True, null=True)
+    population_covered_percent = models.FloatField(_("population covered (percentage)"), blank=True, null=True)
+
+    population_uncovered = models.PositiveIntegerField(_("population not covered"), blank=True, null=True)
+    population_uncovered_percent = models.FloatField(_("population not covered (percentage)"), blank=True, null=True)
 
     tiff = models.FileField(
         _("coverage GeoTIFF"),
