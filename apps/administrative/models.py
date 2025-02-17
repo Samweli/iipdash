@@ -209,7 +209,7 @@ class Area(MP_Node):
 
     #: The total area of the `area` in square meters.
     area = models.GeneratedField(
-        expression=Area('geometry'),
+        expression=Area("geometry"),
         output_field=models.FloatField(null=True),
         db_persist=True,
         blank=True,
