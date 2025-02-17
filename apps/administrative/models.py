@@ -22,8 +22,8 @@ from typing import Any, Dict, Tuple
 
 from django.conf import settings
 from django.contrib.gis.db import models
+from django.contrib.gis.db.models.functions import Area
 from django.contrib.gis.geos import MultiPolygon, Polygon
-from django.core.validators import MinValueValidator
 from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
 
@@ -208,12 +208,14 @@ class Area(MP_Node):
     )
 
     #: The total area of the `area` in square meters.
-    area = models.FloatField(
-        _("area (square meters)"),
-        validators=[MinValueValidator(0)],
+    area = models.GeneratedField(
+        expression=Area('geometry'),
+        output_field=models.FloatField(null=True),
+        db_persist=True,
         blank=True,
         null=True,
-        help_text=_("The total area of the `area` in square meters."),
+        verbose_name=_("area (square meters)"),
+        help_text=_("The calculated total area of the `area` in square meters."),
     )
 
     #: The database level timestamp of when the area was created.
