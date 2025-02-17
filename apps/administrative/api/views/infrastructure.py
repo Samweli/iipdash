@@ -61,6 +61,14 @@ class AreaMobileCoverageViewSet(AreaViewSet):
         "coverage_3g",
         "coverage_4g",
         "coverage_5g",
+        "population_uncovered_2g",
+        "population_uncovered_3g",
+        "population_uncovered_4g",
+        "population_uncovered_5g",
+        "no_coverage_2g",
+        "no_coverage_3g",
+        "no_coverage_4g",
+        "no_coverage_5g",
     )
 
     def get_queryset(self):
@@ -96,6 +104,38 @@ class AreaMobileCoverageViewSet(AreaViewSet):
             ),
             population_covered_5g=Sum(
                 "mobile_coverage__population_covered",
+                filter=Q(mobile_coverage__network_generation__code="5g"),
+            ),
+            no_coverage_2g=Sum(
+                "mobile_coverage__population_uncovered_percent",
+                filter=Q(mobile_coverage__network_generation__code="2g"),
+            ),
+            no_coverage_3g=Sum(
+                "mobile_coverage__population_uncovered_percent",
+                filter=Q(mobile_coverage__network_generation__code="3g"),
+            ),
+            no_coverage_4g=Sum(
+                "mobile_coverage__population_uncovered_percent",
+                filter=Q(mobile_coverage__network_generation__code="4g"),
+            ),
+            no_coverage_5g=Sum(
+                "mobile_coverage__population_uncovered_percent",
+                filter=Q(mobile_coverage__network_generation__code="5g"),
+            ),
+            population_uncovered_2g=Sum(
+                "mobile_coverage__population_uncovered",
+                filter=Q(mobile_coverage__network_generation__code="2g"),
+            ),
+            population_uncovered_3g=Sum(
+                "mobile_coverage__population_uncovered",
+                filter=Q(mobile_coverage__network_generation__code="3g"),
+            ),
+            population_uncovered_4g=Sum(
+                "mobile_coverage__population_uncovered",
+                filter=Q(mobile_coverage__network_generation__code="4g"),
+            ),
+            population_uncovered_5g=Sum(
+                "mobile_coverage__population_uncovered",
                 filter=Q(mobile_coverage__network_generation__code="5g"),
             ),
         )

@@ -58,6 +58,7 @@ class FiberOpticNodeAdmin(GISModelAdmin, ImportExportModelAdmin):
         "updated_at",
     ]
     list_select_related = ["administrative_area"]
+    raw_id_fields = ["administrative_area"]
     search_fields = ["id", "uuid", "administrative_area__name"]
     readonly_fields = ["id", "uuid", "created_at", "updated_at"]
 
@@ -99,9 +100,15 @@ class CellTowerAdmin(GISModelAdmin, ImportExportModelAdmin):
 
 @admin.register(MobileCoverage)
 class MobileCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
-    list_display = ["network_generation", "administrative_area", "administrative_area__country", "population_covered"]
+    list_display = [
+        "network_generation",
+        "administrative_area",
+        "administrative_area__country",
+        "population_uncovered_percent",
+    ]
     list_display_links = ["network_generation", "administrative_area"]
     list_select_related = ["network_generation", "administrative_area"]
     list_filter = ["network_generation", "administrative_area__country", "created_at", "updated_at"]
+    raw_id_fields = ["administrative_area"]
     search_fields = ["id", "uuid", "administrative_area__name"]
     readonly_fields = ["id", "uuid", "tms_url", "created_at", "updated_at"]

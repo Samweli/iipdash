@@ -199,6 +199,18 @@ class BaseAreaMobileCoverageSerializer(serializers.ModelSerializer):
     #: 5G Mobile coverage percentage.
     coverage_5g = serializers.FloatField(read_only=True)
 
+    #: 2G Mobile coverage percentage.
+    no_coverage_2g = serializers.FloatField(read_only=True)
+
+    #: 3G Mobile coverage percentage.
+    no_coverage_3g = serializers.FloatField(read_only=True)
+
+    #: 4G Mobile coverage percentage.
+    no_coverage_4g = serializers.FloatField(read_only=True)
+
+    #: 5G Mobile coverage percentage.
+    no_coverage_5g = serializers.FloatField(read_only=True)
+
     #: Population covered by 2G.
     population_covered_2g = serializers.IntegerField(read_only=True)
 
@@ -210,6 +222,18 @@ class BaseAreaMobileCoverageSerializer(serializers.ModelSerializer):
 
     #: Population covered by 5G.
     population_covered_5g = serializers.IntegerField(read_only=True)
+
+    #: Population not covered by 2G.
+    population_uncovered_2g = serializers.IntegerField(read_only=True)
+
+    #: Population not covered by 3G.
+    population_uncovered_3g = serializers.IntegerField(read_only=True)
+
+    #: Population not covered by 4G.
+    population_uncovered_4g = serializers.IntegerField(read_only=True)
+
+    #: Population covered by 5G.
+    population_uncovered_5g = serializers.IntegerField(read_only=True)
 
 
 class AreaMobileCoverageSerializer(BaseAreaMobileCoverageSerializer, GeoFeatureModelSerializer):
@@ -250,10 +274,18 @@ class AreaMobileCoverageCSVSerializer(BaseAreaMobileCoverageSerializer):
             "population_covered_3g",
             "population_covered_4g",
             "population_covered_5g",
+            "population_uncovered_2g",
+            "population_uncovered_3g",
+            "population_uncovered_4g",
+            "population_uncovered_5g",
             "coverage_2g",
             "coverage_3g",
             "coverage_4g",
             "coverage_5g",
+            "no_coverage_2g",
+            "no_coverage_3g",
+            "no_coverage_4g",
+            "no_coverage_5g",
         ]
         read_only_fields = fields
 
