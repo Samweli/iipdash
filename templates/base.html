@@ -9,21 +9,28 @@
   <head>
 
     {# Start: analytics #}
-    {% block google_analytics %}{% endblock google_analytics %}
+    {% block google_analytics %}{% endblock %}
     {# End: analytics #}
 
     {# Start: meta #}
     {% block meta %}
       <meta charset="utf-8">
+
+      {# Start: meta viewport #}
       {% block meta_viewport %}
         <meta name="viewport" content="width=device-width, initial-scale=1">
-      {% endblock meta_viewport %}
-      {% block meta_cards %}{% endblock meta_cards %}
-    {% endblock meta %}
+      {% endblock %}
+      {# End: meta viewport #}
+
+      {# Start: meta cards #}
+      {% block meta_cards %}{% endblock %}
+      {# End: meta cards #}
+
+    {% endblock %}
     {# End: meta #}
 
     {# Start: title #}
-    <title>{{ SITE_NAME }} &bull; {% block head_title %}{{ SITE_TAGLINE }}{% endblock head_title %}</title>
+    <title>{{ SITE_NAME }} &bull; {% block head_title %}{{ SITE_TAGLINE }}{% endblock %}</title>
     {# End: title #}
 
     {# Start: css #}
@@ -31,11 +38,14 @@
       <link href="{% static 'main.css' %}" rel="stylesheet">
       <link href="{% static 'vendor.css' %}" rel="stylesheet">
     {% endblock css %}
-    {% block extra_css %}{% endblock extra_css %}
     {# End: css #}
 
+    {# Start: extra css #}
+    {% block extra_css %}{% endblock %}
+    {# End: extra css #}
+
     {# Start: extra head #}
-    {% block extra_head %}{% endblock extra_head %}
+    {% block extra_head %}{% endblock %}
     {# End: exta head #}
 
   </head>
@@ -47,38 +57,45 @@
 
     {# Start: main body #}
       {% block main_body %}
-        {# Start: main top navigation #}
 
-        {# End: main top navigation #}
+      {# Start: main top navigation #}
         {% block main_top_nav %}
           {% include 'includes/main_top_nav.html' %}
-        {% endblock main_top_nav %}
+        {% endblock %}
+      {# End: main top navigation #}
 
-        {# Start: main content #}
+      {# Start: main content #}
         {% block main_content %}
           <main id="{% block main_content_id %}main-content{% endblock %}"
-                class="container-fluid {% block extra_main_content_class %}main-content{% endblock %}">
-            {% block content %}{% endblock content %}
-          </main>
-        {% endblock main_content %}
-        {# End: main content #}
+                class="container-fluid navbar-height-offset {% block extra_main_content_class %}main-content{% endblock %}">
 
-      {% endblock main_body %}
+            {# Start: content #}
+            {% block content %}{% endblock %}
+            {# End: content #}
+
+          </main>
+        {% endblock %}
+      {# End: main content #}
+
+      {% endblock %}
     {# End: main body #}
 
     {# Start: extra body #}
-      {% block extra_body %}{% endblock extra_body %}
-    {# Start: extra body #}
+      {% block extra_body %}{% endblock %}
+    {# Ende: extra body #}
 
     {# Start: js #}
       {% block js %}
         <script src="{% static 'main.js' %}"></script>
-      {% endblock js %}
-      {% block extra_js %}{% endblock extra_js %}
+      {% endblock %}
     {# End: js #}
 
+    {# Start: extra js #}
+      {% block extra_js %}{% endblock %}
+    {# End: extra js #}
+
     </body>
-  {% endblock body %}
+  {% endblock %}
   {# End: body #}
 
 </html>

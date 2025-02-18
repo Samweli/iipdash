@@ -6,6 +6,7 @@ module.exports = {
   entry: {
     main: ['./assets/js/main.js', './assets/scss/main.scss'],
     vendor: ['./assets/vendor/vendor.css'],
+    home: ['./assets/js/home.js'],
   },
   output: {
     path: path.resolve('./assets/dist/'),

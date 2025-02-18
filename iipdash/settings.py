@@ -70,6 +70,7 @@ INSTALLED_APPS = [
     "education",
     "infrastructure",
     "debug_toolbar",
+    "active_link",
 ]
 
 MIDDLEWARE = [

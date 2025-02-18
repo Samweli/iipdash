@@ -1,8 +1,8 @@
 # Reference: https://docs.docker.com/engine/reference/builder/#syntax
 # syntax=docker/dockerfile:1
 
-# Use Debian Bullseye with Python 3.12.8 as the base development image
-FROM python:3.12.8-slim-bullseye as python
+# Use Debian Bookworm with Python 3.12.8 as the base development image
+FROM python:3.12.8-slim-bookworm as python
 
 # Image metadata
 LABEL maintainer="Tehamalab <engineering@tehamalab.com>" \

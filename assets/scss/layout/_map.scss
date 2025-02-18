@@ -1,0 +1,27 @@
+// Map styles
+//
+
+.map-sidebar {
+  height: calc(100vh - $navbar-height); // Full height minus navbar
+
+  // Map sidebar disclaimer
+  .map-sidebar-disclaimer {
+    small {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 400;
+      font-size: 0.75rem;
+      line-height: 1.33;
+      color: #575757;
+    }
+
+    img {
+      width: 163px;
+      height: 33px;
+    }
+  }
+}
+
+// Map container
+.map-container {
+  height: calc(100vh - $navbar-height); // Full height minus navbar
+}

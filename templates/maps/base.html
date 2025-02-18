@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block body_class %}{{ block.super }} vh-100 m-0 overflow-hidden{% endblock %}
+
+{% block extra_main_content_class %}{{ block.super }} px-0{% endblock %}
+
+{# Start: content #}
+{% block content %}
+
+  {# Start: map content (sidebar & map) #}
+  {% block map_content %}
+    <div class="d-flex flex-row vh-100">
+
+    {# Start: map sidebar #}
+      {% block map_sidebar %}
+        <aside id="{% block map_sidebar_id %}map-sidebar{% endblock %}"
+               class="d-flex flex-column col-md-3 overflow-auto p-3 border-end {% block extra_map_sidebar_class %}map-sidebar{% endblock %}">
+
+          {# Start: map sidebar content #}
+          <div id="map-sidebar-content" class="flex-grow-1 map-sidebar-content">
+            {% block map_sidebar_content %}{% endblock %}
+          </div>
+          {# End: map sidebar content #}
+
+          {# Start: map sidebar disclaimer #}
+          {% include 'maps/disclaimer.html' %}
+          {# End: map sidebar disclaimer #}
+
+        </aside>
+      {% endblock %}
+    {# End: map sidebar #}
+
+    {# Start: map container #}
+      {% block map_container %}
+        <section id="{% block map_container_id %}map-container{% endblock %}"
+                 class="flex-grow-1 overflow-hidden {% block extra_map_container_class %}map-container{% endblock %}">
+
+          {# Start: map #}
+          {% block map%}
+            <div id="{% block map_id %}map{% endblock %}"
+                 class="w-100 h-100 pt-1 {% block extra_map_class %}map{% endblock %}">
+            </div>
+          {% endblock %}
+          {# End: map #}
+
+        </section>
+      {% endblock %}
+    {# End: map container #}
+
+    </div>
+  {% endblock %}
+  {# End: map content (sidebar & map) #}
+
+{% endblock content %}
+{# End: content #}
