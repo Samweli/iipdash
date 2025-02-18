@@ -33,6 +33,8 @@ from django.utils.translation import gettext_lazy as _
 import gdal2tiles
 import rasterio
 
+from administrative.models import Area
+
 from .files import mobile_coverage_tiff_path
 from .tasks import generate_mobile_coverage_tiles, update_mobile_coverage_raster
 
@@ -317,6 +319,10 @@ class FiberOpticNode(models.Model):
     def __str__(self):
         return self.display_name
 
+    def save(self, *args, **kwargs):
+        self.set_administrative_area()
+        super().save(*args, **kwargs)
+
     @property
     def display_name(self):
         if self.node_type:
@@ -325,6 +331,15 @@ class FiberOpticNode(models.Model):
             return _("fiber optic node: %(administrative_area)s") % {
                 "administrative_area": str(self.administrative_area)
             }
+
+    def set_administrative_area(self):
+        """Try to detect related administrative area based on the location if not yet provided."""
+        if self.administrative_area is not None or self.geometry is None:
+            return
+
+        area = Area.objects.filter(geometry__covers=self.geometry).order_by("-depth").first()
+        if area:
+            self.administrative_area = area
 
 
 class NetworkGeneration(models.Model):
@@ -556,6 +571,19 @@ class CellTower(models.Model):
         verbose_name = _("Cell Tower")
         verbose_name_plural = _("Cell Towers")
 
+    def __str__(self):
+        """
+        Returns the string representation of the cell tower.
+
+        Returns:
+            str: A user-friendly display name for the cell tower.
+        """
+        return self.display_name
+
+    def save(self, *args, **kwargs):
+        self.set_administrative_area()
+        super().save(*args, **kwargs)
+
     @property
     def display_name(self):
         """
@@ -570,14 +598,14 @@ class CellTower(models.Model):
             "uuid": self.uuid,
         }
 
-    def __str__(self):
-        """
-        Returns the string representation of the cell tower.
+    def set_administrative_area(self):
+        """Try to detect related administrative area based on the location if not yet provided."""
+        if self.administrative_area is not None or self.geometry is None:
+            return
 
-        Returns:
-            str: A user-friendly display name for the cell tower.
-        """
-        return self.display_name
+        area = Area.objects.filter(geometry__covers=self.geometry).order_by("-depth").first()
+        if area:
+            self.administrative_area = area
 
 
 class MobileCoverage(models.Model):

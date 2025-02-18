@@ -23,6 +23,8 @@ from django.db.models.functions import Now
 from django.template.defaultfilters import slugify
 from django.utils.translation import gettext_lazy as _
 
+from administrative.models import Area
+
 
 class Category(models.Model):
     """Category of an educational institution.
@@ -616,8 +618,18 @@ class Institution(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+        self.set_administrative_area()
         super().save(*args, **kwargs)
         transaction.on_commit(lambda: self.refresh_related_areas())
+
+    def set_administrative_area(self):
+        """Try to detect related administrative area based on the location if not yet provided."""
+        if self.administrative_area is not None or self.geometry is None:
+            return
+
+        area = Area.objects.filter(geometry__covers=self.geometry).order_by("-depth").first()
+        if area:
+            self.administrative_area = area
 
     def refresh_related_areas(self):
         """
