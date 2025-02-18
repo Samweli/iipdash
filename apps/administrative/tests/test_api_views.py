@@ -2,6 +2,7 @@ import uuid
 from typing import Any, Dict
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from rest_framework import status
@@ -18,6 +19,11 @@ _tile_param = settings.TILE_PARAM
 _point_param = settings.POINT_PARAM
 _dist_param = settings.DIST_PARAM
 
+User = get_user_model()
+
+_test_username = "testuser"
+_test_password = "12mhud93pkqo_"
+
 
 class AreaAPITestCase(TestCase):
     """Test suite for the AreaViewSet."""
@@ -25,6 +31,10 @@ class AreaAPITestCase(TestCase):
     def setUp(self) -> None:
         """Set up the test case."""
         self.client = APIClient()
+
+        user = User.objects.create_user(username=_test_username, password=_test_password)
+        self.client.force_login(user)
+
         self.area = AreaFactory.create(depth=1)
 
     def test_list_areas(self) -> None:

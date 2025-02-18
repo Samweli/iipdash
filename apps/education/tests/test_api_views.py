@@ -2,6 +2,7 @@ import uuid
 from typing import Any, Dict
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from rest_framework import status
@@ -18,6 +19,11 @@ _tile_param = settings.TILE_PARAM
 _point_param = settings.POINT_PARAM
 _dist_param = settings.DIST_PARAM
 
+User = get_user_model()
+
+_test_username = "testuser"
+_test_password = "12mhud93pkqo_"
+
 
 class CategoryAPITestCase(TestCase):
     """Test suite for the CategoryViewSet."""
@@ -25,6 +31,10 @@ class CategoryAPITestCase(TestCase):
     def setUp(self) -> None:
         """Set up the test case."""
         self.client = APIClient()
+
+        user = User.objects.create_user(username=_test_username, password=_test_password)
+        self.client.force_login(user)
+
         self.category = CategoryFactory.create()
 
     def test_list_categories(self) -> None:
@@ -103,6 +113,10 @@ class OwnershipAPITestCase(TestCase):
     def setUp(self) -> None:
         """Set up the test case."""
         self.client = APIClient()
+
+        user = User.objects.create_user(username=_test_username, password=_test_password)
+        self.client.force_login(user)
+
         self.ownership = OwnershipFactory.create()
 
     def test_list_ownerships(self) -> None:
@@ -180,6 +194,10 @@ class InstitutionAPITestCase(TestCase):
     def setUp(self) -> None:
         """Set up the test case."""
         self.client = APIClient()
+
+        user = User.objects.create_user(username=_test_username, password=_test_password)
+        self.client.force_login(user)
+
         self.institution = InstitutionFactory.create()
 
     def test_list_institutions(self) -> None:
