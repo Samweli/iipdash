@@ -6,6 +6,7 @@ from django.views.decorators.cache import cache_page
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.decorators import action
+from rest_framework.fields import BooleanField
 from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
@@ -80,6 +81,13 @@ class AreaViewSet(CSVDownloadMixin, VectorLayer, ReadOnlyModelViewSet):
         queryset = self.filter_queryset(queryset)
 
         return queryset
+
+    def get_serializer(self, *args, **kwargs):
+
+        # Optionally exclude geometry values in the response.
+        exclude_geometry = self.request.query_params.get("exclude_geometry", "")
+        kwargs["exclude_geometry"] = exclude_geometry.lower() in BooleanField.TRUE_VALUES
+        return super().get_serializer(*args, **kwargs)
 
     @action(
         detail=False,

@@ -1,6 +1,7 @@
 from typing import List, Type
 
 from rest_framework import serializers
+from rest_framework.fields import empty
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from ..models import Area
@@ -21,7 +22,23 @@ __all__ = [
 ]
 
 
-class AreaSerializer(GeoFeatureModelSerializer):
+class BaseGeoFeatureModelSerializer(GeoFeatureModelSerializer):
+
+    def __init__(self, instance=None, data=empty, exclude_geometry=False, **kwargs):
+        """If ``exclude_geometry`` is True, the serializer output when reading the instances won't include
+        geometry coordinates.
+        """
+        self.exclude_geometry = exclude_geometry
+        super().__init__(instance=instance, data=data, **kwargs)
+
+    def to_representation(self, instance):
+        if self.exclude_geometry is True:
+            instance.geometry = None
+        data = super().to_representation(instance)
+        return data
+
+
+class AreaSerializer(BaseGeoFeatureModelSerializer):
     """GeoJSON serializer for administrative areas."""
 
     class Meta:
@@ -77,7 +94,7 @@ class BaseAreaEducationSerializer(serializers.ModelSerializer):
     institutions_fiber_20km = serializers.IntegerField(read_only=True)
 
 
-class AreaEducationSerializer(BaseAreaEducationSerializer, GeoFeatureModelSerializer):
+class AreaEducationSerializer(BaseAreaEducationSerializer, BaseGeoFeatureModelSerializer):
     """GeoJSON serializer for education aggregate statistics in administrative areas."""
 
     class Meta:
@@ -140,7 +157,7 @@ class BaseAreaEducationIFONDSerializer(serializers.ModelSerializer):
     institutions_electrified_no_fiber = serializers.IntegerField(read_only=True)
 
 
-class AreaEducationIFONDSerializer(BaseAreaEducationIFONDSerializer, GeoFeatureModelSerializer):
+class AreaEducationIFONDSerializer(BaseAreaEducationIFONDSerializer, BaseGeoFeatureModelSerializer):
     """GeoJSON Serializer for summary education institutions statistics per administrative areas based on
     Fiber Optic Node/Network Distance."""
 
@@ -236,7 +253,7 @@ class BaseAreaMobileCoverageSerializer(serializers.ModelSerializer):
     population_uncovered_5g = serializers.IntegerField(read_only=True)
 
 
-class AreaMobileCoverageSerializer(BaseAreaMobileCoverageSerializer, GeoFeatureModelSerializer):
+class AreaMobileCoverageSerializer(BaseAreaMobileCoverageSerializer, BaseGeoFeatureModelSerializer):
     """GeoJSON serializer for mobile coverage statistics in administrative areas."""
 
     class Meta:
