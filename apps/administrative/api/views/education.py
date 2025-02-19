@@ -1,5 +1,5 @@
 from django.conf import settings
-from django.db.models import Count, Q
+from django.db.models import Avg, Count, Q
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import cache_page
@@ -9,6 +9,8 @@ from rest_framework.decorators import action
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from vectortiles.rest_framework.renderers import MVTRenderer
+
+from core.aggregation import Median
 
 from ...models import Area
 from ..serializers import (
@@ -63,6 +65,8 @@ class AreaEducationViewSet(AreaViewSet):
         "institutions_fiber_10km",
         "institutions_fiber_15km",
         "institutions_fiber_20km",
+        "institutions_fiber_distance_avg",
+        "institutions_fiber_distance_median",
     )
 
     def get_queryset(self):
@@ -94,6 +98,8 @@ class AreaEducationViewSet(AreaViewSet):
                 "related_education_institution",
                 filter=Q(related_education_institution__fon_distance__lte=20000),
             ),
+            institutions_fiber_distance_avg=Avg("related_education_institution__fon_distance"),
+            institutions_fiber_distance_median=Median("related_education_institution__fon_distance"),
         )
 
         return qs
@@ -164,6 +170,8 @@ class AreaEducationIFONDViewSet(AreaViewSet):
         "institutions_electrified",
         "institutions_fiber_connected",
         "institutions_electrified_no_fiber",
+        "institutions_fiber_distance_avg",
+        "institutions_fiber_distance_median",
     )
 
     def clean_distance(self):
@@ -212,6 +220,8 @@ class AreaEducationIFONDViewSet(AreaViewSet):
                 )
                 & Q(related_education_institution__fon_distance__lte=distance),
             ),
+            institutions_fiber_distance_avg=Avg("related_education_institution__fon_distance"),
+            institutions_fiber_distance_median=Median("related_education_institution__fon_distance"),
         )
 
         return qs

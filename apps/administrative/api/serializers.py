@@ -93,6 +93,12 @@ class BaseAreaEducationSerializer(serializers.ModelSerializer):
     #: Number of education institutions with nearest fiber optic within 20km.
     institutions_fiber_20km = serializers.IntegerField(read_only=True)
 
+    #: Average distance between education institutions and fiber optic nodes.
+    institutions_fiber_distance_avg = serializers.IntegerField(read_only=True)
+
+    #: Median distance between education institutions and fiber optic nodes.
+    institutions_fiber_distance_median = serializers.IntegerField(read_only=True)
+
 
 class AreaEducationSerializer(BaseAreaEducationSerializer, BaseGeoFeatureModelSerializer):
     """GeoJSON serializer for education aggregate statistics in administrative areas."""
@@ -136,6 +142,8 @@ class AreaEducationCSVSerializer(BaseAreaEducationSerializer):
             "institutions_fiber_10km",
             "institutions_fiber_15km",
             "institutions_fiber_20km",
+            "institutions_fiber_distance_avg",
+            "institutions_fiber_distance_median",
         ]
         read_only_fields = fields
 
@@ -155,6 +163,12 @@ class BaseAreaEducationIFONDSerializer(serializers.ModelSerializer):
 
     #: Number of electrified education institutions not connected to fiber optic
     institutions_electrified_no_fiber = serializers.IntegerField(read_only=True)
+
+    #: Average distance between education institutions and fiber optic nodes.
+    institutions_fiber_distance_avg = serializers.IntegerField(read_only=True)
+
+    #: Median distance between education institutions and fiber optic nodes.
+    institutions_fiber_distance_median = serializers.IntegerField(read_only=True)
 
 
 class AreaEducationIFONDSerializer(BaseAreaEducationIFONDSerializer, BaseGeoFeatureModelSerializer):
@@ -198,6 +212,8 @@ class AreaEducationIFONDCSVSerializer(BaseAreaEducationSerializer):
             "institutions_electrified",
             "institutions_fiber_connected",
             "institutions_electrified_no_fiber",
+            "institutions_fiber_distance_avg",
+            "institutions_fiber_distance_median",
         ]
         read_only_fields = fields
 
