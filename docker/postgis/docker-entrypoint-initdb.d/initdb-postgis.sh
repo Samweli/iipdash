@@ -9,14 +9,16 @@ set -e
 export PGUSER="$POSTGRES_USER"
 
 # Create the 'template_postgis' template db
-"${psql[@]}" <<- 'EOSQL'
+# "${psql[@]}" <<- 'EOSQL'
+psql <<- 'EOSQL'  # FIX: /bin/bash: bad interpreter: Permission denied
 CREATE DATABASE template_postgis IS_TEMPLATE true;
 EOSQL
 
 # Load PostGIS into both template_database and $POSTGRES_DB
 for DB in template_postgis "$POSTGRES_DB"; do
     echo "Loading PostGIS extensions into $DB"
-    "${psql[@]}" --dbname="$DB" <<-'EOSQL'
+    # "${psql[@]}" --dbname="$DB" <<-'EOSQL'
+    psql --dbname="$DB" <<-'EOSQL'  # FIX: /bin/bash: bad interpreter: Permission denied
         CREATE EXTENSION IF NOT EXISTS postgis;
         CREATE EXTENSION IF NOT EXISTS postgis_raster;
         -- CREATE EXTENSION IF NOT EXISTS postgis_topology;

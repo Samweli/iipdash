@@ -73,7 +73,7 @@ servedocs: ## build, watch and serve Sphinx HTML documentation with live reload
 docker/pull: ## pull docker images i.e python etc
 	docker pull ubuntu:24.04 # base image for rabbitmq
 	docker pull debian:bullseye-slim # base image for python and postgres
-	docker pull python:3.12.8-slim-bullseye
+	docker pull python:3.12.8-slim-bookworm
 	docker pull postgres:17.2-bullseye # base image for postgis
 	docker pull postgis/postgis:17-3.5
 	docker pull rabbitmq:4.0.4-management
@@ -90,6 +90,6 @@ docker/down/dev: docker/clean/dangling ## stop and remove development docker con
 docker/clean/dev: docker/clean/dangling ## stop and remove development docker containers, networks, volumes etc.
 	docker compose -f ./docker-compose-development.yaml down -v --remove-orphans
 
-.PHONY: docker/clean/dangling  ## clean dangling docker images
-docker/clean/dangling:
+.PHONY: docker/clean/dangling
+docker/clean/dangling: ## clean dangling docker images
 	docker image ls --filter "dangling=true" -a -q | xargs -L1 -r -t docker rmi
