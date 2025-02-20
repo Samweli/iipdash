@@ -5,98 +5,59 @@
 {# Start: html #}
 <html lang="en">
 
-  {# Start: head #}
-  <head>
+    <head>
+        {% block google_analytics %}{% endblock %}
 
-    {# Start: analytics #}
-    {% block google_analytics %}{% endblock %}
-    {# End: analytics #}
+        {% block meta %}
+            <meta charset="utf-8">
 
-    {# Start: meta #}
-    {% block meta %}
-      <meta charset="utf-8">
+            {% block meta_viewport %}
+                <meta name="viewport" content="width=device-width, initial-scale=1">
+            {% endblock meta_viewport %}
 
-      {# Start: meta viewport #}
-      {% block meta_viewport %}
-        <meta name="viewport" content="width=device-width, initial-scale=1">
-      {% endblock %}
-      {# End: meta viewport #}
+            {% block meta_cards %}{% endblock %}
+        {% endblock meta %}
 
-      {# Start: meta cards #}
-      {% block meta_cards %}{% endblock %}
-      {# End: meta cards #}
+        <title>
+            {{ SITE_NAME }} &bull; {% block head_title %}{{ SITE_TAGLINE }}{% endblock %}
+        </title>
 
-    {% endblock %}
-    {# End: meta #}
+        {% block css %}
+            <link href="{% static 'main.css' %}" rel="stylesheet">
+            <link href="{% static 'vendor.css' %}" rel="stylesheet">
+        {% endblock css %}
 
-    {# Start: title #}
-    <title>{{ SITE_NAME }} &bull; {% block head_title %}{{ SITE_TAGLINE }}{% endblock %}</title>
-    {# End: title #}
+        {% block extra_css %}{% endblock %}
 
-    {# Start: css #}
-    {% block css %}
-      <link href="{% static 'main.css' %}" rel="stylesheet">
-      <link href="{% static 'vendor.css' %}" rel="stylesheet">
-    {% endblock css %}
-    {# End: css #}
+        {% block extra_head %}{% endblock %}
 
-    {# Start: extra css #}
-    {% block extra_css %}{% endblock %}
-    {# End: extra css #}
+    </head>
 
-    {# Start: extra head #}
-    {% block extra_head %}{% endblock %}
-    {# End: exta head #}
 
-  </head>
-  {# End: head #}
-
-  {# Start: body #}
-  {% block body %}
     <body id="{% block body_id %}{% endblock %}" class="{% block body_class %}{% endblock %}">
+        {% block body %}{% endblock %}
 
-    {# Start: main body #}
-      {% block main_body %}
+        {% block extra_body %}{% endblock %}
 
-      {# Start: main top navigation #}
-        {% block main_top_nav %}
-          {% include 'includes/main_top_nav.html' %}
-        {% endblock %}
-      {# End: main top navigation #}
 
-      {# Start: main content #}
-        {% block main_content %}
-          <main id="{% block main_content_id %}main-content{% endblock %}"
-                class="container-fluid navbar-height-offset {% block extra_main_content_class %}main-content{% endblock %}">
+        {% block js %}
+            <script type="text/javascript">
+                window.settings = {
+                    API_ROOT: "{% url 'api:api-root' %}",
+                    STATIC_URL: "{% static '' %}",
+                    BASEMAP_URL: "{{ BASEMAP_URL }}",
+                    BASEMAP_ATTRIBUTION: `{{ BASEMAP_ATTRIBUTION|safe }}`,
+                    MAP_DEFAULT_CENTER: {{ MAP_DEFAULT_CENTER }},
+                    MAP_DEFAULT_ZOOM: {{ MAP_DEFAULT_ZOOM }},
+                    MAPBOX_ACCESS_TOKEN: "{{ MAPBOX_ACCESS_TOKEN }}",
+                    MAPBOX_STYLE_ID: "{{ MAPBOX_STYLE_ID }}"
+                };
+            </script>
+            <script src="{% static 'main.js' %}"></script>
+        {% endblock js %}
 
-            {# Start: content #}
-            {% block content %}{% endblock %}
-            {# End: content #}
-
-          </main>
-        {% endblock %}
-      {# End: main content #}
-
-      {% endblock %}
-    {# End: main body #}
-
-    {# Start: extra body #}
-      {% block extra_body %}{% endblock %}
-    {# Ende: extra body #}
-
-    {# Start: js #}
-      {% block js %}
-        <script src="{% static 'main.js' %}"></script>
-      {% endblock %}
-    {# End: js #}
-
-    {# Start: extra js #}
-      {% block extra_js %}{% endblock %}
-    {# End: extra js #}
-
+        {% block extra_js %}{% endblock %}
     </body>
-  {% endblock %}
-  {# End: body #}
 
 </html>
 {# End: html #}

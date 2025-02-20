@@ -7,6 +7,7 @@ module.exports = {
     main: ['./assets/js/main.js', './assets/scss/main.scss'],
     vendor: ['./assets/vendor/vendor.css'],
     home: ['./assets/js/home.js'],
+    education_dash: ['./assets/js/education_dash.js'],
   },
   output: {
     path: path.resolve('./assets/dist/'),

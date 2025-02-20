@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+
+{% block body %}
+    {% block main_body %}
+
+        {% block main_top_nav %}
+            {% include 'includes/main_top_nav.html' %}
+        {% endblock main_top_nav %}
+
+        {% block main_content %}
+            <main id="{% block main_content_id %}main-content{% endblock %}"
+                  class="container-fluid navbar-height-offset {% block extra_main_content_class %}main-content{% endblock %}">
+
+                {% block content %}{% endblock %}
+
+            </main>
+        {% endblock main_content %}
+
+    {% endblock main_body %}
+{% endblock body %}

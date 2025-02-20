@@ -421,6 +421,22 @@ GDAL2TILES_PROCESSES = env.int("GDAL2TILES_PROCESSES", default=1)
 MAPBOX_STYLE_ID = env("MAPBOX_STYLE_ID", default="mapbox/light-v11")
 MAPBOX_ACCESS_TOKEN = env("MAPBOX_ACCESS_TOKEN", default="")
 
+# Map display
+MAP_DEFAULT_CENTER = env.list("MAP_DEFAULT_CENTER", cast=float, default=[27.5, -10.0])
+
+MAP_DEFAULT_ZOOM = env.int("MAP_DEFAULT_ZOOM", default=5)
+
+BASEMAP_URL = env(
+    "BASEMAP_URL",
+    default=f"https://api.mapbox.com/styles/v1/{MAPBOX_STYLE_ID}/tiles/256/{{z}}/{{x}}/{{y}}?access_token={MAPBOX_ACCESS_TOKEN}",
+)
+
+BASEMAP_ATTRIBUTION = env(
+    "BASEMAP_ATTRIBUTION",
+    default='&copy; <a href="https://www.openstreetmap.org/" target="_blank" class="text-muted">'
+    'OpenStreetMap</a> contributors, <a href="https://leafletjs.com" class="text-muted">',
+)
+
 
 # Logging
 

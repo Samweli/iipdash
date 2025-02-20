@@ -1,0 +1,62 @@
+import * as Vue from 'vue';
+import axios from 'axios';
+import maplibregl from 'maplibre-gl';
+
+import * as settings from './conf';
+import * as maps from './maps';
+
+
+const EducationDash = {
+    components: {},
+
+    data () {
+        return {
+            _map: null,
+            _mapID: '_education-map',
+            lookup: {},
+            results: {features: []}
+        }
+    },
+
+    methods: {
+
+        initLookup () {},
+        
+        updateData: async function () {},
+
+        initMap () {
+            const map = new maplibregl.Map({
+                ...maps.basemap,
+                container: '_education-map'
+            });
+
+            map.addControl(new maplibregl.NavigationControl());
+
+            this._map = Vue.markRaw(map);
+
+        },
+
+        updateMap: async function () {},
+
+        update: async function () {
+            try {
+                await this.updateData();
+                this.updateMap();
+            } catch (e) {
+                console.log(e)
+            }
+
+            const event = new Event('page-updated');
+            window.dispatchEvent(event);
+        },
+    },
+
+    mounted () {
+        this.initLookup();
+        this.initMap();
+        this.update();
+    }
+}
+
+const app = Vue.createApp(EducationDash);
+app.mount('#_education-dash');

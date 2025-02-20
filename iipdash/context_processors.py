@@ -9,4 +9,8 @@ def site(request):
         "SITE_API_URL": settings.SITE_API_URL,
         "MAPBOX_STYLE_ID": settings.MAPBOX_STYLE_ID,
         "MAPBOX_ACCESS_TOKEN": settings.MAPBOX_ACCESS_TOKEN,
+        "BASEMAP_URL": settings.BASEMAP_URL,
+        "BASEMAP_ATTRIBUTION": settings.BASEMAP_ATTRIBUTION,
+        "MAP_DEFAULT_CENTER": settings.MAP_DEFAULT_CENTER,
+        "MAP_DEFAULT_ZOOM": settings.MAP_DEFAULT_ZOOM,
     }

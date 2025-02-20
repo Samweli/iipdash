@@ -1,0 +1,21 @@
+{% extends 'dashboards/base.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Map" %}{% endblock %}
+
+{% block body_id %}_education-dash{% endblock %}
+{% block body_class %}{% endblock %}
+
+{% block map_id %}_education-map{% endblock %}
+
+
+{% block map_sidebar_content %}
+{% endblock map_sidebar_content %}
+
+
+{% block extra_js %}
+    {{ block.super }}
+    <script src="{% static 'education_dash.js' %}"></script>
+{% endblock extra_js %}
