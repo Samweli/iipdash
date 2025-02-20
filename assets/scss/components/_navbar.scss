@@ -5,13 +5,14 @@
 //
 
 .navbar {
+    height: $navbar-height;
 
     // Navbar brand
     .navbar-brand {
-        font-family: 'DM Serif Display', serif;
+        font-family: $font-family-base;
         font-style: normal;
         font-weight: 400;
-        line-height: 1.5;  // DESIGN: line-height: 27px;
+        line-height: 1.5;  // ~27px;
     }
 
     // Navbar nav
@@ -20,28 +21,26 @@
     //
     .navbar-nav {
 
-        //
         // Nav link
-        //
         .nav-link {
             font-family: 'DM Sans', sans-serif;
             font-style: normal;
             font-weight: 500;
-            // TODO: font-weight: $font-weight-medium; // Use Bootstrap variable
             letter-spacing: 0.11em;
             text-transform: uppercase;
-            line-height: 1.25;
-            // DESIGN: line-height: 20px;
+            line-height: 1.25; // ~20px;
 
             // Active Link Styling
-            //
             &.active {
                 text-decoration: underline;
                 text-decoration-thickness: 3px;
                 text-underline-offset: 5px;
             }
+
         }
+
     }
+
 }
 
 .navbar-height-offset {
