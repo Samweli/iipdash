@@ -42,7 +42,14 @@ const EducationDash = {
 
         },
 
-        updateMap: async function () {},
+        updateMap: async function () {
+            this._map.on('load', () => {
+
+                // education summary statistics by area
+                this._map.addSource('areas-education', maps.sources['areas-education']);
+                this._map.addLayer(maps.layers['areas-education']);
+            });
+       },
 
         update: async function () {
             try {

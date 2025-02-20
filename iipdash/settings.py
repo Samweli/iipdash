@@ -428,7 +428,7 @@ MAP_DEFAULT_ZOOM = env.int("MAP_DEFAULT_ZOOM", default=5)
 
 BASEMAP_URL = env(
     "BASEMAP_URL",
-    default=f"https://api.mapbox.com/styles/v1/{MAPBOX_STYLE_ID}/tiles/256/{{z}}/{{x}}/{{y}}?access_token={MAPBOX_ACCESS_TOKEN}",
+    default=f"https://api.mapbox.com/styles/v1/{MAPBOX_STYLE_ID}/tiles/256/{{z}}/{{x}}/{{y}}?access_token={MAPBOX_ACCESS_TOKEN}",  # noqa
 )
 
 BASEMAP_ATTRIBUTION = env(

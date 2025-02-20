@@ -43,7 +43,7 @@
         {% block js %}
             <script type="text/javascript">
                 window.settings = {
-                    API_ROOT: "{% url 'api:api-root' %}",
+                    API_ROOT: "{{ API_ROOT }}",
                     STATIC_URL: "{% static '' %}",
                     BASEMAP_URL: "{{ BASEMAP_URL }}",
                     BASEMAP_ATTRIBUTION: `{{ BASEMAP_ATTRIBUTION|safe }}`,
