@@ -1,6 +1,6 @@
-// Variables
-//
+// Overrides Bootstrap variables
 // See: https://github.com/twbs/bootstrap/blob/main/scss/_variables.scss
+//
 
 // Fonts
 // Settings for the loadig and set fonts.
@@ -26,3 +26,7 @@ $primary: #007fff !default;
 //
 $font-family-sans-serif: 'DM Sans', serif;
 $font-family-base: $font-family-sans-serif;
+
+// Navbar
+//
+$navbar-height: 56px;

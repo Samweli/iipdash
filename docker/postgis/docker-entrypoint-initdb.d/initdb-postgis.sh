@@ -18,6 +18,7 @@ for DB in template_postgis "$POSTGRES_DB"; do
     echo "Loading PostGIS extensions into $DB"
     "${psql[@]}" --dbname="$DB" <<-'EOSQL'
         CREATE EXTENSION IF NOT EXISTS postgis;
+        CREATE EXTENSION IF NOT EXISTS postgis_raster;
         -- CREATE EXTENSION IF NOT EXISTS postgis_topology;
         -- Reconnect to update pg_setting.resetval
         -- See https://github.com/postgis/docker-postgis/issues/288

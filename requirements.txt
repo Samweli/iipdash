@@ -33,3 +33,6 @@ celery
 flower
 django-celery-results
 django-celery-beat
+
+
+django-active-link

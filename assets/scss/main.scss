@@ -1,8 +1,32 @@
-@import 'variables';
+// Base variables
+//
+@import 'base/variables';
 
+// Import Bootstrap
+//
 @import 'bootstrap/scss/bootstrap';
 
+// Import Font Awesome
+//
 @import '~@fortawesome/fontawesome-free/scss/fontawesome.scss';
 @import '~@fortawesome/fontawesome-free/scss/regular.scss';
 @import '~@fortawesome/fontawesome-free/scss/solid.scss';
 @import '~@fortawesome/fontawesome-free/scss/brands.scss';
+
+// Base styles
+//
+@import 'base/typography';
+
+// Layout styles
+//
+@import 'layout/grid';
+@import 'layout/footer';
+@import 'layout/map';
+
+// Component styles
+//
+@import 'components/navbar';
+
+// Page-specific styles
+//
+@import 'pages/home';

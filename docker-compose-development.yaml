@@ -117,9 +117,14 @@ services:
   # postgresql+psycopg://iipdash:iipdash@localhost:6432/iipdash
   # ```
   #
-  # -docker URI:
+  # - docker URI:
   # ```
   # postgresql+psycopg://iipdash:iipdash@iipdash-dev-pg:5432/iipdash
+  # ```
+  #
+  # - docker container
+  # ```
+  # docker exec -it iipdash-dev-pg psql -U iipdash -d iipdash
   # ```
   iipdash-dev-pg:
     image: postgis/postgis:17-3.5
@@ -153,6 +158,11 @@ services:
   # - docker URI:
   # ```
   # postgresql+psycopg://test_iipdash:test_iipdash@iipdash-test-pg:5432/test_iipdash
+  # ```
+  #
+  # - docker container
+  # ```
+  # docker exec -it iipdash-test-pg psql -U test_iipdash -d test_iipdash
   # ```
   iipdash-test-pg:
     image: postgis/postgis:17-3.5

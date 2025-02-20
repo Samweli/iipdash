@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+/*!****************************************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./node_modules/maplibre-gl/src/css/maplibre-gl.css ***!
+  \****************************************************************************************************/
+>>>>>>> feature/ui-layout
 .maplibregl-map {
     font: 12px/20px "Helvetica Neue", Arial, Helvetica, sans-serif;
     overflow: hidden;
@@ -875,6 +881,12 @@ a.maplibregl-ctrl-logo.maplibregl-compact {
     z-index: 99999;
 }
 
+<<<<<<< HEAD
+=======
+/*!*********************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./assets/vendor/maplibre-gl.css ***!
+  \*********************************************************************************/
+>>>>>>> feature/ui-layout
 .maplibregl-map {
   font:
     12px/20px 'Helvetica Neue',
@@ -883,5 +895,11 @@ a.maplibregl-ctrl-logo.maplibregl-compact {
     sans-serif;
 }
 
+<<<<<<< HEAD
+=======
+/*!****************************************************************************!*\
+  !*** css ./node_modules/css-loader/dist/cjs.js!./assets/vendor/vendor.css ***!
+  \****************************************************************************/
+>>>>>>> feature/ui-layout
 /*@import "~maplibre-gl/dist/maplibre-gl.css";*/
 
