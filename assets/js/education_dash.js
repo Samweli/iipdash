@@ -21,7 +21,7 @@ const EducationDash = {
     methods: {
 
         initLookup () {},
-        
+
         updateData: async function () {},
 
         initMap () {
@@ -30,7 +30,13 @@ const EducationDash = {
                 container: '_education-map'
             });
 
-            map.addControl(new maplibregl.NavigationControl());
+            const navigationControl = new maplibregl.NavigationControl({
+                visualizePitch: true,
+                visualizeRoll: true,
+                showZoom: true,
+                showCompass: true
+            });
+            map.addControl(navigationControl);
 
             this._map = Vue.markRaw(map);
 
