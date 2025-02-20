@@ -258,7 +258,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # Site
 
-SITE_NAME = env("SITE_NAME", default="IIP dashboard")
+SITE_NAME = env("SITE_NAME", default="Infrastructure Mapping Platform")
 
 SITE_TAGLINE = env("SITE_TAGLINE", default="Integrated Infrastructure Planning (IIP) Dashboard")
 
