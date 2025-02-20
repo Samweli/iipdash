@@ -63,9 +63,12 @@ services:
         TEST_DATABASE_PORT: 5432
         CELERY_BROKER_URL: amqp://iipdash:iipdash@iipdash-dev-rabbitmq:5672//
     depends_on:
-      - iipdash-dev-pg
-      - iipdash-test-pg
-      - iipdash-dev-rabbitmq
+      iipdash-dev-pg:
+        condition: service_healthy
+      iipdash-test-pg:
+        condition: service_healthy
+      iipdash-dev-rabbitmq:
+        condition: service_healthy
     volumes:
       - .:/home/iipdash/iipdash:z
     env_file:
