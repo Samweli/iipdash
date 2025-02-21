@@ -65,6 +65,7 @@ urlpatterns = [
     path("about/", TemplateView.as_view(template_name="about/about.html"), name="about"),
     path("education/", TemplateView.as_view(template_name="dashboards/education.html"), name="education"),
     path("admin/", admin.site.urls),
+    path("accounts/", include("allauth.urls")),
     path("api/auth/", include("rest_framework.urls")),
     path("api/oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     path("api/", include((api_router.urls, "api"))),

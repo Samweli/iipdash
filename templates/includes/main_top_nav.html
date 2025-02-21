@@ -5,48 +5,79 @@
      class="navbar navbar-expand-lg bg-primary fixed-top"
      data-bs-theme="dark">
 
-  {# Start: container #}
-  <div class="container-fluid">
+    {# Start: container #}
+    <div class="container-fluid">
 
-    {# Start: navbar brand #}
-    <a class="navbar-brand" href="{% url 'home' %}">{{ SITE_NAME }}</a>
-    {# End: navbar brand #}
+        {# Start: navbar brand #}
+        <a class="navbar-brand" href="{% url 'home' %}">{{ SITE_NAME }}</a>
+        {# End: navbar brand #}
 
-    {# Start: navbar toggler #}
-    <button class="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarNav"
-            aria-controls="navbarNav"
-            aria-expanded="false"
-            aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    {# End: navbar toggler #}
+        {# Start: navbar toggler #}
+        <button class="navbar-toggler"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNav"
+                aria-controls="navbarNav"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        {# End: navbar toggler #}
 
-    {# Start: navbar nav #}
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <a class="nav-link {% active_link 'map' strict=True %}" href="{% url 'map' %}">
-            {% trans "Map" %}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link {% active_link 'about' strict=True %}" href="{% url 'about' %}">
-            {% trans "About" %}
-          </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="">
-            {% trans "Sign In" %}
-          </a>
-        </li>
-      </ul>
+        {# Start: navbar nav #}
+        <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+
+            <ul class="navbar-nav">
+
+                <li class="nav-item">
+                    <a class="nav-link {% active_link 'map' strict=True %}" href="{% url 'map' %}">
+                        {% trans "Map" %}
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link {% active_link 'about' strict=True %}" href="{% url 'about' %}">
+                        {% trans "About" %}
+                    </a>
+                </li>
+
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link" href="#" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle fa-2x"></i>
+                        </a>
+
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <div class="dropdown-item" href="#">
+                                {% if user.get_full_name %}
+                                    <span class="lead font-weight-bold">{{ user.get_full_name }}</span><br>
+                                {% endif %}
+                                <small class="text-primary">{{ user.email|default:user.username }}</small>
+                            </div>
+
+                            <a class="dropdown-item" href="{% url 'account_logout' %}">
+                                <i class="fas fa-sign-out-alt text-muted me-2"></i> {% trans 'Sign Out' %}
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="{% url 'account_change_password' %}">
+                                <i class="fas fa-user-pen text-muted me-2"></i> {% trans 'Change password' %}
+                            </a>
+                        </div>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link {% active_link 'account_login' strict=True %}" href="{% url 'account_login' %}">
+                            {% trans 'Login' %}
+                        </a>
+                    </li>
+                {% endif %}
+
+            </ul>
+
+        </div>
+        {# End: navbar nav #}
+
     </div>
-    {# End: navbar nav #}
-
-  </div>
-  {# End: container #}
+    {# End: container #}
 
 </nav>

@@ -60,6 +60,8 @@ INSTALLED_APPS = [
     "treebeard",
     "django_countries",
     "import_export",
+    "allauth",
+    "allauth.account",
     "rest_framework",
     "rest_framework_gis",
     "oauth2_provider",
@@ -67,6 +69,8 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "drf_spectacular_sidecar",
     "corsheaders",
+    "crispy_forms",
+    "crispy_bootstrap5",
     "core",
     "users",
     "administrative",
@@ -87,6 +91,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
 ]
 
 ROOT_URLCONF = "iipdash.urls"
@@ -162,6 +167,11 @@ CACHE_MVT_ALIAS = env("CACHE_MVT_ALIAS", default="default")
 
 AUTH_USER_MODEL = "users.User"
 
+AUTHENTICATION_BACKENDS = [
+    "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
+]
+
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
@@ -191,6 +201,11 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.ScryptPasswordHasher",
 ]
 
+LOGIN_URL = "/accounts/login/"
+
+LOGIN_REDIRECT_URL = "/"
+
+ACCOUNT_LOGIN_METHODS = {"username", "email"}
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
@@ -399,6 +414,12 @@ CELERY_TASK_TRACK_STARTED = env.bool("CELERY_TASK_TRACK_STARTED", default=True)
 CELERY_BEAT_SCHEDULER = env("CELERY_BEAT_SCHEDULER", default="django_celery_beat.schedulers:DatabaseScheduler")
 
 CELERY_FLOWER_BASIC_AUTH = env("CELERY_FLOWER_BASIC_AUTH", default=None)
+
+# Crispy forms
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Administrative
 

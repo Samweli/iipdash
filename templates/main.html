@@ -10,7 +10,7 @@
 
         {% block main_content %}
             <main id="{% block main_content_id %}main-content{% endblock %}"
-                  class="container-fluid navbar-height-offset {% block extra_main_content_class %}main-content{% endblock %}">
+                  class="{% block main_content_class %}container-fluid navbar-height-offset main-content{% endblock %}">
 
                 {% block content %}{% endblock %}
 

@@ -1,0 +1,21 @@
+{% extends "account/base_manage.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Sign Out" %}{% endblock %}
+
+{% block content %}
+    <h1 class="text-center py-5">
+        {% trans "Sign Out" %}
+    </h1>
+
+    <div class="text-center">
+        <p class="text-muted">{% trans 'Are you sure you want to sign out?' %}</p>
+
+        <form method="post" action="{% url 'account_logout' %}" class="d-block">
+            {% csrf_token %}
+            {{ redirect_field }}
+            <button class="btn btn-warning" type="submit">{% trans 'Sign Out' %}</button>
+        </form>
+    </div>
+{% endblock %}
