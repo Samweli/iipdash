@@ -48,6 +48,10 @@ const EducationDash = {
                 // education summary statistics by area
                 this._map.addSource('areas-education', maps.sources['areas-education']);
                 this._map.addLayer(maps.layers['areas-education']);
+
+                // education institutions
+                this._map.addSource('education-institutions', maps.sources['education-institutions']);
+                this._map.addLayer(maps.layers['education-institutions']);
             });
        },
 

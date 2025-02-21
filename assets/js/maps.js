@@ -1,5 +1,12 @@
 import * as settings from './conf';
 
+
+
+export const defaultMinZoom = 1;
+export const defaultMaxZoom = 19;
+
+const colorPrimary = "#007fff";
+
 // The default basemap style
 export const basemap = {
     style: {
@@ -17,8 +24,8 @@ export const basemap = {
                 'id': 'basemap',
                 'type': 'raster',
                 'source': 'basemap',
-                'minzoom': 1,
-                'maxzoom': 19
+                'minzoom': defaultMinZoom,
+                'maxzoom': defaultMaxZoom
             }
         ]
     },
@@ -27,6 +34,7 @@ export const basemap = {
 }
 
 
+export const educationInstitutionsTilesUrl = settings.API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/'
 export const areasEducationTilesURL = settings.API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=2'
 
 
@@ -34,8 +42,14 @@ export const sources = {
     'areas-education': {
         type: 'vector',
         tiles: [areasEducationTilesURL],
-        minzoom: 1,
-        maxzoom: 19
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom
+    },
+    'education-institutions': {
+        type: 'vector',
+        tiles: [educationInstitutionsTilesUrl],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom
     }
 }
 
@@ -47,7 +61,7 @@ const areasEducationLayer = {
     type: 'fill',
     paint: {
         "fill-opacity": 0.7,
-        "fill-outline-color": "#007fff",
+        "fill-outline-color": colorPrimary,
         'fill-color': [
             'case',
             ['==', ['get', 'institutions_fiber_distance_median'], null],
@@ -59,7 +73,7 @@ const areasEducationLayer = {
                 // color stops,
                 0, '#ffffff',
                 1000, '#dae1ff',
-                30000, '#007fff'
+                30000, colorPrimary
             ]
         ],
         'fill-opacity': [ // Zoom-dependent opacity
@@ -73,7 +87,31 @@ const areasEducationLayer = {
     }
 };
 
+const educationInstitutionsLayer = {
+    id: 'education-institutions',
+    source: 'education-institutions',
+    'source-layer': 'education-institutions',
+    type: 'circle',
+    paint: {
+        "circle-blur": 0,
+        "circle-color": colorPrimary,
+        "circle-opacity": 0.9,
+        "circle-stroke-opacity": 0,
+        "circle-stroke-width": 0,
+        'circle-radius': [ // Zoom-dependent circle radius
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0, 0.5, // zoom level 0
+            5, 2.0, // zoom level 5
+            10, 3.0,  // zoom level 10
+            14, 5.0  // zoom level 14
+        ],
+    }
+}
+
 
 export const layers = {
     'areas-education': areasEducationLayer,
+    'education-institutions': educationInstitutionsLayer
 }
