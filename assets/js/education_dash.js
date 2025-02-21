@@ -52,6 +52,10 @@ const EducationDash = {
                 // education institutions
                 this._map.addSource('education-institutions', maps.sources['education-institutions']);
                 this._map.addLayer(maps.layers['education-institutions']);
+
+                // fiber nodes
+                this._map.addSource('fiber-nodes', maps.sources['fiber-nodes']);
+                this._map.addLayer(maps.layers['fiber-nodes']);
             });
        },
 

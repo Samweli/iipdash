@@ -35,6 +35,7 @@ export const basemap = {
 
 
 export const educationInstitutionsTilesUrl = settings.API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/'
+export const fiberNodesTilesUrl = settings.API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/'
 export const areasEducationTilesURL = settings.API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=2'
 
 
@@ -48,6 +49,12 @@ export const sources = {
     'education-institutions': {
         type: 'vector',
         tiles: [educationInstitutionsTilesUrl],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom
+    },
+    'fiber-nodes': {
+        type: 'vector',
+        tiles: [fiberNodesTilesUrl],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom
     }
@@ -87,6 +94,7 @@ const areasEducationLayer = {
     }
 };
 
+
 const educationInstitutionsLayer = {
     id: 'education-institutions',
     source: 'education-institutions',
@@ -110,8 +118,33 @@ const educationInstitutionsLayer = {
     }
 }
 
+const fiberNodesLayer = {
+    id: 'fiber-nodes',
+    source: 'fiber-nodes',
+    'source-layer': 'fiber-nodes',
+    type: 'circle',
+    paint: {
+        'circle-blur': 0,
+        'circle-color': '#ffffff',
+        'circle-opacity': 0.5,
+        'circle-stroke-color': '#AEA79F',
+        'circle-stroke-opacity': 0.9,
+        'circle-stroke-width': 2,
+        'circle-radius': [ // Zoom-dependent circle radius
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0, 1.0, // zoom level 0
+            5, 5.0, // zoom level 5
+            10, 10.0,  // zoom level 10
+            14, 14.0  // zoom level 14
+        ],
+    }
+}
+
 
 export const layers = {
     'areas-education': areasEducationLayer,
-    'education-institutions': educationInstitutionsLayer
+    'education-institutions': educationInstitutionsLayer,
+    'fiber-nodes': fiberNodesLayer
 }
