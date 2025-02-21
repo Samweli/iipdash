@@ -422,7 +422,7 @@ MAPBOX_STYLE_ID = env("MAPBOX_STYLE_ID", default="mapbox/light-v11")
 MAPBOX_ACCESS_TOKEN = env("MAPBOX_ACCESS_TOKEN", default="")
 
 # Map display
-MAP_DEFAULT_CENTER = env.list("MAP_DEFAULT_CENTER", cast=float, default=[27.5, -10.0])
+MAP_DEFAULT_CENTER = env.list("MAP_DEFAULT_CENTER", cast=float, default=[24.5, -6.5])
 
 MAP_DEFAULT_ZOOM = env.int("MAP_DEFAULT_ZOOM", default=5)
 
