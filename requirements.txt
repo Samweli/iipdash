@@ -12,6 +12,7 @@ django-import-export[all]
 django-allauth
 
 django-crispy-forms
+crispy-bootstrap5
 
 django-debug-toolbar
 
