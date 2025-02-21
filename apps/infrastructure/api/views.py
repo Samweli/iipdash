@@ -410,7 +410,6 @@ class FiberOpticNodeViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyMode
     #: A tuple of fields to be included in vector tiles data.
     tile_fields = (
         "uuid",
-        "name",
         "node_type",
         "country",
         "administrative_area_uuid",
@@ -423,7 +422,7 @@ class FiberOpticNodeViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyMode
         """Returns a queryset used to generate vector tiles."""
 
         queryset = self.get_queryset().annotate(
-            geom=Cast("geometry", MultiLineStringField()),
+            geom=Cast("geometry", PointField()),
             country=F("administrative_area__country"),
             administrative_area_uuid=F("administrative_area__uuid"),
             administrative_area_name=F("administrative_area__name"),
