@@ -45,6 +45,10 @@ const EducationDash = {
         updateMap: async function () {
             this._map.on('load', () => {
 
+                // country boundaries
+                this._map.addSource('countries', maps.sources['countries']);
+                this._map.addLayer(maps.layers['countries']);
+
                 // education summary statistics by area
                 this._map.addSource('areas-education', maps.sources['areas-education']);
                 this._map.addLayer(maps.layers['areas-education']);

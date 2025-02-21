@@ -34,12 +34,19 @@ export const basemap = {
 }
 
 
+export const countriesTilesURL = settings.API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=1'
 export const educationInstitutionsTilesUrl = settings.API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/'
 export const fiberNodesTilesUrl = settings.API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/'
 export const areasEducationTilesURL = settings.API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=2'
 
 
 export const sources = {
+    'countries': {
+        type: 'vector',
+        tiles: [countriesTilesURL],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom
+    },
     'areas-education': {
         type: 'vector',
         tiles: [areasEducationTilesURL],
@@ -61,13 +68,24 @@ export const sources = {
 }
 
 
+const countriesLayer = {
+    id: 'countries',
+    source: 'countries',
+    'source-layer': 'administrative-areas',
+    type: 'line',
+    paint: {
+        'line-width': 2.7,
+        'line-color': colorPrimary,
+    }
+};
+
+
 const areasEducationLayer = {
     id: 'areas-education',
     source: 'areas-education',
     'source-layer': 'areas-education',
     type: 'fill',
     paint: {
-        "fill-opacity": 0.7,
         "fill-outline-color": colorPrimary,
         'fill-color': [
             'case',
@@ -144,6 +162,7 @@ const fiberNodesLayer = {
 
 
 export const layers = {
+    'countries': countriesLayer,
     'areas-education': areasEducationLayer,
     'education-institutions': educationInstitutionsLayer,
     'fiber-nodes': fiberNodesLayer
