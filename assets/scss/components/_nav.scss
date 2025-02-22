@@ -1,0 +1,42 @@
+// Nav styles
+//
+// Kickstart any navigation component with a set of style resets. Works with
+// `<nav>`s, `<ul>`s or `<ol>`s.
+//
+
+//
+// Underline bordered
+//
+
+.nav-underline-bordered {
+  @extend .nav-underline;
+
+  border-bottom: 0.0625rem solid #c8c8c8; // TODO: refactor to color variables
+
+  .nav-link {
+    @extend .ff-dm-sans, .fst-normal;
+    font-weight: $font-weight-semibold;
+    font-size: 1.25rem; // ~ (20px / 16px)
+    line-height: 1.3; // ~ (26px / 20px)
+    color: #7c7c7c; // TODO: refactor to color variables
+
+    padding-right: 0;
+    padding-left: 0;
+    border-bottom: 0.25rem solid transparent;
+
+    &:hover,
+    &:focus {
+      border-bottom-color: currentcolor;
+    }
+  }
+
+  .nav-link.active,
+  .show > .nav-link {
+    @extend .ff-dm-sans, .fst-normal;
+    font-weight: $font-weight-semibold;
+    font-size: 1.25rem; // ~ (20px / 16px)
+    line-height: 1.3; // ~ (26px / 20px)
+    color: $primary;
+    border-bottom-color: currentcolor;
+  }
+}

@@ -1,0 +1,10 @@
+// Select
+//
+
+.form-select-primary {
+  @extend .form-select, .ff-dm-serif-display;
+
+  background-color: $primary;
+  color: $white;
+  border: none;
+}

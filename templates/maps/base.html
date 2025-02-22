@@ -17,10 +17,11 @@
     {# Start: map sidebar #}
       {% block map_sidebar %}
         <aside id="{% block map_sidebar_id %}map-sidebar{% endblock %}"
-               class="d-flex flex-column col-md-3 overflow-auto p-3 border-end {% block extra_map_sidebar_class %}map-sidebar{% endblock %}">
+               class="d-flex flex-column col-md-3 overflow-auto border-end {% block extra_map_sidebar_class %}map-sidebar{% endblock %}">
 
           {# Start: map sidebar content #}
-          <div id="map-sidebar-content" class="flex-grow-1 map-sidebar-content">
+          <div id="{% block map_sidebar_content_id %}map-sidebar-content{% endblock %}"
+               class="flex-grow-1 {% block extra_map_sidebar_content_class %}map-sidebar-content{% endblock %}">
             {% block map_sidebar_content %}{% endblock %}
           </div>
           {# End: map sidebar content #}

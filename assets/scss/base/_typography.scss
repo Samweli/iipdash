@@ -1,2 +1,81 @@
 // Font families, sizes, headings, and global text styles.
 //
+
+// Font families
+//
+.ff-dm-sans {
+  font-family: $font-family-dm-sans !important;
+}
+
+.ff-dm-serif-display {
+  font-family: $font-family-dm-serif-display !important;
+}
+
+// Font size
+//
+
+// Font weights
+//
+// .fw-normal
+// .fw-bold
+// .fw-light
+// See: https://getbootstrap.com/docs/5.0/utilities/text/
+
+// Line heights
+//
+
+// Text colors
+//
+// .text-primary
+// .text-secondary
+// .text-body
+// .tex-muted
+// See: https://getbootstrap.com/docs/5.0/utilities/colors/
+
+// Headings
+//
+// .h-txt: Default header
+// .h-txt-primary: Primary header
+// .h-txt-stats: Default statistics header
+// .h-txt-stats-primary: Primary statistics header
+//
+.h-txt {
+  @extend .ff-dm-serif-display, .fw-normal, .fst-normal;
+  font-size: 1.25rem; // ~ (20px / 16px)
+  line-height: 1.35; // ~ (27px / 20px )
+}
+
+.h-txt-primary {
+  @extend .h-txt, .text-primary;
+}
+
+// Paragraphs
+//
+// .p-txt: Default paragraph
+// .p-txt-primary: Primary paragraph
+// .p-txt-black: Primary paragraph
+// .p-txt-stats: Default statistics paragraph
+// .p-txt-stats-primary: Primary statistics paragraph
+//
+.p-txt {
+  @extend .ff-dm-sans, .fw-normal, .fst-normal;
+  font-size: 0.875rem; // ~ (14px / 16px)
+  line-height: 1.286; // ~ (18px / 14px )
+
+  a {
+    text-decoration-thickness: 9.5%;
+    text-decoration-skip-ink: auto;
+  }
+}
+
+.p-txt-black {
+  @extend .p-txt, .text-black;
+}
+
+// Small
+.p-txt-small {
+  @extend .p-txt;
+  font-size: 0.75rem; // ~ (12px / 16px)
+  line-height: 1.33; // ~ (16px / 12px )
+  color: $main-grey;
+}

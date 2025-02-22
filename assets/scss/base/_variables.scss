@@ -12,25 +12,35 @@ $web-font-path: 'https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght
 
 // Color system
 //
-$primary: #007fff !default;
+$white: #ffffff !default;
+$main-blue: #007fff !default;
+$main-black: #363636 !default;
+$main-grey: #575757 !default;
+$light-grey: #ebebeb !default;
+
+$primary: $main-blue !default;
 
 // Body
 //
 // Settings for the `<body>` element.
 //
-// $body-bg: $white !default;
+$body-color: $main-black !default;
+$body-bg: $white !default;
 
 // Typography
 //
 // Font, line-height, and color for body text, headings, and more.
 //
-$font-family-sans-serif: 'DM Sans', serif;
+$font-family-dm-sans: 'DM Sans', sans-serif;
+$font-family-dm-serif-display: 'DM Serif Display', serif;
+
+$font-family-sans-serif: $font-family-dm-sans;
 $font-family-base: $font-family-sans-serif;
 
-
 // Navbar
-$navbar-height: 4.0625rem; // ~65px
+//
+$navbar-height: 4.0625rem; // ~ (65px / 16px)
 
-$navbar-brand-font-size: 1.25rem;  // ~20px
-$nav-link-font-size:  0.9375rem; // ~15px
+$navbar-brand-font-size: 1.25rem; // ~ (20px / 16px)
+$nav-link-font-size: 0.9375rem; // ~ (15px / 16px)
 $navbar-nav-link-padding-x: 1.4rem;

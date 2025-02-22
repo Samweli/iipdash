@@ -1,14 +1,14 @@
 {% load static %}
 {% load i18n %}
 
-{# Start: disclaimer #}
-<div class="d-flex flex-column align-items-center p-2 border-top mt-auto map-sidebar-disclaimer">
-  <img src="{% static 'images/wb_logo.png' %}" class="mt-2 me-2" alt="{% trans 'The World Bank Logo' %}">
-  <small class="text-muted text-justify mt-3">
-    {% blocktrans %}The boundaries, colors, denominations, and other information shown on any map in this work do not imply any judgment on the part of the World Bank concerning the legal status of any territory or the endorsement or acceptance of such boundaries.{% endblocktrans %}
-  </small>
+{# Start: map sidebar disclaimer #}
+<div id="map-sidebar-disclaimer"
+     class="d-flex flex-column align-items-center justify-content-center p-3 border-top mt-auto map-sidebar-disclaimer">
+    <img src="{% static 'images/wb_logo.png' %}" class="mt-2 me-2" alt="{% trans 'The World Bank Logo' %}">
+    <p class="p-txt-small mt-3 mb-3">
+        {% blocktrans trimmed %}
+            The boundaries, colors, denominations, and other information shown on any map in this work do not imply any judgment on the part of the World Bank concerning the legal status of any territory or the endorsement or acceptance of such boundaries.
+        {% endblocktrans %}
+    </p>
 </div>
-{# End: disclaimer #}
-
-
-
+{# End: map sidebar disclaimer #}

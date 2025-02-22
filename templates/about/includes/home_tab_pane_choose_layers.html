@@ -1,0 +1,36 @@
+{% load i18n %}
+
+
+{# Start: choose layers tab pane #}
+<div
+    id="tab-pane-choose-layers"
+    class="tab-pane fade show active choose-layers"
+    role="tabpanel"
+    aria-labelledby="tab-link-choose-layers">
+    <p class="p-txt-black mt-3">
+        {% blocktrans trimmed %}
+            Some layers cannot be displayed at the same time.
+        {% endblocktrans %}
+    </p>
+    <div class="mt-3">
+        <div class="mb-3">
+            <select id="form-select-climate-and-energy" name="climate-and-energy" class="form-select-primary">
+                {% comment %} <option value="" selected>-- Choose a layer --</option> {% endcomment %}
+                <option value="Climate and energy">Climate and energy</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <select id="form-select-digital-infrastructure" name="digital-infrastructure" class="form-select-primary">
+                {% comment %} <option value="" selected>-- Choose a layer --</option> {% endcomment %}
+                <option value="Digital infrastructure">Digital infrastructure</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <select id="form-select-demographics" name="demographics" class="form-select-primary">
+                {% comment %} <option value="" selected>-- Choose a layer --</option> {% endcomment %}
+                <option value="Demographics">Demographics</option>
+            </select>
+        </div>
+    </div>
+</div>
+{# End: choose layers tab pane #}

@@ -3,17 +3,10 @@
 
 .map-sidebar {
   height: calc(100vh - $navbar-height); // Full height minus navbar
+  box-shadow: 0.0625rem 0.0625rem 0.25rem rgba($black, 0.15);
 
   // Map sidebar disclaimer
   .map-sidebar-disclaimer {
-    small {
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 400;
-      font-size: 0.75rem;
-      line-height: 1.33;
-      color: #575757;
-    }
-
     img {
       width: 163px;
       height: 33px;

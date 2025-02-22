@@ -1,0 +1,124 @@
+{% load i18n %}
+
+
+{# Start: view presets tab pane #}
+<div
+    id="tab-pane-view-presets"
+    class="tab-pane fade view-presets"
+    role="tabpanel"
+    aria-labelledby="tab-link-view-presets">
+
+    {# Start: view presets info #}
+    <p class="mt-3">
+        {% blocktrans trimmed %}
+            These presets activate specific layers to reveal insights that can inform infrastructure planning.
+        {% endblocktrans %}
+    </p>
+    {# End: view presets info #}
+
+    {# Start: view presets nav tabs #}
+    <ul id="view-presets-tabs-tab-list" class="nav nav-underline nav-underline-bordered justify-content-center" role="tablist">
+        <li class="nav-item fs-4" role="presentation">
+            <button
+                id="tab-link-connected-schools"
+                class="nav-link d-flex flex-column align-items-center"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-pane-connected-schools"
+                type="button"
+                role="tab"
+                aria-controls="tab-pane-connected-schools"
+                aria-selected="true">
+                <i class="fa-solid fa-bolt fa-2x"></i>
+                {% trans "Connected schools" %}
+                {% comment %} <span>Connected</span><br><span>schools</span> {% endcomment %}
+            </button>
+        </li>
+        <li class="nav-item fs-4" role="presentation">
+            <button
+                id="tab-link-vulnerable-communities"
+                class="nav-link d-flex flex-column align-items-center"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-pane-vulnerable-communities"
+                type="button"
+                role="tab"
+                aria-controls="tab-pane-vulnerable-communities"
+                aria-selected="false">
+                <i class="fa-solid fa-house-flood-water fa-2x"></i>
+                {% trans "Vulnerable communities" %}
+                {% comment %} <span>Vulnerable</span><br><span>communities</span> {% endcomment %}
+            </button>
+        </li>
+        <li class="nav-item fs-4" role="presentation">
+            <button
+                id="tab-link-mobile-internet-access"
+                class="nav-link d-flex flex-column align-items-center "
+                data-bs-toggle="tab"
+                data-bs-target="#tab-pane-mobile-internet-access"
+                type="button"
+                role="tab"
+                aria-controls="tab-pane-mobile-internet-access"
+                aria-selected="false">
+                <i class="fa-solid fa-tower-cell fa-2x"></i>
+                {% trans "Mobile internet access" %}
+                {% comment %} <span>Mobile internet</span><br><span>access</span> {% endcomment %}
+            </button>
+        </li>
+    </ul>
+    {# End: view presets nav tabs #}
+
+
+    {# Start: view presets tab content #}
+    <div id="view-presets-tabs-tab-content" class="tab-content p-3">
+
+        {# Start: connected schools tab pane #}
+        <div
+            id="tab-pane-connected-schools"
+            class="tab-pane fade connected-schools"
+            role="tabpanel"
+            aria-labelledby="tab-link-connected-schools">
+            <p class="mt-3">
+                {% blocktrans trimmed %}
+                    How connected are schools to digital infrastructure?
+                {% endblocktrans %}
+            </p>
+            <p>
+                {% blocktrans trimmed %}
+                    This preset activates layers including school locations and mobile coverage, affording planners insight into connectivity and access.
+                    Once enabled, click on a region to view summary statistics that have been calculated based on these layers.
+                {% endblocktrans %}
+            </p>
+            <button type="button" class="btn btn-primary">
+                {% trans "Enable preset" %}
+            </button>
+        </div>
+        {# End: connected schools tab pane #}
+
+        {# Start: vulnerable communities tab pane #}
+        <div
+            id="tab-pane-vulnerable-communities"
+            class="tab-pane fade vulnerable-communities"
+            role="tabpanel"
+            aria-labelledby="tab-link-vulnerable-communities">
+            <p class="mt-3">
+                {% trans "Vulnerable communities" %}
+            </p>
+        </div>
+        {# End: vulnerable communities tab pane #}
+
+       {# Start: mobile internet access tab pane #}
+        <div
+            id="tab-pane-mobile-internet-access"
+            class="tab-pane fade mobile-internet-access"
+            role="tabpanel"
+            aria-labelledby="tab-link-mobile-internet-access">
+            <p class="mt-3">
+                {% trans "Mobile internet access" %}
+            </p>
+        </div>
+        {# End: mobile internet access tab pane #}
+
+    </div>
+   {# End: view presets tab content #}
+
+</div>
+{# End: view presets tab pane #}
