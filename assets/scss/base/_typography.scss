@@ -13,6 +13,25 @@
 
 // Font size
 //
+.fs-20 {
+  font-size: 1.25rem !important; // ~ (20px / 16px)
+}
+
+.fs-16 {
+  font-size: 1rem !important; // ~ (16px / 16px)
+}
+
+.fs-15 {
+  font-size: 0.9375rem !important; // ~ (15px / 16px)
+}
+
+.fs-14 {
+  font-size: 0.875rem !important; // ~ (14px / 16px)
+}
+
+.fs-12 {
+  font-size: 0.75rem !important; // ~ (12px / 16px)
+}
 
 // Font weights
 //
@@ -40,8 +59,7 @@
 // .h-txt-stats-primary: Primary statistics header
 //
 .h-txt {
-  @extend .ff-dm-serif-display, .fw-normal, .fst-normal;
-  font-size: 1.25rem; // ~ (20px / 16px)
+  @extend .ff-dm-serif-display, .fw-normal, .fst-normal, .fs-20;
   line-height: 1.35; // ~ (27px / 20px )
 }
 
@@ -58,8 +76,7 @@
 // .p-txt-stats-primary: Primary statistics paragraph
 //
 .p-txt {
-  @extend .ff-dm-sans, .fw-normal, .fst-normal;
-  font-size: 0.875rem; // ~ (14px / 16px)
+  @extend .ff-dm-sans, .fw-normal, .fst-normal, .fs-14;
   line-height: 1.286; // ~ (18px / 14px )
 
   a {
@@ -74,8 +91,7 @@
 
 // Small
 .p-txt-small {
-  @extend .p-txt;
-  font-size: 0.75rem; // ~ (12px / 16px)
+  @extend .p-txt, .fs-12;
   line-height: 1.33; // ~ (16px / 12px )
-  color: $main-grey;
+  color: $grey-57;
 }
