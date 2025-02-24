@@ -14,6 +14,9 @@
 {% block map_sidebar_content %}
 {% endblock map_sidebar_content %}
 
+{% block extra_css %}
+    <link href="{% static 'education_dash.css' %}" rel="stylesheet">
+{% endblock extra_css %}
 
 {% block extra_js %}
     {{ block.super }}

@@ -18,3 +18,49 @@
 .map-container {
   height: calc(100vh - $navbar-height); // Full height minus navbar
 }
+
+.maplibregl-ctrl .maplibregl-legend-list button.maplibregl-legend-close-button,
+.maplibregl-legend-list > br,
+.maplibregl-legend-onlyRendered-checkbox,
+.maplibregl-legend-onlyRendered-label {
+    display: none;
+}
+
+.maplibregl-ctrl .maplibregl-legend-list {
+    overflow-y: auto;
+    margin: 5px 5px 15px 10px;
+
+    .maplibregl-legend-title-label {
+        color: $primary;
+        font-size: 20px;
+        line-height: 27.5px;
+        font-weight: 400;
+    }
+
+    .legend-table {
+
+        tr {
+            display: flex;  // use flex box to allow re-ordering of legend columns.
+        }
+
+        th:first-child, td:first-child {
+          order: 2;  // Move first column to the last position
+        }
+
+        th:nth-child(3), td:nth-child(3) {
+            flex-grow: 1;  // make the label column fill up the space
+        }
+
+        .legend-table-td {
+            margin: 5px 2px;
+            padding: 5px;
+
+            label {
+                font-size: 14px;
+                line-height: 18.23px;
+                font-weight: 600;
+                color: $main-black;
+            }
+        }
+    }
+}

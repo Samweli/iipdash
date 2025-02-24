@@ -1,6 +1,9 @@
 import * as Vue from 'vue';
 import axios from 'axios'; // eslint-disable-line no-unused-vars
 import maplibregl from 'maplibre-gl';
+import { MaplibreLegendControl } from '@watergis/maplibre-gl-legend';
+
+import '@watergis/maplibre-gl-legend/dist/maplibre-gl-legend.css'; // direct import in CSS doesn't work
 
 import * as settings from './conf'; // eslint-disable-line no-unused-vars
 import * as maps from './maps';
@@ -56,6 +59,20 @@ const EducationDash = {
                 // fiber nodes
                 this._map.addSource('fiber-nodes', maps.sources['fiber-nodes']);
                 this._map.addLayer(maps.layers['fiber-nodes']);
+
+                const targets = {
+                    'education-institutions': 'School location',
+                    'fiber-nodes': 'Fiber optic node',
+                };
+
+                this._map.addControl(
+                    new MaplibreLegendControl(targets, {
+                        showDefault: true,
+                        onlyRendered: false,
+                        title: 'Active layers',
+                    }),
+                    'bottom-left',
+                );
             });
         },
 
