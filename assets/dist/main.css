@@ -8287,7 +8287,7 @@ textarea.form-control-lg {
 }
 
 .fst-normal, .nav-underline-bordered .nav-link.active,
-.nav-underline-bordered .show > .nav-link, .nav-underline-bordered .nav-link, .navbar .navbar-nav .nav-link, .navbar .navbar-brand, .p-txt, .p-txt-small, .p-txt-black, .h-txt, .h-txt-primary {
+.nav-underline-bordered .show > .nav-link, .nav-underline-bordered .nav-link, .navbar .navbar-nav .nav-link, .navbar .navbar-brand, .p-txt, .p-txt-12, .p-txt-14, .p-txt-14-black, .p-txt-16, .p-txt-black, .h-txt, .h-txt-20, .h-txt-20-primary, .h-txt-primary {
   font-style: normal !important;
 }
 
@@ -8299,7 +8299,7 @@ textarea.form-control-lg {
   font-weight: 300 !important;
 }
 
-.fw-normal, .navbar .navbar-brand, .p-txt, .p-txt-small, .p-txt-black, .h-txt, .h-txt-primary {
+.fw-normal, .navbar .navbar-brand, .p-txt, .p-txt-12, .p-txt-14, .p-txt-14-black, .p-txt-16, .p-txt-black, .h-txt, .h-txt-20, .h-txt-20-primary, .h-txt-primary {
   font-weight: 400 !important;
 }
 
@@ -8386,7 +8386,7 @@ textarea.form-control-lg {
 }
 
 /* rtl:end:remove */
-.text-primary, .h-txt-primary {
+.text-primary, .h-txt-20-primary, .h-txt-primary {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-primary-rgb), var(--bs-text-opacity)) !important;
 }
@@ -8426,7 +8426,7 @@ textarea.form-control-lg {
   color: rgba(var(--bs-dark-rgb), var(--bs-text-opacity)) !important;
 }
 
-.text-black, .p-txt-black {
+.text-black, .p-txt-14-black, .p-txt-black {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-black-rgb), var(--bs-text-opacity)) !important;
 }
@@ -22338,20 +22338,20 @@ readers do not read off random characters that represent icons */
 }
 
 .ff-dm-sans, .nav-underline-bordered .nav-link.active,
-.nav-underline-bordered .show > .nav-link, .nav-underline-bordered .nav-link, .navbar .navbar-nav .nav-link, .p-txt, .p-txt-small, .p-txt-black {
+.nav-underline-bordered .show > .nav-link, .nav-underline-bordered .nav-link, .navbar .navbar-nav .nav-link, .p-txt, .p-txt-12, .p-txt-14, .p-txt-14-black, .p-txt-16, .p-txt-black {
   font-family: "DM Sans", sans-serif !important;
 }
 
-.ff-dm-serif-display, .form-select-primary, .navbar .navbar-brand, .h-txt, .h-txt-primary {
+.ff-dm-serif-display, .form-select-primary, .navbar .navbar-brand, .h-txt, .h-txt-20, .h-txt-20-primary, .h-txt-primary {
   font-family: "DM Serif Display", serif !important;
 }
 
 .fs-20, .nav-underline-bordered .nav-link.active,
-.nav-underline-bordered .show > .nav-link, .nav-underline-bordered .nav-link, .h-txt, .h-txt-primary {
+.nav-underline-bordered .show > .nav-link, .nav-underline-bordered .nav-link, .h-txt-20, .h-txt-20-primary {
   font-size: 1.25rem !important;
 }
 
-.fs-16 {
+.fs-16, .p-txt-16 {
   font-size: 1rem !important;
 }
 
@@ -22359,29 +22359,37 @@ readers do not read off random characters that represent icons */
   font-size: 0.9375rem !important;
 }
 
-.fs-14, .p-txt, .p-txt-small, .p-txt-black {
+.fs-14, .p-txt-14, .p-txt-14-black {
   font-size: 0.875rem !important;
 }
 
-.fs-12, .p-txt-small {
+.fs-12, .p-txt-12 {
   font-size: 0.75rem !important;
 }
 
-.h-txt, .h-txt-primary {
+.text-grey-57, .p-txt-12 {
+  color: #575757 !important;
+}
+
+.h-txt-20, .h-txt-20-primary {
   line-height: 1.35;
 }
 
-.p-txt, .p-txt-small, .p-txt-black {
-  line-height: 1.286;
-}
-.p-txt a, .p-txt-small a, .p-txt-black a {
+.p-txt a, .p-txt-12 a, .p-txt-14 a, .p-txt-14-black a, .p-txt-16 a, .p-txt-black a {
   text-decoration-thickness: 9.5%;
   text-decoration-skip-ink: auto;
 }
 
-.p-txt-small {
+.p-txt-16 {
+  line-height: 1.3125;
+}
+
+.p-txt-14, .p-txt-14-black {
+  line-height: 1.286;
+}
+
+.p-txt-12 {
   line-height: 1.33;
-  color: #575757;
 }
 
 .map-sidebar {

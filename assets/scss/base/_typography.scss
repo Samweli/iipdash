@@ -50,6 +50,9 @@
 // .text-body
 // .tex-muted
 // See: https://getbootstrap.com/docs/5.0/utilities/colors/
+.text-grey-57 {
+  color: $grey-57 !important;
+}
 
 // Headings
 //
@@ -59,12 +62,20 @@
 // .h-txt-stats-primary: Primary statistics header
 //
 .h-txt {
-  @extend .ff-dm-serif-display, .fw-normal, .fst-normal, .fs-20;
-  line-height: 1.35; // ~ (27px / 20px )
+  @extend .ff-dm-serif-display, .fw-normal, .fst-normal;
 }
 
 .h-txt-primary {
   @extend .h-txt, .text-primary;
+}
+
+.h-txt-20 {
+  @extend .h-txt, .fs-20;
+  line-height: 1.35; // ~ (27px / 20px )
+}
+
+.h-txt-20-primary {
+  @extend .h-txt-20, .text-primary;
 }
 
 // Paragraphs
@@ -76,8 +87,7 @@
 // .p-txt-stats-primary: Primary statistics paragraph
 //
 .p-txt {
-  @extend .ff-dm-sans, .fw-normal, .fst-normal, .fs-14;
-  line-height: 1.286; // ~ (18px / 14px )
+  @extend .ff-dm-sans, .fw-normal, .fst-normal;
 
   a {
     text-decoration-thickness: 9.5%;
@@ -89,9 +99,21 @@
   @extend .p-txt, .text-black;
 }
 
-// Small
-.p-txt-small {
-  @extend .p-txt, .fs-12;
+.p-txt-16 {
+  @extend .p-txt, .fs-16;
+  line-height: 1.3125; // ~ (21px / 16px )
+}
+
+.p-txt-14 {
+  @extend .p-txt, .fs-14;
+  line-height: 1.286; // ~ (18px / 14px )
+}
+
+.p-txt-14-black {
+  @extend .p-txt-14, .text-black;
+}
+
+.p-txt-12 {
+  @extend .p-txt, .fs-12, .text-grey-57;
   line-height: 1.33; // ~ (16px / 12px )
-  color: $grey-57;
 }
