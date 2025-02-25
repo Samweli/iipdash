@@ -105,6 +105,13 @@ const EducationDash = {
             this._map.addSource('education-institutions', maps.sources['education-institutions']);
             this._map.addLayer(institutionsLayer);
 
+            this._map.on('click', 'areas-education', (e) => {
+                new maplibregl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(e.features[0].properties.name)
+                    .addTo(this._map);
+            });
+
             // fiber nodes
             const fiberNodesLayer = _.merge({}, maps.layers['fiber-nodes'], {
                 layout: {
@@ -113,6 +120,7 @@ const EducationDash = {
             });
             this._map.addSource('fiber-nodes', maps.sources['fiber-nodes']);
             this._map.addLayer(fiberNodesLayer);
+
 
             // Legend
             const targets = {
