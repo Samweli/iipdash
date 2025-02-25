@@ -5,6 +5,17 @@
   height: calc(100vh - $navbar-height); // Full height minus navbar
   box-shadow: 0.0625rem 0.0625rem 0.25rem rgba($black, 0.15);
 
+  // Map sidebar header
+  .map-sidebar-header {
+    background-color: $white;
+  }
+
+  // Map sidebar header primary
+  .map-sidebar-header-primary {
+    background-color: $primary;
+    box-shadow: 0.0625rem -0.0625rem 0.25rem rgba($black, 0.15);
+  }
+
   // Map sidebar disclaimer
   .map-sidebar-disclaimer {
     img {

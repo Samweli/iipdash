@@ -8,14 +8,14 @@
 
   {# Start: map sidebar header #}
   <div id="{% block map_sidebar_header_id %}map-sidebar-header{% endblock %}"
-       class="mb-3 {% block extra_map_sidebar_header_class %}map-sidebar-header{% endblock %}">
+       class="{% block extra_map_sidebar_header_class %}mb-3 map-sidebar-header{% endblock %}">
     {% block map_sidebar_header_content %}{% endblock %}
   </div>
   {# End: map sidebar header #}
 
   {# Start: map sidebar tabs #}
   <div id="{% block map_sidebar_tabs_id %}map-sidebar-tabs{% endblock %}"
-       class="mt-3 {% block extra_map_sidebar_tabs_class %}map-sidebar-tabs{% endblock %}">
+       class="{% block extra_map_sidebar_tabs_class %}mt-3 map-sidebar-tabs{% endblock %}">
     {% block map_sidebar_tabs_content %}{% endblock %}
   </div>
   {# End: map sidebar tabs #}

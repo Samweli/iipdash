@@ -62,7 +62,7 @@ from .api_urls import router as api_router
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="about/home.html"), name="home"),
-    path("map/", TemplateView.as_view(template_name="about/map.html"), name="map"),
+    path("maps/", TemplateView.as_view(template_name="about/maps.html"), name="maps"),
     path("about/", TemplateView.as_view(template_name="about/about.html"), name="about"),
     path("education/", views.EducationDashboardView.as_view(), name="education-dashboard"),
     path("admin/", admin.site.urls),

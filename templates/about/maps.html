@@ -1,0 +1,84 @@
+{% extends 'maps/main.html' %}
+
+{% load static %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Maps" %}{% endblock %}
+
+{% block body_id %}maps{% endblock %}
+
+{% block body_class %}{{ block.super }} maps{% endblock %}
+
+{% block extra_map_sidebar_header_class %}map-sidebar-header map-sidebar-header-primary mb-0{% endblock %}
+
+{% block extra_map_sidebar_tabs_class %}map-sidebar-tabs{% endblock %}
+
+{# Start: map sidebar header content #}
+{% block map_sidebar_header_content %}
+    <div class="p-3">
+        {% comment %} Cancel button to go back, use gap for spacing {% endcomment %}
+        <p class="p-txt-20-white mb-0">{% trans "Preset enabled:" %}</p>
+        <p class="p-txt-24-white">{% trans "Connected schools" %}</p>
+        <p class="p-txt-20-white mb-0">{% trans "Location selected:" %}</p>
+        <p class="p-txt-24-white">Malawi</p>
+    </div>
+{% endblock %}
+{# End: map sidebar header content #}
+
+{# Start: map sidebar tabs content #}
+{% block map_sidebar_tabs_content %}
+
+    {# Start: sidebar nav tabs #}
+    <ul id="map-sidebar-tabs-tab-list" class="nav nav-underline nav-underline-primary justify-content-center" role="tablist">
+        <li class="nav-item me-5" role="presentation">
+            <button
+                id="tab-link-overview"
+                class="nav-link active"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-pane-overview"
+                type="button"
+                role="tab"
+                aria-controls="tab-pane-overview"
+                aria-selected="true">
+                {% trans "Overview" %}
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button
+                id="tab-link-details"
+                class="nav-link"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-pane-details"
+                type="button"
+                role="tab"
+                aria-controls="tab-pane-details"
+                aria-selected="false">
+                {% trans "Details" %}
+            </button>
+        </li>
+    </ul>
+    {# End: sidebar nav tabs #}
+
+    {# Start: map sidebar tab content #}
+    <div id="map-sidebar-tabs-tab-content" class="tab-content p-3">
+
+        {# Start: overview tab pane #}
+        {% include "about/includes/maps_tab_pane_overview.html" %}
+        {# End: overview tab pane #}
+
+        {# Start: details tab pane #}
+        {% include "about/includes/maps_tab_pane_details.html" %}
+        {# End: details tab pane #}
+
+    </div>
+    {# End: map sidebar tab content #}
+
+{% endblock %}
+{# End: map sidebar tabs content #}
+
+{# Start: js #}
+{% block js %}
+    {{ block.super }}
+    <script src="{% static 'home.js' %}"></script>
+{% endblock js %}
+{# End: js #}
