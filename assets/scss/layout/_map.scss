@@ -64,3 +64,13 @@
         }
     }
 }
+
+.map-pane {
+    z-index: 101;
+}
+
+.map-top-pane {
+    display: flex;
+    position: fixed;
+    top: $navbar-height;
+}

@@ -10,13 +10,54 @@
 
 {% block map_id %}_education-map{% endblock %}
 
-
 {% block map_sidebar_content %}
 {% endblock map_sidebar_content %}
+
+{% block map_extras %}
+    <div class="map-pane map-top-pane">
+
+        <div class="m-1">
+            <select class="form-select"
+                    v-model="lookup.country"
+                    @change="updateCountry()">
+                <option value="">{% trans 'Country' %}</option>
+                <option v-if="countries.features"
+                        v-for="option in countries.features"
+                        v-text="option.properties.name"
+                        :value="option.properties.country">
+                </option>
+            </select>
+        </div>
+
+        <div class="m-1">
+            <select class="form-select"
+                    v-model="lookup.administrative_area"
+                    @change="update()">
+                <option value="">{% trans 'Region' %}</option>
+                <option v-if="regionOptions.features"
+                        v-for="option in regionOptions.features"
+                        v-text="option.properties.name"
+                        :value="option.id">
+                </option>
+            </select>
+        </div>
+
+        <div class="m-1">
+            <button type="button" class="btn btn-outline-primary bg-light"
+                    @click="toggleSummaryLayer()">
+                <i class="fas fa-layer-group"></i> {% trans 'Reveal underlying data' %}
+            </button>
+        </div>
+
+    </div>
+
+{% endblock map_extras %}
+
 
 {% block extra_css %}
     <link href="{% static 'education_dash.css' %}" rel="stylesheet">
 {% endblock extra_css %}
+
 
 {% block extra_js %}
     {{ block.super }}
