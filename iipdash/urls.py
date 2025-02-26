@@ -64,7 +64,7 @@ urlpatterns = [
     path("", TemplateView.as_view(template_name="about/home.html"), name="home"),
     path("maps/", TemplateView.as_view(template_name="about/maps.html"), name="maps"),
     path("about/", TemplateView.as_view(template_name="about/about.html"), name="about"),
-    path("education/", views.EducationDashboardView.as_view(), name="education-dashboard"),
+    path("education/", views.EducationDashboardView.as_view(), name="dashboard-education"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("api/auth/", include("rest_framework.urls")),
