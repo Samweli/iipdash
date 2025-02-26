@@ -2,7 +2,7 @@ from typing import List, Type
 
 from django.conf import settings
 from django.contrib.gis.db.models import PointField
-from django.db.models import F, QuerySet
+from django.db.models import Avg, Count, F, IntegerField, Q, QuerySet
 from django.db.models.functions import Cast
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -10,7 +10,7 @@ from django.views.decorators.cache import cache_page
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
 from rest_framework.pagination import PageNumberPagination
@@ -19,6 +19,7 @@ from rest_framework_gis.pagination import GeoJsonPagination
 from vectortiles.backends.postgis import VectorLayer
 from vectortiles.rest_framework.renderers import MVTRenderer
 
+from core.aggregation import Median
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
 from core.api.mixins import CSVDownloadMixin
 
@@ -164,6 +165,7 @@ class OwnershipViewSet(viewsets.ReadOnlyModelViewSet):
         summary=_("Education Institution"),
         description=_("Retrieve details of an education institution."),
     ),
+    aggregates=extend_schema(summary=_("Education Institutions aggregates")),
     download=extend_schema(summary=_("Education Institutions CSV")),
     tile=extend_schema(summary=_("Education Institutions Vector Tiles")),
 )
@@ -256,3 +258,36 @@ class InstitutionViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelVi
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for eduction institutions"""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Summary statistics related education institutions.",
+        url_path="aggregates",
+        url_name="aggregates",
+    )
+    def aggregates(self, request, *args, **kwargs):
+        """Returns summary statistics related education institutions."""
+        base_queryset = self.filter_queryset(self.get_queryset())
+
+        fon_distances = (
+            base_queryset.values(fon_distance_km=Cast(F("fon_distance") / 1000, IntegerField()))
+            .annotate(count=Count("*"))
+            .order_by("fon_distance_km")
+        )
+
+        agg = base_queryset.aggregate(
+            count=Count("*"),
+            fon_distance_10km_count=Count("id", filter=Q(fon_distance__lte=10000)),
+            fon_distance_15km_count=Count("id", filter=Q(fon_distance__lte=15000)),
+            fon_distance_20km_count=Count("id", filter=Q(fon_distance__lte=20000)),
+            fon_distance_30km_count=Count("id", filter=Q(fon_distance__lte=30000)),
+            fon_distance_avg=Avg("fon_distance"),
+            fon_distance_median=Median("fon_distance"),
+        )
+        data = {
+            **agg,
+            "fon_distances": fon_distances,
+        }
+
+        return Response(data, status=status.HTTP_200_OK)
