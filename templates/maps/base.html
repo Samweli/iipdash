@@ -7,55 +7,61 @@
 
 {% block main_content_class %}{{ block.super }} px-0{% endblock %}
 
-{# Start: content #}
+
 {% block content %}
 
-  {# Start: map content (sidebar & map) #}
-  {% block map_content %}
-    <div class="d-flex flex-row">
+    {% block map_content %}
+        <div class="d-flex flex-row">
 
-    {# Start: map sidebar #}
-      {% block map_sidebar %}
-        <aside id="{% block map_sidebar_id %}map-sidebar{% endblock %}"
-               class="d-flex flex-column col-md-3 overflow-auto border-end {% block extra_map_sidebar_class %}map-sidebar{% endblock %}">
+            {% block map_sidebar %}
 
-          {# Start: map sidebar content #}
-          <div id="{% block map_sidebar_content_id %}map-sidebar-content{% endblock %}"
-               class="flex-grow-1 {% block extra_map_sidebar_content_class %}map-sidebar-content{% endblock %}">
-            {% block map_sidebar_content %}{% endblock %}
-          </div>
-          {# End: map sidebar content #}
+                <aside id="{% block map_sidebar_id %}map-sidebar{% endblock %}"
+                       class="d-flex flex-column col-md-3 overflow-auto border-end {% block extra_map_sidebar_class %}map-sidebar{% endblock %}">
 
-          {# Start: map sidebar disclaimer #}
-          {% include 'maps/disclaimer.html' %}
-          {# End: map sidebar disclaimer #}
+                    {# Start: map sidebar content #}
+                    <div id="{% block map_sidebar_content_id %}map-sidebar-content{% endblock %}"
+                       class="flex-grow-1 {% block extra_map_sidebar_content_class %}map-sidebar-content{% endblock %}">
+                        {% block map_sidebar_content %}
 
-        </aside>
-      {% endblock %}
-    {# End: map sidebar #}
+                            <div id="{% block map_sidebar_header_id %}map-sidebar-header{% endblock %}"
+                                 class="{% block extra_map_sidebar_header_class %}mb-3 map-sidebar-header{% endblock %}">
+                                {% block map_sidebar_header_content %}{% endblock %}
+                            </div>
 
-    {# Start: map container #}
-      {% block map_container %}
-        <section id="{% block map_container_id %}map-container{% endblock %}"
-                 class="flex-grow-1 overflow-hidden {% block extra_map_container_class %}map-container{% endblock %}">
+                            <div id="{% block map_sidebar_tabs_id %}map-sidebar-tabs{% endblock %}"
+                                 class="{% block extra_map_sidebar_tabs_class %}mt-3 map-sidebar-tabs{% endblock %}">
+                                {% block map_sidebar_tabs_content %}{% endblock %}
+                            </div>
 
-          {# Start: map #}
-          {% block map%}
-            <div id="{% block map_id %}map{% endblock %}"
-                 class="w-100 h-100 pt-1 {% block extra_map_class %}map{% endblock %}">
-            </div>
-          {% endblock %}
-          {# End: map #}
+                        {% endblock map_sidebar_content %}
+                    </div>
+                    {# End: map sidebar content #}
 
-          {% block map_extras %}{% endblock %}
+                    {% include 'maps/disclaimer.html' %}
 
-        </section>
-      {% endblock %}
-    {# End: map container #}
+                </aside>
 
-    </div>
-  {% endblock %}
-  {# End: map content (sidebar & map) #}
+            {% endblock map_sidebar %}
+
+
+            {% block map_container %}
+
+                <section id="{% block map_container_id %}map-container{% endblock %}"
+                         class="flex-grow-1 overflow-hidden {% block extra_map_container_class %}map-container{% endblock %}">
+
+                    {% block map %}
+                        <div id="{% block map_id %}map{% endblock %}"
+                             class="w-100 h-100 pt-1 {% block extra_map_class %}map{% endblock %}">
+                        </div>
+                    {% endblock map %}
+
+                    {% block map_extras %}{% endblock %}
+
+                </section>
+
+            {% endblock map_container %}
+
+        </div>
+    {% endblock map_content %}
 
 {% endblock content %}
-{# End: content #}

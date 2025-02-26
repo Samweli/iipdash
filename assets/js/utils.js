@@ -5,3 +5,12 @@ export const updateURLParams = (url, params) => {
     }
     return _url;
 };
+
+export const asPercent = (value, total) => {
+    const percent = (value / total) * 100;
+    return Math.round(percent);
+};
+
+export const meters2km = (value) => {
+    return Math.round(value / 1000);
+};

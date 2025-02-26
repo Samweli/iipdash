@@ -1,5 +1,6 @@
 import * as Vue from 'vue';
 import axios from 'axios';
+import Chart from 'chart.js/auto';
 import maplibregl from 'maplibre-gl';
 import { MaplibreLegendControl } from '@watergis/maplibre-gl-legend';
 import _ from 'lodash';
@@ -8,6 +9,8 @@ import '@watergis/maplibre-gl-legend/dist/maplibre-gl-legend.css'; // direct imp
 
 import * as settings from './conf';
 import * as maps from './maps';
+import * as utils from './utils';
+import * as chartsConfig from './charts_config.js';
 
 const API_ROOT = settings.API_ROOT;
 
@@ -25,9 +28,36 @@ const EducationDash = {
             countries: { features: [] },
             regions: { features: [] },
             regionOptions: { features: [] },
+            institutionsAggregates: { fon_distances: [] },
             mapLoaded: false,
             summaryLayerActive: true,
+            selectedCountry: null,
+            selectedRegion: null,
+            charts: {
+                schoolsFONDistanceSummary: {
+                    id: 'school-fiber-node-stats-bar-chart',
+                },
+                schoolsFONDistance: {
+                    id: 'school-fiber-node-stats-histogram-chart',
+                },
+            },
         };
+    },
+
+    computed: {
+        selectedLocation() {
+            const locations = [];
+
+            if (this.selectedRegion) {
+                locations.push(this.selectedRegion.properties.name);
+            }
+
+            if (this.selectedCountry) {
+                locations.push(this.selectedCountry.properties.name);
+            }
+
+            return locations.join(' - ');
+        },
     },
 
     methods: {
@@ -57,7 +87,25 @@ const EducationDash = {
             }
         },
 
-        updateData: async function () {},
+        updateData: async function () {
+            if (this.lookup.country) {
+                this.selectedCountry = _.find(this.countries.features, ['properties.country', this.lookup.country]);
+            }
+
+            if (this.lookup.administrative_area) {
+                this.selectedRegion = _.find(this.regions.features, { id: this.lookup.administrative_area });
+            }
+
+            // institutions summary aggregations
+            try {
+                const institutionsAggregates = await axios.get(`${API_ROOT}education/institutions/aggregates`, {
+                    params: this.lookup,
+                });
+                this.institutionsAggregates = institutionsAggregates.data;
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
+            }
+        },
 
         initMap() {
             const map = new maplibregl.Map({
@@ -106,10 +154,7 @@ const EducationDash = {
             this._map.addLayer(institutionsLayer);
 
             this._map.on('click', 'areas-education', (e) => {
-                new maplibregl.Popup()
-                    .setLngLat(e.lngLat)
-                    .setHTML(e.features[0].properties.name)
-                    .addTo(this._map);
+                new maplibregl.Popup().setLngLat(e.lngLat).setHTML(e.features[0].properties.name).addTo(this._map);
             });
 
             // fiber nodes
@@ -120,7 +165,6 @@ const EducationDash = {
             });
             this._map.addSource('fiber-nodes', maps.sources['fiber-nodes']);
             this._map.addLayer(fiberNodesLayer);
-
 
             // Legend
             const targets = {
@@ -170,13 +214,82 @@ const EducationDash = {
             }
         },
 
+        updateCharts() {
+            // Summary Fiber Optic Node Distance to schools (10, 20 & 30km)
+
+            const schoolsFONDistanceSummaryCount = this.institutionsAggregates.fon_distances.reduce(
+                (agg, record) => {
+                    if (record.fon_distance_km <= 10) {
+                        agg.km10 += record.count;
+                    } else if (record.fon_distance_km <= 20) {
+                        agg.km20 += record.count;
+                    } else if (record.fon_distance_km <= 30) {
+                        agg.km30 += record.count;
+                    } else {
+                        agg.other += record.count;
+                    }
+
+                    return agg;
+                },
+                { km10: 0, km20: 0, km30: 0, other: 0 },
+            );
+
+            const schoolsFONDistanceSummaryData = {
+                labels: [' '], // Empty label to remove Y-axis text
+                datasets: [
+                    { label: '10KM', data: [schoolsFONDistanceSummaryCount.km10], backgroundColor: '#007FFF' },
+                    { label: '20KM', data: [schoolsFONDistanceSummaryCount.km20], backgroundColor: '#82A5FF' },
+                    { label: '30KM', data: [schoolsFONDistanceSummaryCount.km30], backgroundColor: '#BFCCFF' },
+                    { label: '', data: [schoolsFONDistanceSummaryCount.other], backgroundColor: '#D9D9D9' },
+                ],
+            };
+
+            const schoolsFONDistanceSummaryConfig = {
+                ...chartsConfig.schoolsFONDistanceSummary,
+                data: schoolsFONDistanceSummaryData,
+            };
+
+            this.clearChart(this.charts.schoolsFONDistanceSummary.id);
+            const schoolsFONDistanceSummaryCtx = document
+                .getElementById(this.charts.schoolsFONDistanceSummary.id)
+                .getContext('2d');
+            new Chart(schoolsFONDistanceSummaryCtx, schoolsFONDistanceSummaryConfig); // eslint-disable-line no-new
+
+            // institutions fiber optic node distances
+
+            const schoolsFONDistanceData = {
+                labels: this.institutionsAggregates.fon_distances.map((record) => record.fon_distance_km),
+                datasets: [
+                    {
+                        label: 'Number of Schools',
+                        data: this.institutionsAggregates.fon_distances.map((record) => record.count),
+                        backgroundColor: '#007FFF',
+                        // borderRadius: 5, // Rounded bar edges for a sleek look
+                        barPercentage: 0.8, // Reduce bar width
+                        categoryPercentage: 0.8, // Reduce space between bars
+                    },
+                ],
+            };
+
+            const schoolsFONDistanceConfig = {
+                ...chartsConfig.schoolsFONDistance,
+                data: schoolsFONDistanceData,
+            };
+
+            this.clearChart(this.charts.schoolsFONDistance.id);
+            const schoolsFONDistanceCtx = document.getElementById(this.charts.schoolsFONDistance.id).getContext('2d');
+            new Chart(schoolsFONDistanceCtx, schoolsFONDistanceConfig); // eslint-disable-line no-new
+        },
+
         update: async function () {
             try {
                 await this.updateData();
-                this.updateMap();
             } catch (e) {
                 console.log(e); // eslint-disable-line no-console
             }
+
+            this.updateMap();
+            this.updateCharts();
 
             const event = new Event('page-updated');
             window.dispatchEvent(event);
@@ -211,6 +324,19 @@ const EducationDash = {
                 this.summaryLayerActive = true;
             }
         },
+
+        clearChart(elementID) {
+            const ctx = document.getElementById(elementID);
+
+            try {
+                Chart.getChart(ctx).destroy();
+            } catch (e) {
+                // chart didn't exist yet
+            }
+        },
+
+        meters2km: utils.meters2km,
+        asPercent: utils.asPercent,
     },
 
     mounted() {
