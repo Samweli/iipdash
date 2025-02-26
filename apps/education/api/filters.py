@@ -188,6 +188,11 @@ class InstitutionFilter(filters.FilterSet):
             model using `lte` comparison.
     """
 
+    country = filters.CharFilter(
+        field_name="administrative_area__country",
+        help_text=_("Filter by country code."),
+    )
+
     #: Filter by multiple country codes
     country_in: filters.BaseInFilter = filters.BaseInFilter(
         field_name="administrative_area__country",
@@ -218,6 +223,11 @@ class InstitutionFilter(filters.FilterSet):
         field_name="code",
         lookup_expr="iexact",
         help_text=_("Filter by code."),
+    )
+
+    administrative_area = filters.UUIDFilter(
+        field_name="administrative_area__uuid",
+        help_text=_("Filter by administrative area UUID."),
     )
 
     #: Filter by multiple administrative area UUIDs
@@ -270,11 +280,13 @@ class InstitutionFilter(filters.FilterSet):
 
         model: Type[Institution] = Institution
         fields: List[str] = [
+            "country",
             "country_in",
             "category_in",
             "ownership_in",
             "name",
             "code",
+            "administrative_area",
             "administrative_area_in",
             "has_electricity",
             "has_fiber_optic",
