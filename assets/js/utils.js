@@ -6,11 +6,16 @@ export const updateURLParams = (url, params) => {
     return _url;
 };
 
-export const asPercent = (value, total) => {
-    const percent = (value / total) * 100;
-    return Math.round(percent);
+export const round = (value, precision) => {
+    const multiplier = Math.pow(10, precision || 0);
+    return Math.round(value * multiplier) / multiplier;
 };
 
-export const meters2km = (value) => {
-    return Math.round(value / 1000);
+export const asPercent = (value, total, precision = 0) => {
+    const percent = (value / total) * 100;
+    return round(percent, precision);
+};
+
+export const meters2km = (value, precision = 1) => {
+    return round(value / 1000, precision);
 };

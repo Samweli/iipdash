@@ -26,6 +26,7 @@ const EducationDash = {
                 country: '',
             },
             countries: { features: [] },
+            countriesLookup: {},
             regions: { features: [] },
             regionOptions: { features: [] },
             institutionsAggregates: { fon_distances: [] },
@@ -54,9 +55,11 @@ const EducationDash = {
 
             if (this.selectedCountry) {
                 locations.push(this.selectedCountry.properties.name);
+            } else if (this.selectedRegion) {
+                locations.push(this.countriesLookup[this.selectedRegion.properties.country]);
             }
 
-            return locations.join(' - ');
+            return locations.join(', ');
         },
     },
 
@@ -71,6 +74,9 @@ const EducationDash = {
                     params: { level: 1, exclude_geometry: 1 },
                 });
                 this.countries = countries.data;
+                this.countries.features.forEach((feature) => {
+                    this.countriesLookup[feature.properties.country] = feature.properties.name;
+                });
             } catch (e) {
                 console.log(e); // eslint-disable-line no-console
             }
@@ -154,7 +160,50 @@ const EducationDash = {
             this._map.addLayer(institutionsLayer);
 
             this._map.on('click', 'areas-education', (e) => {
-                new maplibregl.Popup().setLngLat(e.lngLat).setHTML(e.features[0].properties.name).addTo(this._map);
+                const countryName = this.countriesLookup[e.features[0].properties.country];
+                const name = `${e.features[0].properties.name}, ${countryName}`;
+
+                let avgDistance = utils.meters2km(e.features[0].properties.institutions_fiber_distance_avg);
+                if (isNaN(avgDistance)) {
+                    avgDistance = '-';
+                }
+
+                let percent10km = utils.asPercent(
+                    e.features[0].properties.institutions_fiber_10km,
+                    e.features[0].properties.institutions_count,
+                );
+                if (isNaN(percent10km)) {
+                    percent10km = '-';
+                }
+
+                new maplibregl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(
+                        `<div class="card border-0" style="width: 22rem;">
+                            <div class="card-header text-bg-primary">
+                              <h5 class="text-white">${name}</h5>
+                            </div>
+
+                            <div class="card-body">
+                                <p class="p-txt-stats-description">
+                                    average distance to fiber node
+                                </p>
+                                <div class="d-flex flex-row align-items-center">
+                                    <p class="p-txt-stats-value-primary">${avgDistance}</p>
+                                    <p class="p-txt-stats-label-primary ms-1">KM</p>
+                                </div>
+
+                                <p class="p-txt-stats-description">
+                                    schools within 10 km of fiber node
+                                </p>
+                                <div class="d-flex flex-row align-items-center">
+                                    <p class="p-txt-stats-value-primary">${percent10km}</p>
+                                    <p class="p-txt-stats-label-primary ms-1">%</p>
+                                </div>
+                            </div>
+                        </div>`,
+                    )
+                    .addTo(this._map);
             });
 
             // fiber nodes
