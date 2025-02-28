@@ -10,3 +10,14 @@
     @extend .btn-primary, .p-txt-20, .fw-medium;
     color: $white !important;
 }
+
+.btn-close-bg-white {
+    @extend .btn-close;
+
+    // scss-docs-start close-css-vars
+    --#{$prefix}btn-close-color: #{$white};
+    --#{$prefix}btn-close-bg: #{escape-svg($btn-close-bg-white)};
+    --#{$prefix}btn-close-opacity: none;
+    --#{$prefix}btn-close-hover-opacity: none;
+    // scss-docs-end close-css-vars
+}
