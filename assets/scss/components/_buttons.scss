@@ -1,0 +1,12 @@
+//
+// Base styles
+//
+
+//
+// Alternate buttons
+//
+
+.btn-primary-enable-preset {
+    @extend .btn-primary, .p-txt-20, .fw-medium;
+    color: $white !important;
+}

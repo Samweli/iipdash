@@ -2,32 +2,32 @@
 //
 
 .map-sidebar {
-  height: calc(100vh - $navbar-height); // Full height minus navbar
-  box-shadow: 0.0625rem 0.0625rem 0.25rem rgba($black, 0.15);
+    height: calc(100vh - $navbar-height); // Full height minus navbar
+    box-shadow: 0.0625rem 0.0625rem 0.25rem rgba($black, 0.15);
 
-  // Map sidebar header
-  .map-sidebar-header {
-    background-color: $white;
-  }
-
-  // Map sidebar header primary
-  .map-sidebar-header-primary {
-    background-color: $primary;
-    box-shadow: 0.0625rem -0.0625rem 0.25rem rgba($black, 0.15);
-  }
-
-  // Map sidebar disclaimer
-  .map-sidebar-disclaimer {
-    img {
-      width: 163px;
-      height: 33px;
+    // Map sidebar header
+    .map-sidebar-header {
+        background-color: $white;
     }
-  }
+
+    // Map sidebar header primary
+    .map-sidebar-header-primary {
+        background-color: $primary;
+        box-shadow: 0.0625rem -0.0625rem 0.25rem rgba($black, 0.15);
+    }
+
+    // Map sidebar disclaimer
+    .map-sidebar-disclaimer {
+        img {
+            width: 163px;
+            height: 33px;
+        }
+    }
 }
 
 // Map container
 .map-container {
-  height: calc(100vh - $navbar-height); // Full height minus navbar
+    height: calc(100vh - $navbar-height); // Full height minus navbar
 }
 
 .maplibregl-ctrl .maplibregl-legend-list button.maplibregl-legend-close-button,
@@ -49,17 +49,18 @@
     }
 
     .legend-table {
-
         tr {
-            display: flex;  // use flex box to allow re-ordering of legend columns.
+            display: flex; // use flex box to allow re-ordering of legend columns.
         }
 
-        th:first-child, td:first-child {
-          order: 2;  // Move first column to the last position
+        th:first-child,
+        td:first-child {
+            order: 2; // Move first column to the last position
         }
 
-        th:nth-child(3), td:nth-child(3) {
-            flex-grow: 1;  // make the label column fill up the space
+        th:nth-child(3),
+        td:nth-child(3) {
+            flex-grow: 1; // make the label column fill up the space
         }
 
         .legend-table-td {
