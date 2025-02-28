@@ -105,7 +105,7 @@ class InstitutionAdmin(GISModelAdmin, ImportExportModelAdmin):
     ]
 
     #: A list of fields that can be searched in the admin interface.
-    search_fields: list[str] = ["name", "code", "id", "uuid"]
+    search_fields: list[str] = ["name", "code", "id", "uuid", "administrative_area__name"]
 
     #: A list of fields that are displayed as read-only in the admin interface.
     readonly_fields: list[str] = [
