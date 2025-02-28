@@ -16,8 +16,10 @@
 
 {% block map_sidebar_header_content %}
     <div class="p-3">
-        {% comment %} Cancel button to go back, use gap for spacing {% endcomment %}
-        <p class="p-txt-20-white mb-0">{% trans "Preset enabled:" %}</p>
+        <div class="d-flex flex-row">
+            <p class="p-txt-20-white mb-0">{% trans "Preset enabled:" %}</p>
+            <a class="btn-close btn-close-bg-white align-self-end ms-auto" role="button" href="{% url 'home' %}"></a>
+        </div>
         <p class="p-txt-24-white">{% trans "Connected schools" %}</p>
         <p class="p-txt-20-white mb-0">{% trans "Location selected:" %}</p>
         <p class="p-txt-24-white" v-text="selectedLocation || '-'"></p>
