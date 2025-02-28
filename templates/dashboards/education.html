@@ -110,6 +110,22 @@
         </div>
 
     </div>
+
+    <div class="map-pane map-legend-pane" v-if="summaryLayerActive">
+        <h5 class="text-primary">Active layers</h5>
+        <div class="">{% trans 'Distance to fiber node' %}</div>
+        <div class="small text-muted">{% trans 'Average per region, km' %}</div>
+        <div class="d-flex align-items-center">
+            <div class="me-1">0</div>
+            <div>
+                <img src="{% static '/images/legend-choropleth-primary.png' %}"
+                     class="img-fluid choropleth-img">
+            </div>
+            <div class="ms-1">30+</div>
+        </div>
+
+        {# TODO: including other legend items #}
+    </div>
 {% endblock map_extras %}
 
 

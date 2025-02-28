@@ -90,3 +90,20 @@
     position: fixed;
     top: $navbar-height;
 }
+
+.map-legend-pane {
+    position: fixed;
+    bottom: 0;
+    background-color: $white;
+    margin: 1rem;
+    padding: 2rem;
+    max-width: 20rem;
+    border-radius: var(--bs-border-radius);
+    box-shadow: var(--bs-box-shadow);
+    border-color: rgba(var(--bs-light-rgb), var(--bs-border-opacity));
+
+    .choropleth-img {
+        max-width: 10rem;
+        max-height: 1.5rem;
+    }
+}

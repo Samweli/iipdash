@@ -32,6 +32,7 @@ const EducationDash = {
             institutionsAggregates: { fon_distances: [] },
             mapLoaded: false,
             summaryLayerActive: true,
+            legendControl: null,
             selectedCountry: null,
             selectedRegion: null,
             charts: {
@@ -214,21 +215,6 @@ const EducationDash = {
             });
             this._map.addSource('fiber-nodes', maps.sources['fiber-nodes']);
             this._map.addLayer(fiberNodesLayer);
-
-            // Legend
-            const targets = {
-                'education-institutions': 'School location',
-                'fiber-nodes': 'Fiber optic node',
-            };
-
-            this._map.addControl(
-                new MaplibreLegendControl(targets, {
-                    showDefault: true,
-                    onlyRendered: false,
-                    title: 'Active layers',
-                }),
-                'bottom-left',
-            );
         },
 
         updateMap: async function () {
@@ -366,11 +352,13 @@ const EducationDash = {
                 this._map.setLayoutProperty('education-institutions', 'visibility', 'visible');
                 this._map.setLayoutProperty('fiber-nodes', 'visibility', 'visible');
                 this.summaryLayerActive = false;
+                this.addMapLegend();
             } else {
                 this._map.setLayoutProperty('education-institutions', 'visibility', 'none');
                 this._map.setLayoutProperty('fiber-nodes', 'visibility', 'none');
                 this._map.setLayoutProperty('areas-education', 'visibility', 'visible');
                 this.summaryLayerActive = true;
+                this._map.removeControl(this.legendControl);
             }
         },
 
@@ -382,6 +370,23 @@ const EducationDash = {
             } catch (e) {
                 // chart didn't exist yet
             }
+        },
+
+        addMapLegend() {
+            // TODO: use custom legend instead of this for more flexibility.
+            const targets = {
+                'education-institutions': 'School location',
+                'fiber-nodes': 'Fiber optic node',
+            };
+
+            const legendControl = new MaplibreLegendControl(targets, {
+                showDefault: true,
+                onlyRendered: false,
+                title: 'Active layers',
+            });
+            this.legendControl = Vue.markRaw(legendControl);
+
+            this._map.addControl(this.legendControl, 'bottom-left');
         },
 
         meters2km: utils.meters2km,
