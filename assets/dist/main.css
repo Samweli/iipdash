@@ -3840,23 +3840,24 @@ textarea.form-control-lg {
   background-color: var(--bs-nav-pills-link-active-bg);
 }
 
-.nav-underline, .nav-underline-primary, .nav-underline-bordered {
+.nav-underline, .nav-underline-primary, .nav-underline-secondary, .nav-underline-bordered {
   --bs-nav-underline-gap: 1rem;
   --bs-nav-underline-border-width: 0.125rem;
   --bs-nav-underline-link-active-color: var(--bs-emphasis-color);
   gap: var(--bs-nav-underline-gap);
 }
-.nav-underline .nav-link, .nav-underline-primary .nav-link, .nav-underline-bordered .nav-link {
+.nav-underline .nav-link, .nav-underline-primary .nav-link, .nav-underline-secondary .nav-link, .nav-underline-bordered .nav-link {
   padding-right: 0;
   padding-left: 0;
   border-bottom: var(--bs-nav-underline-border-width) solid transparent;
 }
-.nav-underline .nav-link:hover, .nav-underline-primary .nav-link:hover, .nav-underline-bordered .nav-link:hover, .nav-underline .nav-link:focus, .nav-underline-primary .nav-link:focus, .nav-underline-bordered .nav-link:focus {
+.nav-underline .nav-link:hover, .nav-underline-primary .nav-link:hover, .nav-underline-secondary .nav-link:hover, .nav-underline-bordered .nav-link:hover, .nav-underline .nav-link:focus, .nav-underline-primary .nav-link:focus, .nav-underline-secondary .nav-link:focus, .nav-underline-bordered .nav-link:focus {
   border-bottom-color: currentcolor;
 }
-.nav-underline .nav-link.active, .nav-underline-primary .nav-link.active, .nav-underline-bordered .nav-link.active,
+.nav-underline .nav-link.active, .nav-underline-primary .nav-link.active, .nav-underline-secondary .nav-link.active, .nav-underline-bordered .nav-link.active,
 .nav-underline .show > .nav-link,
 .nav-underline-primary .show > .nav-link,
+.nav-underline-secondary .show > .nav-link,
 .nav-underline-bordered .show > .nav-link {
   font-weight: 700;
   color: var(--bs-nav-underline-link-active-color);
@@ -8288,7 +8289,8 @@ textarea.form-control-lg {
 }
 
 .fst-normal, .nav-underline-primary .nav-link.active,
-.nav-underline-primary .show > .nav-link, .nav-underline-primary .nav-link, .nav-underline-bordered .nav-link.active,
+.nav-underline-primary .show > .nav-link, .nav-underline-primary .nav-link, .nav-underline-secondary .nav-link.active,
+.nav-underline-secondary .show > .nav-link, .nav-underline-secondary .nav-link, .nav-underline-bordered .nav-link.active,
 .nav-underline-bordered .show > .nav-link, .nav-underline-bordered .nav-link, .navbar .navbar-nav .nav-link, .navbar .navbar-brand, .p-txt, .p-txt-stats-description, .p-txt-stats-label, .p-txt-stats-label-primary, .p-txt-stats-value, .p-txt-stats-value-primary, .p-txt-12, .p-txt-14, .p-txt-14-black, .p-txt-16, .p-txt-16-black, .p-txt-18, .p-txt-18-charcoal-black, .p-txt-20, .btn-primary-enable-preset, .p-txt-20-black, .p-txt-20-white, .p-txt-24, .p-txt-24-white, .p-txt-black, .h-txt, .h-txt-20, .h-txt-20-primary, .h-txt-primary {
   font-style: normal !important;
 }
@@ -8301,7 +8303,8 @@ textarea.form-control-lg {
   font-weight: 300 !important;
 }
 
-.fw-normal, .nav-underline-primary .nav-link, .navbar .navbar-brand, .p-txt, .p-txt-stats-description, .p-txt-stats-label, .p-txt-stats-label-primary, .p-txt-stats-value, .p-txt-stats-value-primary, .p-txt-12, .p-txt-14, .p-txt-14-black, .p-txt-16, .p-txt-16-black, .p-txt-18, .p-txt-18-charcoal-black, .p-txt-20, .btn-primary-enable-preset, .p-txt-20-black, .p-txt-20-white, .p-txt-24, .p-txt-24-white, .p-txt-black, .h-txt, .h-txt-20, .h-txt-20-primary, .h-txt-primary {
+.fw-normal, .nav-underline-primary .nav-link, .nav-underline-secondary .nav-link.active,
+.nav-underline-secondary .show > .nav-link, .nav-underline-secondary .nav-link, .navbar .navbar-brand, .p-txt, .p-txt-stats-description, .p-txt-stats-label, .p-txt-stats-label-primary, .p-txt-stats-value, .p-txt-stats-value-primary, .p-txt-12, .p-txt-14, .p-txt-14-black, .p-txt-16, .p-txt-16-black, .p-txt-18, .p-txt-18-charcoal-black, .p-txt-20, .btn-primary-enable-preset, .p-txt-20-black, .p-txt-20-white, .p-txt-24, .p-txt-24-white, .p-txt-black, .h-txt, .h-txt-20, .h-txt-20-primary, .h-txt-primary {
   font-weight: 400 !important;
 }
 
@@ -8309,7 +8312,8 @@ textarea.form-control-lg {
   font-weight: 500 !important;
 }
 
-.fw-semibold, .p-txt-stats-label, .p-txt-stats-label-primary, .p-txt-stats-value, .p-txt-stats-value-primary {
+.fw-semibold, .nav-underline-bordered .nav-link.active,
+.nav-underline-bordered .show > .nav-link, .nav-underline-bordered .nav-link, .p-txt-stats-label, .p-txt-stats-label-primary, .p-txt-stats-value, .p-txt-stats-value-primary {
   font-weight: 600 !important;
 }
 
@@ -8434,7 +8438,8 @@ textarea.form-control-lg {
   color: rgba(var(--bs-black-rgb), var(--bs-text-opacity)) !important;
 }
 
-.text-white, .p-txt-20-white, .p-txt-24-white {
+.text-white, .nav-underline-primary .nav-link.active,
+.nav-underline-primary .show > .nav-link, .nav-underline-primary .nav-link, .p-txt-20-white, .p-txt-24-white {
   --bs-text-opacity: 1;
   color: rgba(var(--bs-white-rgb), var(--bs-text-opacity)) !important;
 }
@@ -22346,7 +22351,8 @@ readers do not read off random characters that represent icons */
   font-family: "DM Sans", sans-serif !important;
 }
 
-.ff-dm-serif-display, .form-select-primary, .navbar .navbar-brand, .h-txt, .h-txt-20, .h-txt-20-primary, .h-txt-primary {
+.ff-dm-serif-display, .form-select-primary, .nav-underline-secondary .nav-link.active,
+.nav-underline-secondary .show > .nav-link, .nav-underline-secondary .nav-link, .navbar .navbar-brand, .h-txt, .h-txt-20, .h-txt-20-primary, .h-txt-primary {
   font-family: "DM Serif Display", serif !important;
 }
 
@@ -22380,7 +22386,8 @@ readers do not read off random characters that represent icons */
   font-size: 0.9375rem !important;
 }
 
-.fs-14, .p-txt-14, .p-txt-14-black {
+.fs-14, .nav-underline-secondary .nav-link.active,
+.nav-underline-secondary .show > .nav-link, .nav-underline-secondary .nav-link, .p-txt-14, .p-txt-14-black {
   font-size: 0.875rem !important;
 }
 
@@ -22543,7 +22550,6 @@ readers do not read off random characters that represent icons */
   border-bottom: 0.0625rem solid #c8c8c8;
 }
 .nav-underline-bordered .nav-link {
-  font-weight: 600;
   line-height: 1.3;
   color: #7c7c7c;
   padding-right: 0;
@@ -22555,8 +22561,24 @@ readers do not read off random characters that represent icons */
 }
 .nav-underline-bordered .nav-link.active,
 .nav-underline-bordered .show > .nav-link {
-  font-weight: 600;
   line-height: 1.3;
+  color: #007fff;
+  border-bottom-color: currentcolor;
+}
+
+.nav-underline-secondary .nav-link {
+  line-height: 1.357;
+  color: #7c7c7c;
+  padding-right: 0;
+  padding-left: 0;
+  border-bottom: 0.25rem solid transparent;
+}
+.nav-underline-secondary .nav-link:hover, .nav-underline-secondary .nav-link:focus {
+  border-bottom-color: currentcolor;
+}
+.nav-underline-secondary .nav-link.active,
+.nav-underline-secondary .show > .nav-link {
+  line-height: 1.357;
   color: #007fff;
   border-bottom-color: currentcolor;
 }
@@ -22567,7 +22589,6 @@ readers do not read off random characters that represent icons */
 }
 .nav-underline-primary .nav-link {
   line-height: 1.3;
-  color: #ffffff;
   padding-right: 0;
   padding-left: 0;
   border-bottom: 0.25rem solid transparent;
@@ -22577,9 +22598,7 @@ readers do not read off random characters that represent icons */
 }
 .nav-underline-primary .nav-link.active,
 .nav-underline-primary .show > .nav-link {
-  font-weight: 400;
   line-height: 1.3;
-  color: #ffffff;
   border-bottom-color: currentcolor;
 }
 

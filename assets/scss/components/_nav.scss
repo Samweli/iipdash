@@ -14,8 +14,7 @@
     border-bottom: 0.0625rem solid $grey-c8;
 
     .nav-link {
-        @extend .ff-dm-sans, .fst-normal, .fs-20;
-        font-weight: $font-weight-semibold;
+        @extend .ff-dm-sans, .fst-normal, .fw-semibold, .fs-20;
         line-height: 1.3; // ~ (26px / 20px)
         color: $grey-7c;
 
@@ -31,24 +30,24 @@
 
     .nav-link.active,
     .show > .nav-link {
-        @extend .ff-dm-sans, .fst-normal, .fs-20;
-        font-weight: $font-weight-semibold;
+        @extend .ff-dm-sans, .fst-normal, .fw-semibold, .fs-20;
         line-height: 1.3; // ~ (26px / 20px)
         color: $primary;
         border-bottom-color: currentcolor;
     }
 }
 
-.nav-underline-primary {
+//
+// Underline secondary [nested inside others]
+//
+
+.nav-underline-secondary {
     @extend .nav-underline;
 
-    background-color: $primary;
-    box-shadow: 0.0625rem 0.0625rem 0.25rem rgba($black, 0.15);
-
     .nav-link {
-        @extend .ff-dm-sans, .fst-normal, .fw-normal, .fs-20;
-        line-height: 1.3; // ~ (26px / 20px)
-        color: $white;
+        @extend .ff-dm-serif-display, .fst-normal, .fs-14, .fw-normal;
+        line-height: 1.357; // ~ (19px / 14px)
+        color: $grey-7c;
 
         padding-right: 0;
         padding-left: 0;
@@ -62,10 +61,41 @@
 
     .nav-link.active,
     .show > .nav-link {
-        @extend .ff-dm-sans, .fst-normal, .fw-bold, .fs-20;
-        font-weight: $font-weight-normal;
+        @extend .ff-dm-serif-display, .fst-normal, .fs-14, .fw-normal;
+        line-height: 1.357; // ~ (19px / 14px)
+        color: $primary;
+        border-bottom-color: currentcolor;
+    }
+}
+
+//
+// Underline primary
+//
+
+.nav-underline-primary {
+    @extend .nav-underline;
+
+    background-color: $primary;
+    box-shadow: 0.0625rem 0.0625rem 0.25rem rgba($black, 0.15);
+
+    .nav-link {
+        @extend .ff-dm-sans, .fst-normal, .fw-normal, .fs-20, .text-white;
         line-height: 1.3; // ~ (26px / 20px)
-        color: $white;
+
+        padding-right: 0;
+        padding-left: 0;
+        border-bottom: 0.25rem solid transparent;
+
+        &:hover,
+        &:focus {
+            border-bottom-color: currentcolor;
+        }
+    }
+
+    .nav-link.active,
+    .show > .nav-link {
+        @extend .ff-dm-sans, .fst-normal, .fw-bold, .fs-20, .text-white;
+        line-height: 1.3; // ~ (26px / 20px)
         border-bottom-color: currentcolor;
     }
 }

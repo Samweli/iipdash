@@ -17,7 +17,7 @@
     {# End: view presets info #}
 
     {# Start: view presets nav tabs #}
-    <ul id="view-presets-tabs-tab-list" class="nav nav-underline nav-underline-bordered justify-content-center" role="tablist">
+    <ul id="view-presets-tabs-tab-list" class="nav nav-underline nav-underline-secondary justify-content-center mt-3" role="tablist">
         <li class="nav-item fs-4" role="presentation">
             <button
                 id="tab-link-connected-schools"
@@ -29,14 +29,13 @@
                 aria-controls="tab-pane-connected-schools"
                 aria-selected="true">
                 <i class="fa-solid fa-bolt fa-2x"></i>
-                {% trans "Connected schools" %}
-                {% comment %} <span>Connected</span><br><span>schools</span> {% endcomment %}
+                <span class="mt-2">Connected</span><span>schools</span>
             </button>
         </li>
         <li class="nav-item fs-4" role="presentation">
             <button
                 id="tab-link-vulnerable-communities"
-                class="nav-link d-flex flex-column align-items-center"
+                class="nav-link d-flex flex-column align-items-center disabled"
                 data-bs-toggle="tab"
                 data-bs-target="#tab-pane-vulnerable-communities"
                 type="button"
@@ -44,8 +43,7 @@
                 aria-controls="tab-pane-vulnerable-communities"
                 aria-selected="false">
                 <i class="fa-solid fa-house-flood-water fa-2x"></i>
-                {% trans "Vulnerable communities" %}
-                {% comment %} <span>Vulnerable</span><br><span>communities</span> {% endcomment %}
+                <span class="mt-2">Vulnerable</span><span>communities</span>
             </button>
         </li>
         <li class="nav-item fs-4" role="presentation">
@@ -59,8 +57,7 @@
                 aria-controls="tab-pane-mobile-internet-access"
                 aria-selected="false">
                 <i class="fa-solid fa-tower-cell fa-2x"></i>
-                {% trans "Mobile internet access" %}
-                {% comment %} <span>Mobile internet</span><br><span>access</span> {% endcomment %}
+                <span class="mt-2">Mobile internet</span><span>access</span>
             </button>
         </li>
     </ul>
