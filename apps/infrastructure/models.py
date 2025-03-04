@@ -31,6 +31,7 @@ from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
 
 import gdal2tiles
+import numpy as np
 import rasterio
 
 from administrative.models import Area
@@ -772,30 +773,65 @@ class MobileCoverage(models.Model):
             Path: Path to the created RGBA GeoTIFF file.
         """
         dataset = rasterio.open(self.tiff.open())
-        band = dataset.read(1)
-        band = band * 127.5
-        band = band.astype("uint8")
-        alpha_band = dataset.read_masks(1)
+        data_band = dataset.read(1)
 
         og_file_name = Path(self.tiff.name).name
         rgb_rel_path = f"infrastructure/mobile-coverage/{self.uuid}/tiff-rgba/{og_file_name}"
         rgb_path = Path(settings.MEDIA_ROOT) / rgb_rel_path
         Path.mkdir(rgb_path.parent, parents=True, exist_ok=True)
 
-        with rasterio.open(
-            str(rgb_path),
-            mode="w",
-            driver="GTiff",
-            width=dataset.shape[1],
-            height=dataset.shape[0],
-            count=4,
-            crs=dataset.crs,
-            transform=dataset.transform,
-            dtype=band.dtype,
-        ) as dst:
-            dst.write(band, 1)
-            dst.write(band, 2)
-            dst.write(band, 3)
-            dst.write(alpha_band, 4)
+        try:
+            colormap = dataset.colormap(1)
+        except ValueError:
+            colormap = None
+
+        if colormap:
+            rgba_band = np.full((4, data_band.shape[0], data_band.shape[1]), dataset.nodata, dtype=np.uint8)
+
+            for index, color in colormap.items():
+                rgba_band[0][data_band == index] = color[0]  # Red
+                rgba_band[1][data_band == index] = color[1]  # Green
+                rgba_band[2][data_band == index] = color[2]  # Blue
+                rgba_band[3][data_band == index] = color[3]  # Alpha
+
+            # raster profile
+            profile = {**dataset.profile, "dtype": rasterio.uint8, "count": 4, "nodata": 0}
+
+            with rasterio.open(rgb_path, "w", **profile) as dst:
+                dst.write(rgba_band)
+        else:
+            # treat as grayscale image
+            alpha_band = dataset.read_masks(1)
+
+            # find scaling factor to RGB values (0 - 255)
+            min_value = np.nanmin(data_band)
+            max_value = np.nanmax(data_band)
+            value_range = max_value - min_value
+
+            if value_range:
+                rgb_scale = 255 / value_range
+                rgb_offset = 0 - min_value * rgb_scale
+                data_band = data_band * rgb_scale + rgb_offset
+            else:
+                data_band = np.zeros_like(data_band)
+
+            np.nan_to_num(data_band, copy=False)
+            data_band = data_band.astype("uint8")
+
+            profile = {
+                "driver": "GTiff",
+                "width": dataset.shape[1],
+                "height": dataset.shape[0],
+                "count": 4,
+                "crs": dataset.crs,
+                "transform": dataset.transform,
+                "dtype": data_band.dtype,
+            }
+
+            with rasterio.open(str(rgb_path), mode="w", **profile) as dst:
+                dst.write(data_band, 1)
+                dst.write(data_band, 2)
+                dst.write(data_band, 3)
+                dst.write(alpha_band, 4)
 
         return rgb_path
