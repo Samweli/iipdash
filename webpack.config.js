@@ -8,6 +8,7 @@ module.exports = {
         vendor: ['./assets/vendor/vendor.css'],
         home: ['./assets/js/home.js'],
         education_dash: ['./assets/js/education_dash.js'],
+        infrastructure_dash: ['./assets/js/infrastructure_dash.js'],
     },
     output: {
         path: path.resolve('./assets/dist/'),

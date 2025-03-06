@@ -76,6 +76,7 @@ INSTALLED_APPS = [
     "administrative",
     "education",
     "infrastructure",
+    "dashboards",
     "debug_toolbar",
     "active_link",
 ]

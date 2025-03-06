@@ -57,13 +57,11 @@ from django.views.generic.base import TemplateView
 from debug_toolbar.toolbar import debug_toolbar_urls
 from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
 
-from . import views
 from .api_urls import router as api_router
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="about/home.html"), name="home"),
     path("about/", TemplateView.as_view(template_name="about/about.html"), name="about"),
-    path("education/", views.EducationDashboardView.as_view(), name="dashboard-education"),
     path("admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("api/auth/", include("rest_framework.urls")),
@@ -72,6 +70,7 @@ urlpatterns = [
     path("openapi/schema/", SpectacularAPIView.as_view(), name="openapi-schema"),
     path("openapi/docs/", SpectacularRedocView.as_view(url_name="openapi-schema"), name="openapi-docs"),
     path("openapi/swagger-ui/", SpectacularSwaggerView.as_view(url_name="openapi-schema"), name="openapi-swagger-ui"),
+    path("", include("dashboards.urls")),
 ]
 
 if settings.DEBUG:
