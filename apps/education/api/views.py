@@ -262,12 +262,12 @@ class InstitutionViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelVi
     @action(
         detail=False,
         methods=["get"],
-        name="Summary statistics related education institutions.",
+        name="Summary statistics related to education institutions.",
         url_path="aggregates",
         url_name="aggregates",
     )
     def aggregates(self, request, *args, **kwargs):
-        """Returns summary statistics related education institutions."""
+        """Returns summary statistics related to education institutions."""
         base_queryset = self.filter_queryset(self.get_queryset())
 
         fon_distances = (

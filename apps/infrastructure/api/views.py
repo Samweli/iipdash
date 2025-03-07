@@ -2,7 +2,7 @@ from typing import List, Type
 
 from django.conf import settings
 from django.contrib.gis.db.models import MultiLineStringField, PointField
-from django.db.models import F, QuerySet
+from django.db.models import F, QuerySet, Q, Sum, FloatField
 from django.db.models.functions import Cast
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -10,7 +10,7 @@ from django.views.decorators.cache import cache_page
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
 from rest_framework.response import Response
@@ -69,6 +69,7 @@ class NetworkGenerationViewSet(viewsets.ReadOnlyModelViewSet):
         summary=_("Mobile Network Coverage"),
         description=_("Retrieve details of a specific mobile network coverage."),
     ),
+    aggregates=extend_schema(summary=_("Mobile Network Coverage Aggregates")),
 )
 class MobileCoverageViewSet(viewsets.ReadOnlyModelViewSet):
     """Mobile Network Coverage endpoint."""
@@ -77,6 +78,78 @@ class MobileCoverageViewSet(viewsets.ReadOnlyModelViewSet):
     lookup_field = "uuid"
     required_scopes = ["default"]
     queryset = MobileCoverage.objects.all().order_by("id")
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Summary statistics related to mobile coverage.",
+        url_path="aggregates",
+        url_name="aggregates",
+    )
+    def aggregates(self, request, *args, **kwargs):
+        """Returns summary statistics related to mobile coverage."""
+        base_queryset = self.filter_queryset(self.get_queryset())
+
+        agg = base_queryset.aggregate(
+            population_covered_2g=Sum(
+                "population_covered",
+                filter=Q(network_generation__code="2g"),
+            ),
+            population_covered_3g=Sum(
+                "population_covered",
+                filter=Q(network_generation__code="3g"),
+            ),
+            population_covered_4g=Sum(
+                "population_covered",
+                filter=Q(network_generation__code="4g"),
+            ),
+            population_covered_5g=Sum(
+                "population_covered",
+                filter=Q(network_generation__code="5g"),
+            ),
+            population_uncovered_2g=Sum(
+                "population_uncovered",
+                filter=Q(network_generation__code="2g"),
+            ),
+            population_uncovered_3g=Sum(
+                "population_uncovered",
+                filter=Q(network_generation__code="3g"),
+            ),
+            population_uncovered_4g=Sum(
+                "population_uncovered",
+                filter=Q(network_generation__code="4g"),
+            ),
+            population_uncovered_5g=Sum(
+                "population_uncovered",
+                filter=Q(network_generation__code="5g"),
+            ),
+            population_total_2g=Sum(
+                "administrative_area__population",
+                filter=Q(network_generation__code="2g"),
+            ),
+            population_total_3g=Sum(
+                "administrative_area__population",
+                filter=Q(network_generation__code="3g"),
+            ),
+            population_total_4g=Sum(
+                "administrative_area__population",
+                filter=Q(network_generation__code="4g"),
+            ),
+            population_total_5g=Sum(
+                "administrative_area__population",
+                filter=Q(network_generation__code="5g"),
+            ),
+            coverage_2g=Cast("population_covered_2g", FloatField()) / Cast("population_total_2g", FloatField()),
+            coverage_3g=Cast("population_covered_3g", FloatField()) / Cast("population_total_3g", FloatField()),
+            coverage_4g=Cast("population_covered_4g", FloatField()) / Cast("population_total_4g", FloatField()),
+            coverage_5g=Cast("population_covered_5g", FloatField()) / Cast("population_total_5g", FloatField()),
+            no_coverage_2g=Cast("population_uncovered_2g", FloatField()) / Cast("population_total_2g", FloatField()),
+            no_coverage_3g=Cast("population_uncovered_3g", FloatField()) / Cast("population_total_3g", FloatField()),
+            no_coverage_4g=Cast("population_uncovered_4g", FloatField()) / Cast("population_total_4g", FloatField()),
+            no_coverage_5g=Cast("population_uncovered_5g", FloatField()) / Cast("population_total_5g", FloatField()),
+        )
+
+        return Response(agg, status=status.HTTP_200_OK)
 
 
 @extend_schema_view(
