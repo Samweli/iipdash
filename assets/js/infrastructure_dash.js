@@ -7,6 +7,7 @@ import _ from 'lodash';
 import * as settings from './conf';
 import * as maps from './maps';
 import * as utils from './utils';
+import * as chartsConfig from './charts_config.js';
 
 const API_ROOT = settings.API_ROOT;
 
@@ -25,18 +26,15 @@ const InfrastructureDash = {
             countriesLookup: {},
             regions: { features: [] },
             regionOptions: { features: [] },
-            institutionsAggregates: { fon_distances: [] },
+            mobileCoverageAggregates: {},
             mapLoaded: false,
             summaryLayerActive: true,
-            legendControl: null,
             selectedCountry: null,
             selectedRegion: null,
+            selectedNetworkGeneration: '3g',
             charts: {
-                schoolsFONDistanceSummary: {
-                    id: 'school-fiber-node-stats-bar-chart',
-                },
-                schoolsFONDistance: {
-                    id: 'school-fiber-node-stats-histogram-chart',
+                mobileCoverageSummary: {
+                    id: 'mobile-coverage-summary-chart',
                 },
             },
         };
@@ -98,6 +96,19 @@ const InfrastructureDash = {
             if (this.lookup.administrative_area) {
                 this.selectedRegion = _.find(this.regions.features, { id: this.lookup.administrative_area });
             }
+
+            // areas coverage aggregations
+            try {
+                const mobileCoverageAggregates = await axios.get(
+                    `${API_ROOT}infrastructure/mobile-coverage/aggregates`,
+                    {
+                        params: this.lookup,
+                    },
+                );
+                this.mobileCoverageAggregates = mobileCoverageAggregates.data;
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
+            }
         },
 
         initMap() {
@@ -139,7 +150,36 @@ const InfrastructureDash = {
 
         updateMap: async function () {},
 
-        updateCharts() {},
+        updateCharts() {
+            // summary mobile coverage bar
+
+            const mobileCoverageSummaryData = {
+                labels: [' '], // Empty label to remove Y-axis text
+                datasets: [
+                    {
+                        label: 'Population covered',
+                        data: [this.mobileCoverageAggregates[`coverage_${this.selectedNetworkGeneration}`]],
+                        backgroundColor: '#007FFF',
+                    },
+                    {
+                        label: 'Population not covered',
+                        data: [this.mobileCoverageAggregates[`no_coverage_${this.selectedNetworkGeneration}`]],
+                        backgroundColor: '#D9D9D9',
+                    },
+                ],
+            };
+
+            const mobileCoverageSummaryConfig = {
+                ...chartsConfig.mobileCoverageSummary,
+                data: mobileCoverageSummaryData,
+            };
+
+            this.clearChart(this.charts.mobileCoverageSummary.id);
+            const mobileCoverageSummaryCtx = document
+                .getElementById(this.charts.mobileCoverageSummary.id)
+                .getContext('2d');
+            new Chart(mobileCoverageSummaryCtx, mobileCoverageSummaryConfig); // eslint-disable-line no-new
+        },
 
         update: async function () {
             try {
@@ -184,6 +224,7 @@ const InfrastructureDash = {
 
         meters2km: utils.meters2km,
         asPercent: utils.asPercent,
+        round: utils.round,
     },
 
     mounted() {

@@ -65,3 +65,28 @@ export const schoolsFONDistance = {
         },
     },
 };
+
+export const mobileCoverageSummary = {
+    type: 'bar',
+    options: {
+        indexAxis: 'y', // Horizontal bar
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                stacked: true,
+                display: false,
+            },
+            y: {
+                stacked: true,
+                display: false,
+            },
+        },
+        plugins: {
+            legend: {
+                display: false,
+            },
+            tooltip: { enabled: false },
+        },
+    },
+};
