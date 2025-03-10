@@ -311,3 +311,46 @@ class Area(MP_Node):
                 geom = MultiPolygon(geom)
 
             return geom
+
+
+class PopulationDensityHD(models.Model):
+    uuid = models.UUIDField(
+        _("UUID"),
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        help_text=_("A universally unique identifier (UUID) for the area."),
+    )
+
+    administrative_area = models.ForeignKey(
+        "Area",
+        blank=True,
+        null=True,
+        related_name="population_densities_hd",
+        related_query_name="population_density_hd",
+        on_delete=models.SET_NULL,
+        verbose_name=_("administrative area"),
+        help_text=_("The administrative area to which the population density belongs."),
+    )
+
+    geometry = models.PointField(
+        _("location"),
+        geography=True,
+        srid=4326,
+        help_text=_("The spatial location of the institution."),
+    )
+
+    population_density = models.FloatField(
+        _("population density"),
+        help_text=_("population in 1-arc-second-by-1-arc-second grid (30.87-meter-by-30.87 at the equator)"),
+        db_index=True,
+    )
+
+    year = models.PositiveIntegerField(_("year"), blank=True, null=True)
+
+    class Meta:
+        verbose_name = _("Population Density (HD)")
+        verbose_name_plural = _("Population Densities (HD)")
+        indexes = [
+            models.Index(fields=["administrative_area", "population_density"], name="admin_area_pop_density_idx"),
+        ]

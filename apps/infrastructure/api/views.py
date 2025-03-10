@@ -2,7 +2,7 @@ from typing import List, Type
 
 from django.conf import settings
 from django.contrib.gis.db.models import MultiLineStringField, PointField
-from django.db.models import F, QuerySet, Q, Sum, FloatField
+from django.db.models import F, FloatField, Q, QuerySet, Sum
 from django.db.models.functions import Cast
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -10,7 +10,7 @@ from django.views.decorators.cache import cache_page
 
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import viewsets, status
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
 from rest_framework.response import Response
