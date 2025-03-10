@@ -348,6 +348,23 @@ class PopulationDensityHD(models.Model):
 
     year = models.PositiveIntegerField(_("year"), blank=True, null=True)
 
+    #: The database level timestamp of when the area was created.
+    created_at = models.DateTimeField(
+        "created at",
+        auto_now_add=True,
+        db_default=Now(),
+        help_text=_("The database level timestamp of when the record was created."),
+    )
+
+    #: The database level timestamp of when the area was latest modified.
+    updated_at = models.DateTimeField(
+        _("updated at"),
+        auto_now=True,
+        null=True,
+        blank=True,
+        help_text=_("Timestamp of when the record was last modified."),
+    )
+
     class Meta:
         verbose_name = _("Population Density (HD)")
         verbose_name_plural = _("Population Densities (HD)")

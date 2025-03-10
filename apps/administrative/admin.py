@@ -64,4 +64,4 @@ class PopulationDensityHDAdmin(GISModelAdmin, ImportExportModelAdmin):
     list_display_links = ["administrative_area", "id", "uuid"]
     list_select_related = ["administrative_area"]
     raw_id_fields = ["administrative_area"]
-    list_filter = ["administrative_area__country", "administrative_area"]
+    list_filter = ["administrative_area__country", "administrative_area", "created_at", "updated_at"]
