@@ -138,10 +138,19 @@ const InfrastructureDash = {
             this._map.addSource('countries', maps.sources.countries);
             this._map.addLayer(maps.layers.countries);
 
+            // High resolution population density
+            const populationDensityHDLayer = _.merge({}, maps.layers['population-density-hd'], {
+                layout: {
+                    visibility: 'visible',
+                },
+            });
+            this._map.addSource('population-density-hd', maps.sources['population-density-hd']);
+            this._map.addLayer(populationDensityHDLayer);
+
             // fiber nodes
             const fiberNodesLayer = _.merge({}, maps.layers['fiber-nodes'], {
                 layout: {
-                    visibility: 'none',
+                    visibility: 'visible',
                 },
             });
             this._map.addSource('fiber-nodes', maps.sources['fiber-nodes']);

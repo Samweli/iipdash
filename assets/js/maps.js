@@ -33,6 +33,7 @@ export const basemap = {
 };
 
 export const countriesTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=1';
+export const populationDensityHDTilesURL = API_ROOT + 'demographics/population-density-hd/tiles/{z}/{x}/{y}.mvt/';
 export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/';
 export const fiberNodesTilesUrl = API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/';
 export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=2';
@@ -41,6 +42,12 @@ export const sources = {
     countries: {
         type: 'vector',
         tiles: [countriesTilesURL],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
+    'population-density-hd': {
+        type: 'vector',
+        tiles: [populationDensityHDTilesURL],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
@@ -72,6 +79,45 @@ const countriesLayer = {
     paint: {
         'line-width': 2.7,
         'line-color': colorPrimary,
+    },
+};
+
+const populationDensityHDLayer = {
+    id: 'population-density-hd',
+    source: 'population-density-hd',
+    'source-layer': 'population-density-hd',
+    type: 'circle',
+    paint: {
+        'circle-blur': 0,
+        'circle-color': colorPrimary,
+        'circle-stroke-opacity': 0,
+        'circle-stroke-width': 0,
+        'circle-opacity': [
+            // Zoom-dependent opacity
+            'interpolate',
+            ['linear'],
+            ['get', 'population_density'],
+            10,
+            0.3, // Opacity population density 10
+            20,
+            0.6, // Opacity population density 20
+            30,
+            0.8, // Opacity population density 30
+            50,
+            0.9, // Opacity population density 50+
+        ],
+        'circle-radius': [
+            // Zoom-dependent circle radius
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0,
+            0.1, // zoom level 0
+            11,
+            1.0, // zoom level 10
+            14,
+            3.0, // zoom level 14
+        ],
     },
 };
 
@@ -150,7 +196,7 @@ const fiberNodesLayer = {
     paint: {
         'circle-blur': 0,
         'circle-color': '#ffffff',
-        'circle-opacity': 0.5,
+        'circle-opacity': 0.7,
         'circle-stroke-color': '#AEA79F',
         'circle-stroke-opacity': 0.9,
         'circle-stroke-width': 2,
@@ -173,6 +219,7 @@ const fiberNodesLayer = {
 
 export const layers = {
     countries: countriesLayer,
+    'population-density-hd': populationDensityHDLayer,
     'areas-education': areasEducationLayer,
     'education-institutions': educationInstitutionsLayer,
     'fiber-nodes': fiberNodesLayer,
