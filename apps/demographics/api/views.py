@@ -15,6 +15,7 @@ from vectortiles.backends.postgis import VectorLayer
 from vectortiles.rest_framework.renderers import MVTRenderer
 
 from ..models import PopulationDensityHD
+from .filters import PopulationDensityHDFilter
 from .serializers import PopulationDensityHDSerializer
 
 MVT_CACHE_ALIAS = settings.CACHE_MVT_ALIAS
@@ -41,6 +42,7 @@ class PopulationDensityHDViewSet(VectorLayer, ReadOnlyModelViewSet):
     pagination_class = GeoJsonPagination
 
     filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = PopulationDensityHDFilter
     ordering_fields = ["created_at", "updated_at"]
     ordering = ["-created_at"]
 
