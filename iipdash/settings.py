@@ -74,6 +74,7 @@ INSTALLED_APPS = [
     "core",
     "users",
     "administrative",
+    "demographics",
     "education",
     "infrastructure",
     "dashboards",

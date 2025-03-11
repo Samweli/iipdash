@@ -38,6 +38,24 @@ class BaseGeoFeatureModelSerializer(GeoFeatureModelSerializer):
         return data
 
 
+class RelatedAreaSerializer(serializers.ModelSerializer):
+    """A related administrative area."""
+
+    class Meta:
+        """Metadata for the :class:`RelatedAreaSerializer`.
+
+        Attributes:
+            model (Type[Area]):
+                The model class that this serializer represents.
+
+            fields (List[str]):
+                The list of fields to be included in the serialized data.
+        """
+
+        model: Type[Area] = Area
+        fields: List[str] = ["uuid", "name", "country"]
+
+
 class AreaSerializer(BaseGeoFeatureModelSerializer):
     """GeoJSON serializer for administrative areas."""
 
@@ -321,21 +339,3 @@ class AreaMobileCoverageCSVSerializer(BaseAreaMobileCoverageSerializer):
             "no_coverage_5g",
         ]
         read_only_fields = fields
-
-
-class RelatedAreaSerializer(serializers.ModelSerializer):
-    """A related administrative area."""
-
-    class Meta:
-        """Metadata for the :class:`RelatedAreaSerializer`.
-
-        Attributes:
-            model (Type[Area]):
-                The model class that this serializer represents.
-
-            fields (List[str]):
-                The list of fields to be included in the serialized data.
-        """
-
-        model: Type[Area] = Area
-        fields: List[str] = ["uuid", "name", "country"]

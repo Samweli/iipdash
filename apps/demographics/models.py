@@ -1,0 +1,92 @@
+import uuid
+
+from django.contrib.gis.db import models
+from django.db.models.functions import Now
+from django.utils.translation import gettext_lazy as _
+
+
+class PopulationDensityHD(models.Model):
+    """Hig resolution population density."""
+
+    uuid = models.UUIDField(
+        _("UUID"),
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        help_text=_("A universally unique identifier (UUID) for the area."),
+    )
+
+    administrative_area = models.ForeignKey(
+        "administrative.Area",
+        blank=True,
+        null=True,
+        related_name="population_densities_hd",
+        related_query_name="population_density_hd",
+        on_delete=models.SET_NULL,
+        verbose_name=_("administrative area"),
+        help_text=_("The administrative area to which the population density belongs."),
+    )
+
+    geometry = models.PointField(
+        _("location"),
+        geography=True,
+        srid=4326,
+        help_text=_("The spatial location of the institution."),
+    )
+
+    #: A version of geometry optimized for performant rendering.
+    geom = models.PointField(
+        _("geom"),
+        geography=False,
+        blank=True,
+        null=True,
+        srid=3857,
+        editable=False,
+        help_text=_("A version of geometry optimized for performant rendering."),
+    )
+
+    population_density = models.FloatField(
+        _("population density"),
+        help_text=_("population in 1-arc-second-by-1-arc-second grid (30.87-meter-by-30.87 at the equator)"),
+        db_index=True,
+    )
+
+    year = models.PositiveIntegerField(_("year"), blank=True, null=True)
+
+    #: The database level timestamp of when the area was created.
+    created_at = models.DateTimeField(
+        "created at",
+        auto_now_add=True,
+        db_default=Now(),
+        help_text=_("The database level timestamp of when the record was created."),
+    )
+
+    #: The database level timestamp of when the area was latest modified.
+    updated_at = models.DateTimeField(
+        _("updated at"),
+        auto_now=True,
+        null=True,
+        blank=True,
+        help_text=_("Timestamp of when the record was last modified."),
+    )
+
+    class Meta:
+        verbose_name = _("Population Density (HD)")
+        verbose_name_plural = _("Population Densities (HD)")
+        indexes = [
+            models.Index(fields=["administrative_area", "population_density"], name="admin_area_pop_density_idx"),
+        ]
+
+    def save(self, *args, **kwargs):
+        self.geom = self.geometry2geom()
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.geometry.wkt} {self.population_density}"
+
+    def geometry2geom(self):
+        """Transform geometry to simplified EPSG:3857"""
+
+        if self.geometry:
+            geom = self.geometry.transform(3857, clone=True)
+            return geom
