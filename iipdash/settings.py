@@ -73,6 +73,7 @@ INSTALLED_APPS = [
     "crispy_bootstrap5",
     "core",
     "users",
+    "catalog",
     "administrative",
     "demographics",
     "education",
