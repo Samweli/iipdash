@@ -63,6 +63,8 @@ class PopulationDensityHDViewSet(VectorLayer, ReadOnlyModelViewSet):
     def get_vector_tile_queryset(self, *args, **kwargs):
         """Returns a queryset used to generate vector tiles."""
 
+        zoom = int(self.kwargs["z"])
+
         queryset = (
             self.get_queryset()
             .annotate(
@@ -72,6 +74,11 @@ class PopulationDensityHDViewSet(VectorLayer, ReadOnlyModelViewSet):
             )
             .order_by()
         )
+
+        # reduce features displayed at low zoom levels
+        if zoom <= 7:
+            queryset = queryset.filter(population_density__gte=15 - zoom)
+
         queryset = self.filter_queryset(queryset)
 
         return queryset
