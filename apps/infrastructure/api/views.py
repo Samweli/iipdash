@@ -22,7 +22,7 @@ from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
 from core.api.mixins import CSVDownloadMixin
 
 from ..models import CellTower, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
-from .filters import CellTowerFilter, FiberOpticFilter
+from .filters import CellTowerFilter, FiberOpticFilter, MobileCoverageFilter
 from .openapi import examples
 from .serializers import (
     CellTowerCSVSerializer,
@@ -77,6 +77,8 @@ class MobileCoverageViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = MobileCoverageSerializer
     lookup_field = "uuid"
     required_scopes = ["default"]
+    filterset_class = MobileCoverageFilter
+
     queryset = MobileCoverage.objects.all().order_by("id")
 
     @action(

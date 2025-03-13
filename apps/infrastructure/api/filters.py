@@ -4,9 +4,11 @@ from django.utils.translation import gettext_lazy as _
 
 from django_filters import rest_framework as filters
 
-from ..models import CellTower, FiberOptic
+from core.api.filters import EmptyValueFilter
 
-__all__ = ["CellTowerFilter", "FiberOpticFilter"]
+from ..models import CellTower, FiberOptic, MobileCoverage
+
+__all__ = ["CellTowerFilter", "FiberOpticFilter", "MobileCoverageFilter"]
 
 
 class CellTowerFilter(filters.FilterSet):
@@ -208,3 +210,101 @@ class FiberOpticFilter(filters.FilterSet):
 
         model: Type[FiberOptic] = FiberOptic
         fields: List[str] = ["name", "administrative_area_in", "country_in", "status"]
+
+
+class MobileCoverageFilter(filters.FilterSet):
+
+    country = filters.CharFilter(
+        field_name="administrative_area__country",
+        help_text=_("Filter by country code."),
+    )
+
+    #: Filter by multiple country codes
+    country_in: filters.BaseInFilter = filters.BaseInFilter(
+        field_name="administrative_area__country",
+        help_text=_("Filter by multiple country codes."),
+    )
+
+    administrative_area = filters.UUIDFilter(
+        field_name="administrative_area__uuid",
+        help_text=_("Filter by administrative area UUID."),
+    )
+
+    #: Filter by multiple administrative area UUIDs
+    administrative_area_in: filters.BaseInFilter = filters.BaseInFilter(
+        field_name="administrative_area__uuid",
+        help_text=_("Filter by multiple administrative area UUIDs."),
+    )
+
+    network_generation = filters.UUIDFilter(field_name="network_generation__uuid")
+    network_generation_code = filters.CharFilter(field_name="network_generation__code")
+
+    population_covered_gte = filters.NumberFilter(
+        field_name="population_covered",
+        lookup_expr="gte",
+        help_text=_("minimum population covered"),
+    )
+
+    population_covered_lte = filters.NumberFilter(
+        field_name="population_covered",
+        lookup_expr="lte",
+        help_text=_("maximum population covered"),
+    )
+
+    population_uncovered_gte = filters.NumberFilter(
+        field_name="population_uncovered",
+        lookup_expr="gte",
+        help_text=_("minimum population not covered"),
+    )
+
+    population_uncovered_lte = filters.NumberFilter(
+        field_name="population_uncovered",
+        lookup_expr="lte",
+        help_text=_("maximum population not covered"),
+    )
+
+    population_covered_percent_gte = filters.NumberFilter(
+        field_name="population_covered_percent",
+        lookup_expr="gte",
+        help_text=_("minimum population covered"),
+    )
+
+    population_covered_percent_lte = filters.NumberFilter(
+        field_name="population_covered_percent",
+        lookup_expr="lte",
+        help_text=_("maximum percentage of population covered"),
+    )
+
+    population_uncovered_percent_gte = filters.NumberFilter(
+        field_name="population_uncovered_percent",
+        lookup_expr="gte",
+        help_text=_("minimum percentage of population not covered"),
+    )
+
+    population_uncovered_percent_lte = filters.NumberFilter(
+        field_name="population_uncovered_percent",
+        lookup_expr="lte",
+        help_text=_("maximum percentage of population not covered"),
+    )
+
+    tiff_empty = EmptyValueFilter(field_name=_("tiff"))
+
+    class Meta:
+
+        model = MobileCoverage
+        fields = [
+            "country",
+            "country_in",
+            "administrative_area",
+            "administrative_area_in",
+            "network_generation",
+            "network_generation_code",
+            "population_covered_gte",
+            "population_covered_lte",
+            "population_uncovered_gte",
+            "population_uncovered_lte",
+            "population_covered_percent_gte",
+            "population_covered_percent_lte",
+            "population_uncovered_percent_gte",
+            "population_uncovered_percent_lte",
+        ]

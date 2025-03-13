@@ -1,7 +1,9 @@
 from typing import Any, Dict, List
 
 from django.conf import settings
+from django.core.validators import EMPTY_VALUES
 
+from django_filters import rest_framework as filters
 from rest_framework.views import View
 from rest_framework_gis import filters as gis_filters
 
@@ -149,3 +151,15 @@ class DistanceToPointFilter(gis_filters.DistanceToPointFilter):
                 "schema": {"type": "string"},
             },
         ]
+
+
+class EmptyValueFilter(filters.BooleanFilter):
+
+    def filter(self, qs, value):
+        if value in EMPTY_VALUES:
+            return qs
+
+        exclude = self.exclude ^ (value is False)
+        method = qs.exclude if exclude else qs.filter
+
+        return method(**{f"{self.field_name}__in": EMPTY_VALUES})

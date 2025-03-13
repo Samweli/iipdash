@@ -720,6 +720,9 @@ class MobileCoverage(models.Model):
 
     @property
     def tms_url(self):
+        if not self.tiff:
+            return None
+
         return urljoin(settings.TILES_URL, f"{self.tiles_dir}/{{z}}/{{x}}/{{y}}.png")
 
     def process_tiff(self):
