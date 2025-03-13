@@ -147,6 +147,15 @@ const InfrastructureDash = {
             this._map.addSource('population-density-hd', maps.sources['population-density-hd']);
             this._map.addLayer(populationDensityHDLayer);
 
+            // 3G mobile coverage
+            const mobileCoverage3GLayer = _.merge({}, maps.layers['mobile-coverage-3g'], {
+                layout: {
+                    visibility: 'visible',
+                },
+            });
+            this._map.addSource('mobile-coverage-3g', maps.sources['mobile-coverage-3g']);
+            this._map.addLayer(mobileCoverage3GLayer);
+
             // fiber nodes
             const fiberNodesLayer = _.merge({}, maps.layers['fiber-nodes'], {
                 layout: {

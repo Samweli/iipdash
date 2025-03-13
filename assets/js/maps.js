@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import * as settings from './conf';
 
 export const defaultMinZoom = 1;
@@ -38,6 +40,21 @@ export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/
 export const fiberNodesTilesUrl = API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/';
 export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=2';
 
+export const getMobileCoverageTMSURLs = async (lookup) => {
+    try {
+        const mobileCoverages = await axios.get(`${API_ROOT}infrastructure/mobile-coverage/`, {
+            params: { ...lookup, tiff_empty: false },
+        });
+
+        return mobileCoverages.data.results.map((coverage) => {
+            return coverage.tms_url;
+        });
+    } catch (e) {
+        console.log(e); // eslint-disable-line no-console
+        return [];
+    }
+};
+
 export const sources = {
     countries: {
         type: 'vector',
@@ -68,6 +85,12 @@ export const sources = {
         tiles: [fiberNodesTilesUrl],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
+    },
+    'mobile-coverage-3g': {
+        type: 'raster',
+        tiles: await getMobileCoverageTMSURLs({ network_generation_code: '3g' }),
+        tileSize: 256,
+        scheme: 'tms',
     },
 };
 
@@ -217,10 +240,19 @@ const fiberNodesLayer = {
     },
 };
 
+const mobileCoverage3GLayer = {
+    id: 'mobile-coverage-3g',
+    type: 'raster',
+    source: 'mobile-coverage-3g',
+    minzoom: defaultMinZoom,
+    maxzoom: defaultMaxZoom,
+};
+
 export const layers = {
     countries: countriesLayer,
     'population-density-hd': populationDensityHDLayer,
     'areas-education': areasEducationLayer,
     'education-institutions': educationInstitutionsLayer,
     'fiber-nodes': fiberNodesLayer,
+    'mobile-coverage-3g': mobileCoverage3GLayer,
 };

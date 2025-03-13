@@ -6,7 +6,7 @@ module.exports = {
     extends: ['standard', 'plugin:vue/vue3-recommended', 'plugin:prettier/recommended'],
     parser: 'vue-eslint-parser',
     parserOptions: {
-        ecmaVersion: 2021,
+        ecmaVersion: 2022,
         sourceType: 'module',
     },
     plugins: ['vue'],
