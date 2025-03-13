@@ -33,6 +33,7 @@ from django.utils.translation import gettext_lazy as _
 import gdal2tiles
 import numpy as np
 import rasterio
+from rasterio.enums import ColorInterp
 
 from administrative.models import Area
 
@@ -780,6 +781,18 @@ class MobileCoverage(models.Model):
         rgb_path = Path(settings.MEDIA_ROOT) / rgb_rel_path
         Path.mkdir(rgb_path.parent, parents=True, exist_ok=True)
 
+        # output profile
+        output_profile = {
+            "driver": "GTiff",
+            "width": dataset.shape[1],
+            "height": dataset.shape[0],
+            "count": 4,
+            "crs": dataset.crs,
+            "transform": dataset.transform,
+            "dtype": "uint8",
+            "photometric": "RGBA",
+        }
+
         try:
             colormap = dataset.colormap(1)
         except ValueError:
@@ -788,17 +801,29 @@ class MobileCoverage(models.Model):
         if colormap:
             rgba_band = np.full((4, data_band.shape[0], data_band.shape[1]), dataset.nodata, dtype=np.uint8)
 
+            colormap.update(
+                {
+                    0: (0, 0, 0, 255),
+                    1: (0, 0, 0, 90),
+                    2: (0, 0, 0, 50),
+                    3: (0, 0, 0, 0),
+                }
+            )
+
             for index, color in colormap.items():
                 rgba_band[0][data_band == index] = color[0]  # Red
                 rgba_band[1][data_band == index] = color[1]  # Green
                 rgba_band[2][data_band == index] = color[2]  # Blue
                 rgba_band[3][data_band == index] = color[3]  # Alpha
 
-            # raster profile
-            profile = {**dataset.profile, "dtype": rasterio.uint8, "count": 4, "nodata": 0}
-
-            with rasterio.open(rgb_path, "w", **profile) as dst:
+            with rasterio.open(rgb_path, "w", **output_profile) as dst:
                 dst.write(rgba_band)
+                dst.colorinterp = [
+                    ColorInterp.red,
+                    ColorInterp.green,
+                    ColorInterp.blue,
+                    ColorInterp.alpha,
+                ]
         else:
             # treat as grayscale image
             alpha_band = dataset.read_masks(1)
@@ -818,20 +843,16 @@ class MobileCoverage(models.Model):
             np.nan_to_num(data_band, copy=False)
             data_band = data_band.astype("uint8")
 
-            profile = {
-                "driver": "GTiff",
-                "width": dataset.shape[1],
-                "height": dataset.shape[0],
-                "count": 4,
-                "crs": dataset.crs,
-                "transform": dataset.transform,
-                "dtype": data_band.dtype,
-            }
-
-            with rasterio.open(str(rgb_path), mode="w", **profile) as dst:
+            with rasterio.open(str(rgb_path), mode="w", **output_profile) as dst:
                 dst.write(data_band, 1)
                 dst.write(data_band, 2)
                 dst.write(data_band, 3)
                 dst.write(alpha_band, 4)
+                dst.colorinterp = [
+                    ColorInterp.red,
+                    ColorInterp.green,
+                    ColorInterp.blue,
+                    ColorInterp.alpha,
+                ]
 
         return rgb_path
