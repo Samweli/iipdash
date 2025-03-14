@@ -62,12 +62,15 @@ services:
         TEST_DATABASE_HOST: iipdash-test-pg
         TEST_DATABASE_PORT: 5432
         CELERY_BROKER_URL: amqp://iipdash:iipdash@iipdash-dev-rabbitmq:5672//
+        CACHE_DEFAULT_LOCATION: redis://iipdash-dev-redis:6379
     depends_on:
       iipdash-dev-pg:
         condition: service_healthy
       iipdash-test-pg:
         condition: service_healthy
       iipdash-dev-rabbitmq:
+        condition: service_healthy
+      iipdash-dev-redis:
         condition: service_healthy
     volumes:
       - .:/home/iipdash/iipdash:z
@@ -217,6 +220,35 @@ services:
       retries: 5
       start_period: 10s
 
+  # Redis for development
+  #
+  # Usage:
+  #
+  # - localhost URI:
+  # ```
+  # redis://localhost:7379
+  # ```
+  #
+  # - docker URI:
+  # ```
+  # amqp://iipdash:iipdash@iipdash-dev-rabbitmq:5672//
+  # redis://iipdash-dev-redis:6379
+  # ```
+  iipdash-dev-redis:
+    image: redis:7.4.2-bookworm
+    container_name: iipdash-dev-redis
+    volumes:
+      - iipdash-dev-redis-data:/data
+    ports:
+      - ${DEVELOPMENT_REDIS_PORT:-7379:6379}
+    restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
 # Named volumes for persistent data storage
 volumes:
 
@@ -224,4 +256,7 @@ volumes:
     driver: local
 
   iipdash-test-pg-data:
+    driver: local
+
+  iipdash-dev-redis-data:
     driver: local

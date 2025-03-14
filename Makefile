@@ -72,11 +72,13 @@ servedocs: ## build, watch and serve Sphinx HTML documentation with live reload
 .PHONY: docker/pull
 docker/pull: ## pull docker images i.e python etc
 	docker pull ubuntu:24.04 # base image for rabbitmq
-	docker pull debian:bullseye-slim # base image for python and postgres
+	docker pull debian:bullseye-slim # base image for postgres and postgis
+	docker pull debian:bookworm-slim # base image for python and redis
 	docker pull python:3.12.8-slim-bookworm
 	docker pull postgres:17.2-bullseye # base image for postgis
 	docker pull postgis/postgis:17-3.5
 	docker pull rabbitmq:4.0.4-management
+	docker pull redis:7.4.2-bookworm
 
 .PHONY: docker/up/dev
 docker/up/dev: docker/clean/dangling ## create and start development docker containers, networks etc.
