@@ -15,7 +15,7 @@ class Category(models.Model):
         blank=True,
         null=True,
         max_length=64,
-        help_text=_("unique short code that can be used to identify the layer"),
+        help_text=_("unique short code that can be used to identify the category"),
     )
     description = models.TextField(_("description"), blank=True)
 
