@@ -6,7 +6,7 @@ set -o nounset
 
 python manage.py collectstatic --no-input --clear
 
-chmod -R a+rX $STATIC_ROOT
-chmod -R a+rX $MEDIA_ROOT
+chmod a+rX $STATIC_ROOT
+chmod a+rX $MEDIA_ROOT
 
 exec gunicorn iipdash.wsgi --bind 0.0.0.0:5000 --chdir=/iipdash
