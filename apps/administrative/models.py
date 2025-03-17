@@ -22,7 +22,7 @@ from typing import Any, Dict, Tuple
 
 from django.conf import settings
 from django.contrib.gis.db import models
-from django.contrib.gis.db.models.functions import Area
+from django.contrib.gis.db.models.functions import Area as GeoArea
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.db.models.functions import Now
 from django.utils.functional import cached_property
@@ -208,9 +208,16 @@ class Area(MP_Node):
         help_text=_("A version of geometry optimized for performant rendering."),
     )
 
+    population_density_hd_avg = models.FloatField(
+        _("population density (HD AVG)"),
+        null=True,
+        blank=True,
+        help_text=_("Obtained by averaging of high resolution population density"),
+    )
+
     #: The total area of the `area` in square meters.
     area = models.GeneratedField(
-        expression=Area("geometry"),
+        expression=GeoArea("geometry"),
         output_field=models.FloatField(null=True),
         db_persist=True,
         blank=True,
