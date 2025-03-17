@@ -224,6 +224,13 @@ const InfrastructureDash = {
                     this.lookup.administrative_area,
                 ]);
             }
+
+            // pan to bounds
+            if (this.lookup.administrative_area) {
+                this.fitMapBounds(this.selectedRegion.properties.bbox);
+            } else if (this.lookup.country) {
+                this.fitMapBounds(this.selectedCountry.properties.bbox);
+            }
         },
 
         updateCharts() {
@@ -326,6 +333,16 @@ const InfrastructureDash = {
             } catch (e) {
                 // chart didn't exist yet
             }
+        },
+
+        fitMapBounds(bbox, options = {}) {
+            this._map.fitBounds(
+                [
+                    [bbox[0], bbox[1]],
+                    [bbox[2], bbox[3]],
+                ],
+                options,
+            );
         },
 
         meters2km: utils.meters2km,
