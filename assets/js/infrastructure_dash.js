@@ -56,6 +56,15 @@ const InfrastructureDash = {
 
             return locations.join(', ');
         },
+
+        summaryCSVDownloadURL() {
+            const params = {
+                country: this.lookup.country,
+                uuid: this.lookup.administrative_area,
+                level: 2,
+            };
+            return utils.updateURLParams(`${API_ROOT}administrative/areas-mobile-coverage/download`, params);
+        },
     },
 
     methods: {

@@ -62,6 +62,15 @@ const EducationDash = {
 
             return locations.join(', ');
         },
+
+        summaryCSVDownloadURL() {
+            const params = {
+                country: this.lookup.country,
+                uuid: this.lookup.administrative_area,
+                level: 2,
+            };
+            return utils.updateURLParams(`${API_ROOT}administrative/areas-education/download`, params);
+        },
     },
 
     methods: {
