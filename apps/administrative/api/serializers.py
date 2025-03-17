@@ -26,6 +26,7 @@ __all__ = [
 class BaseGeoFeatureModelSerializer(GeoFeatureModelSerializer):
 
     geometry = GeometrySerializerMethodField()
+    country = serializers.CharField()
 
     def __init__(self, instance=None, data=empty, exclude_geometry=False, **kwargs):
         """If ``exclude_geometry`` is True, the serializer output when reading the instances won't include
@@ -42,6 +43,8 @@ class BaseGeoFeatureModelSerializer(GeoFeatureModelSerializer):
 
 class RelatedAreaSerializer(serializers.ModelSerializer):
     """A related administrative area."""
+
+    country = serializers.CharField()
 
     class Meta:
         """Metadata for the :class:`RelatedAreaSerializer`.
