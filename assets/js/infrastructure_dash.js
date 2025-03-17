@@ -175,7 +175,56 @@ const InfrastructureDash = {
             this._map.addLayer(fiberNodesLayer);
         },
 
-        updateMap: async function () {},
+        updateMap: async function () {
+            if (!this.mapLoaded) {
+                return;
+            }
+
+            if (this.lookup.country) {
+                this._map.setFilter('countries', ['==', ['get', 'country'], this.lookup.country]);
+                this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, [
+                    '==',
+                    ['get', 'country'],
+                    this.lookup.country,
+                ]);
+                this._map.setFilter(`mobile-coverage-${this.selectedNetworkGeneration}`, [
+                    '==',
+                    ['get', 'country'],
+                    this.lookup.country,
+                ]);
+                this._map.setFilter('fiber-nodes', ['==', ['get', 'country'], this.lookup.country]);
+                this._map.setFilter('population-density-hd', ['==', ['get', 'country'], this.lookup.country]);
+            } else {
+                this._map.setFilter('countries', null);
+                this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, null);
+                this._map.setFilter(`mobile-coverage-${this.selectedNetworkGeneration}`, null);
+                this._map.setFilter('fiber-nodes', null);
+                this._map.setFilter('population-density-hd', null);
+            }
+
+            if (this.lookup.administrative_area) {
+                this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, [
+                    '==',
+                    ['get', 'uuid'],
+                    this.lookup.administrative_area,
+                ]);
+                this._map.setFilter(`mobile-coverage-${this.selectedNetworkGeneration}`, [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+                this._map.setFilter('fiber-nodes', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+                this._map.setFilter('population-density-hd', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+            }
+        },
 
         updateCharts() {
             // summary mobile coverage bar
@@ -237,7 +286,37 @@ const InfrastructureDash = {
             this.update();
         },
 
-        toggleSummaryLayer() {},
+        toggleSummaryLayer() {
+            const summaryVisibility = this._map.getLayoutProperty(
+                `areas-mobile-coverage-${this.selectedNetworkGeneration}`,
+                'visibility',
+            );
+            if (summaryVisibility === 'visible') {
+                this._map.setLayoutProperty(
+                    `areas-mobile-coverage-${this.selectedNetworkGeneration}`,
+                    'visibility',
+                    'none',
+                );
+                this._map.setLayoutProperty(
+                    `mobile-coverage-${this.selectedNetworkGeneration}`,
+                    'visibility',
+                    'visible',
+                );
+                this._map.setLayoutProperty('fiber-nodes', 'visibility', 'visible');
+                this._map.setLayoutProperty('population-density-hd', 'visibility', 'visible');
+                this.summaryLayerActive = false;
+            } else {
+                this._map.setLayoutProperty(`mobile-coverage-${this.selectedNetworkGeneration}`, 'visibility', 'none');
+                this._map.setLayoutProperty('fiber-nodes', 'visibility', 'none');
+                this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
+                this._map.setLayoutProperty(
+                    `areas-mobile-coverage-${this.selectedNetworkGeneration}`,
+                    'visibility',
+                    'visible',
+                );
+                this.summaryLayerActive = true;
+            }
+        },
 
         clearChart(elementID) {
             const ctx = document.getElementById(elementID);

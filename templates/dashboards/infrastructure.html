@@ -74,6 +74,61 @@
 
 
 {% block map_extras %}
+    <div class="map-pane map-top-pane">
+
+        <div class="m-1">
+            <select class="form-select"
+                    v-model="lookup.country"
+                    @change="updateCountry()">
+                <option value="">{% trans 'Country' %}</option>
+                <option v-if="countries.features"
+                        v-for="option in countries.features"
+                        v-text="option.properties.name"
+                        :value="option.properties.country">
+                </option>
+            </select>
+        </div>
+
+        <div class="m-1">
+            <select class="form-select"
+                    v-model="lookup.administrative_area"
+                    @change="update()">
+                <option value="">{% trans 'Region' %}</option>
+                <option v-if="regionOptions.features"
+                        v-for="option in regionOptions.features"
+                        v-text="option.properties.name"
+                        :value="option.id">
+                </option>
+            </select>
+        </div>
+
+        <div class="m-1">
+            <button type="button" class="btn btn-outline-primary bg-light"
+                    @click="toggleSummaryLayer()">
+                <i class="fas fa-layer-group"></i> {% trans 'Reveal underlying data' %}
+            </button>
+        </div>
+
+    </div>
+
+    <div class="map-pane map-legend-pane" v-if="summaryLayerActive">
+        <h5 class="text-primary">Active layers</h5>
+        <div class="">
+            <span class="text-uppercase" v-text="selectedNetworkGeneration"></span>
+            {% trans 'mobile coverage' %}
+        </div>
+        <div class="small text-muted">{% trans '% of population' %}</div>
+        <div class="d-flex align-items-center">
+            <div class="me-1">0</div>
+            <div>
+                <img src="{% static '/images/legend-choropleth-primary.png' %}"
+                     class="img-fluid choropleth-img">
+            </div>
+            <div class="ms-1">70+</div>
+        </div>
+
+        {# TODO: including other legend items #}
+    </div>
 {% endblock map_extras %}
 
 
