@@ -34,13 +34,13 @@ export const basemap = {
     zoom: settings.MAP_DEFAULT_ZOOM,
 };
 
-export const countriesTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=1';
+export const countriesTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=2';
 export const populationDensityHDTilesURL = API_ROOT + 'demographics/population-density-hd/tiles/{z}/{x}/{y}.mvt/';
 export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/';
 export const fiberNodesTilesUrl = API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/';
-export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=2';
+export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=3';
 export const areasMobileCoverageTilesURL =
-    API_ROOT + 'administrative/areas-mobile-coverage/tiles/{z}/{x}/{y}.mvt/?level=2';
+    API_ROOT + 'administrative/areas-mobile-coverage/tiles/{z}/{x}/{y}.mvt/?level=3';
 
 export const getMobileCoverageTMSURLs = async (lookup) => {
     try {
@@ -96,7 +96,7 @@ export const sources = {
     },
     'mobile-coverage-3g': {
         type: 'raster',
-        tiles: await getMobileCoverageTMSURLs({ network_generation_code: '3g' }),
+        tiles: await getMobileCoverageTMSURLs({ network_generation_code: '3g', administrative_area_level: 1 }),
         tileSize: 256,
         scheme: 'tms',
     },

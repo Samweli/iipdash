@@ -61,7 +61,7 @@ const InfrastructureDash = {
             const params = {
                 country: this.lookup.country,
                 uuid: this.lookup.administrative_area,
-                level: 2,
+                level: 3,
             };
             return utils.updateURLParams(`${API_ROOT}administrative/areas-mobile-coverage/download`, params);
         },
@@ -75,7 +75,7 @@ const InfrastructureDash = {
             // countries
             try {
                 const countries = await axios.get(`${API_ROOT}administrative/areas`, {
-                    params: { level: 1, exclude_geometry: 1 },
+                    params: { level: 2, exclude_geometry: 1 },
                 });
                 this.countries = countries.data;
                 this.countries.features.forEach((feature) => {
@@ -88,7 +88,7 @@ const InfrastructureDash = {
             // regions
             try {
                 const regions = await axios.get(`${API_ROOT}administrative/areas`, {
-                    params: { level: 2, exclude_geometry: 1 },
+                    params: { level: 3, exclude_geometry: 1 },
                 });
                 this.regions = regions.data;
                 this.regionOptions = _.cloneDeep(this.regions);
@@ -111,7 +111,7 @@ const InfrastructureDash = {
                 const mobileCoverageAggregates = await axios.get(
                     `${API_ROOT}infrastructure/mobile-coverage/aggregates`,
                     {
-                        params: this.lookup,
+                        params: { ...this.lookup, administrative_area_level: 3 },
                     },
                 );
                 this.mobileCoverageAggregates = mobileCoverageAggregates.data;
@@ -196,17 +196,11 @@ const InfrastructureDash = {
                     ['get', 'country'],
                     this.lookup.country,
                 ]);
-                this._map.setFilter(`mobile-coverage-${this.selectedNetworkGeneration}`, [
-                    '==',
-                    ['get', 'country'],
-                    this.lookup.country,
-                ]);
                 this._map.setFilter('fiber-nodes', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('population-density-hd', ['==', ['get', 'country'], this.lookup.country]);
             } else {
                 this._map.setFilter('countries', null);
                 this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, null);
-                this._map.setFilter(`mobile-coverage-${this.selectedNetworkGeneration}`, null);
                 this._map.setFilter('fiber-nodes', null);
                 this._map.setFilter('population-density-hd', null);
             }
@@ -215,11 +209,6 @@ const InfrastructureDash = {
                 this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, [
                     '==',
                     ['get', 'uuid'],
-                    this.lookup.administrative_area,
-                ]);
-                this._map.setFilter(`mobile-coverage-${this.selectedNetworkGeneration}`, [
-                    '==',
-                    ['get', 'administrative_area_uuid'],
                     this.lookup.administrative_area,
                 ]);
                 this._map.setFilter('fiber-nodes', [
@@ -233,6 +222,8 @@ const InfrastructureDash = {
                     this.lookup.administrative_area,
                 ]);
             }
+
+            this.updateMobileCoverageLayer();
 
             // pan to bounds
             if (this.lookup.administrative_area) {
@@ -332,6 +323,21 @@ const InfrastructureDash = {
                 );
                 this.summaryLayerActive = true;
             }
+        },
+
+        updateMobileCoverageLayer: async function () {
+            const tilesLookup = { network_generation_code: this.selectedNetworkGeneration };
+
+            if (this.lookup.country && !this.lookup.administrative_area) {
+                tilesLookup.administrative_area = this.selectedCountry.id;
+            } else if (this.lookup.administrative_area) {
+                tilesLookup.administrative_area = this.selectedRegion.id;
+            } else {
+                tilesLookup.administrative_area_level = 1;
+            }
+
+            const tilesURLs = await maps.getMobileCoverageTMSURLs(tilesLookup);
+            this._map.getSource(`mobile-coverage-${this.selectedNetworkGeneration}`).setTiles(tilesURLs);
         },
 
         clearChart(elementID) {

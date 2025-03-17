@@ -67,7 +67,7 @@ const EducationDash = {
             const params = {
                 country: this.lookup.country,
                 uuid: this.lookup.administrative_area,
-                level: 2,
+                level: 3,
             };
             return utils.updateURLParams(`${API_ROOT}administrative/areas-education/download`, params);
         },
@@ -81,7 +81,7 @@ const EducationDash = {
             // countries
             try {
                 const countries = await axios.get(`${API_ROOT}administrative/areas`, {
-                    params: { level: 1, exclude_geometry: 1 },
+                    params: { level: 2, exclude_geometry: 1 },
                 });
                 this.countries = countries.data;
                 this.countries.features.forEach((feature) => {
@@ -94,7 +94,7 @@ const EducationDash = {
             // regions
             try {
                 const regions = await axios.get(`${API_ROOT}administrative/areas`, {
-                    params: { level: 2, exclude_geometry: 1 },
+                    params: { level: 3, exclude_geometry: 1 },
                 });
                 this.regions = regions.data;
                 this.regionOptions = _.cloneDeep(this.regions);
