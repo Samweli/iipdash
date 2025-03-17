@@ -1,6 +1,7 @@
 import uuid
 
 from django.contrib.gis.db import models
+from django.contrib.gis.geos import Point
 from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
 
@@ -89,4 +90,4 @@ class PopulationDensityHD(models.Model):
 
         if self.geometry:
             geom = self.geometry.transform(3857, clone=True)
-            return geom
+            return Point(round(geom.x, 1), round(geom.y, 1), srid=geom.srid)

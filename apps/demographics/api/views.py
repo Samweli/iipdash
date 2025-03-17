@@ -51,12 +51,10 @@ class PopulationDensityHDViewSet(VectorLayer, ReadOnlyModelViewSet):
 
     #: A tuple of fields to be included in vector tiles data.
     tile_fields = (
-        "uuid",
-        "country",
         "population_density",
         "administrative_area_uuid",
-        "administrative_area_name",
     )
+    tile_buffer = 64
 
     queryset = PopulationDensityHD.objects.all()
 
@@ -68,16 +66,14 @@ class PopulationDensityHDViewSet(VectorLayer, ReadOnlyModelViewSet):
         queryset = (
             self.get_queryset()
             .annotate(
-                country=F("administrative_area__country"),
                 administrative_area_uuid=F("administrative_area__uuid"),
-                administrative_area_name=F("administrative_area__name"),
             )
             .order_by()
         )
 
         # reduce features displayed at low zoom levels
         if zoom <= 7:
-            queryset = queryset.filter(population_density__gte=15 - zoom)
+            queryset = queryset.filter(population_density__gte=20 - zoom)
 
         queryset = self.filter_queryset(queryset)
 
