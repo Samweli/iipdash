@@ -39,6 +39,8 @@ export const populationDensityHDTilesURL = API_ROOT + 'demographics/population-d
 export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/';
 export const fiberNodesTilesUrl = API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/';
 export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=2';
+export const areasMobileCoverageTilesURL =
+    API_ROOT + 'administrative/areas-mobile-coverage/tiles/{z}/{x}/{y}.mvt/?level=2';
 
 export const getMobileCoverageTMSURLs = async (lookup) => {
     try {
@@ -71,6 +73,12 @@ export const sources = {
     'areas-education': {
         type: 'vector',
         tiles: [areasEducationTilesURL],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
+    'areas-mobile-coverage-3g': {
+        type: 'vector',
+        tiles: [areasMobileCoverageTilesURL],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
@@ -183,6 +191,45 @@ const areasEducationLayer = {
     },
 };
 
+const areasMobileCoverage3GLayer = {
+    id: 'areas-mobile-coverage-3g',
+    source: 'areas-mobile-coverage-3g',
+    'source-layer': 'areas-mobile-coverage',
+    type: 'fill',
+    paint: {
+        'fill-outline-color': colorPrimary,
+        'fill-color': [
+            'case',
+            ['==', ['get', 'coverage_3g'], null],
+            'rgba(0, 0, 0, 0)',
+            [
+                'interpolate', // interpolation expression
+                ['linear'], // interpolation type
+                ['get', 'coverage_3g'], // value to be used for interpolation
+                // color stops,
+                0,
+                '#ffffff',
+                1,
+                '#dae1ff',
+                70,
+                colorPrimary,
+            ],
+        ],
+        'fill-opacity': [
+            // Zoom-dependent opacity
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0,
+            1.0, // Opacity at zoom level 0
+            5,
+            0.7, // Opacity at zoom level 5
+            10,
+            0.3, // Opacity at zoom level 10
+        ],
+    },
+};
+
 const educationInstitutionsLayer = {
     id: 'education-institutions',
     source: 'education-institutions',
@@ -252,6 +299,7 @@ export const layers = {
     countries: countriesLayer,
     'population-density-hd': populationDensityHDLayer,
     'areas-education': areasEducationLayer,
+    'areas-mobile-coverage-3g': areasMobileCoverage3GLayer,
     'education-institutions': educationInstitutionsLayer,
     'fiber-nodes': fiberNodesLayer,
     'mobile-coverage-3g': mobileCoverage3GLayer,

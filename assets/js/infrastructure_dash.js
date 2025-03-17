@@ -138,10 +138,19 @@ const InfrastructureDash = {
             this._map.addSource('countries', maps.sources.countries);
             this._map.addLayer(maps.layers.countries);
 
+            // Areas coverage
+            const summaryLayer3gLayer = _.merge({}, maps.layers['areas-mobile-coverage-3g'], {
+                layout: {
+                    visibility: 'visible',
+                },
+            });
+            this._map.addSource('areas-mobile-coverage-3g', maps.sources['areas-mobile-coverage-3g']);
+            this._map.addLayer(summaryLayer3gLayer);
+
             // High resolution population density
             const populationDensityHDLayer = _.merge({}, maps.layers['population-density-hd'], {
                 layout: {
-                    visibility: 'visible',
+                    visibility: 'none',
                 },
             });
             this._map.addSource('population-density-hd', maps.sources['population-density-hd']);
@@ -150,7 +159,7 @@ const InfrastructureDash = {
             // 3G mobile coverage
             const mobileCoverage3GLayer = _.merge({}, maps.layers['mobile-coverage-3g'], {
                 layout: {
-                    visibility: 'visible',
+                    visibility: 'none',
                 },
             });
             this._map.addSource('mobile-coverage-3g', maps.sources['mobile-coverage-3g']);
