@@ -53,6 +53,7 @@ class PopulationDensityHDViewSet(VectorLayer, ReadOnlyModelViewSet):
     tile_fields = (
         "population_density",
         "administrative_area_uuid",
+        "country",
     )
     tile_buffer = 64
 
@@ -67,6 +68,7 @@ class PopulationDensityHDViewSet(VectorLayer, ReadOnlyModelViewSet):
             self.get_queryset()
             .annotate(
                 administrative_area_uuid=F("administrative_area__uuid"),
+                country=F("administrative_area__country"),
             )
             .order_by()
         )
