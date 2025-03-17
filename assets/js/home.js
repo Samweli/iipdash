@@ -1,120 +1,157 @@
+import * as Vue from 'vue';
 import maplibregl from 'maplibre-gl';
-import Chart from 'chart.js/auto';
 
-// Initialize MapLibre GL JS
-const map = new maplibregl.Map({
-    container: 'map', // ID of the div
-    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', // Positron Basemap
-    center: [27.5, -10.0], // Center over [Malawi, Zambia, and DRC]
-    zoom: 5,
-});
+import * as maps from './maps';
+import { fetchCatalogCategories, fetchCatalogLayers } from './api';
 
-// Add zoom & rotation controls
-map.addControl(new maplibregl.NavigationControl());
+/**
+ *  HomeDash Vue application.
+ */
+const HomeDash = {
+    /**
+     * Registers child components.
+     */
+    components: {},
 
-//
-// Sample school fiber node stats bar chart
-//
+    /**
+     * Initializes the component's reactive data.
+     */
+    data: function () {
+        return {
+            _map: null,
+            _mapId: 'home-map',
+            mapLoaded: false,
+            catalogCategories: [],
+            catalogLayers: [],
+        };
+    },
 
-document.addEventListener('DOMContentLoaded', () => {
-    const ctx = document.getElementById('school-fiber-node-stats-bar-chart').getContext('2d');
+    /**
+     * Defines computed properties derived from the component's data.
+     */
+    computed: {},
 
-    const data = {
-        labels: [' '], // Empty label to remove Y-axis text
-        datasets: [
-            { label: '10KM', data: [117], backgroundColor: '#007FFF' },
-            { label: '20KM', data: [63], backgroundColor: '#82A5FF' },
-            { label: '30KM', data: [115], backgroundColor: '#BFCCFF' },
-            { label: ' ', data: [23], backgroundColor: '#D9D9D9' },
-        ],
-    };
-
-    const config = {
-        type: 'bar',
-        data,
-        options: {
-            indexAxis: 'y', // Horizontal bar
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                x: { stacked: true, display: false },
-                y: { stacked: true, display: false },
-            },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: 'top',
-                    labels: { boxWidth: 12, font: { size: 12 }, padding: 10 },
-                },
-                tooltip: { enabled: false },
-            },
+    /**
+     * Defines methods that handle user interactions and component logic.
+     */
+    methods: {
+        /**
+         * Load initial data.
+         *
+         * This loads:
+         * - Catalog categories
+         * - Catalog layers
+         */
+        initData: async function () {
+            const [catalogCategories, catalogLayers] = await Promise.all([
+                fetchCatalogCategories(),
+                fetchCatalogLayers(),
+            ]);
+            this.catalogCategories = catalogCategories;
+            this.catalogLayers = catalogLayers;
         },
-    };
 
-    // Initialize Chart
-    new Chart(ctx, config); // eslint-disable-line no-new
-});
+        /**
+         * Update data.
+         */
+        updateData: async function () {},
 
-//
-// Sample school fiber node stats histogram chart
-//
+        /**
+         * Initalize `maplibregl.Map` and load layers.
+         */
+        initMap: async function () {
+            const map = new maplibregl.Map({
+                ...maps.basemap,
+                container: this._mapId,
+            });
 
-document.addEventListener('DOMContentLoaded', () => {
-    const ctx = document.getElementById('school-fiber-node-stats-histogram-chart').getContext('2d');
+            this._map = Vue.markRaw(map);
 
-    // Simulated data: Number of schools at different distance ranges (0-70 km)
-    // Generate more data points for very thin bars (0-70 km in 1 km intervals)
-    const distances = Array.from({ length: 71 }, (_, i) => `${i} km`);
-    const schoolCounts = Array.from({ length: 71 }, () => Math.floor(Math.random() * 100)); // Random data for demo
+            this._map.on('load', () => {
+                this.mapLoaded = true;
+                this.addMapLayers();
+            });
 
-    const data = {
-        labels: distances,
-        datasets: [
-            {
-                label: 'Number of Schools',
-                data: schoolCounts,
-                backgroundColor: '#007FFF',
-                // borderRadius: 5, // Rounded bar edges for a sleek look
-                barPercentage: 0.8, // Reduce bar width
-                categoryPercentage: 0.8, // Reduce space between bars
-            },
-        ],
-    };
-
-    const config = {
-        type: 'bar',
-        data,
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                // x: { display: false }, // Hide X-axis
-                x: {
-                    min: 0, // Ensure the scale starts at 0
-                    max: 70, // Ensure the scale ends at 70
-                    ticks: {
-                        display: true,
-                        font: { weight: 'bold', size: 12 }, // Make labels bold
-                        callback: function (value, index, values) {
-                            if (value === 0) return '0 KM';
-                            if (value === 70) return '70 KM'; // Force "70 KM" to appear
-                            return ''; // Hide other labels
-                        },
-                        autoSkip: false, // Prevent skipping labels
-                        maxRotation: 0, // Keep labels horizontal
-                        minRotation: 0,
-                    },
-                    grid: { display: false }, // Hide vertical grid lines
-                },
-                y: { display: false }, // Hide Y-axis
-            },
-            plugins: {
-                legend: { display: false }, // Hide legend (only one dataset)
-                tooltip: { enabled: false }, // Enable tooltips
-            },
+            const navigationControl = new maplibregl.NavigationControl({
+                visualizePitch: true,
+                visualizeRoll: true,
+                showZoom: true,
+                showCompass: true,
+            });
+            map.addControl(navigationControl);
         },
-    };
 
-    // Initialize Chart
-    new Chart(ctx, config); // eslint-disable-line no-new
-});
+        /**
+         * Add map layers.
+         */
+        addMapLayers: async function () {
+            // country boundaries
+            this._map.addSource(maps.layers.countries.id, maps.sources.countries);
+            this._map.addLayer(maps.layers.countries);
+        },
+
+        /**
+         * Add map layers legend.
+         */
+        addMapLegend: async function () {},
+
+        /**
+         * Toggle (set or unset) map filters
+         */
+        toggleMapFilters: async function () {},
+
+        /**
+         * Toggle map layers
+         */
+        toggleMapLayers: async function () {},
+
+        /**
+         * Update (set filters, unset filters) map.
+         */
+        updateMap: async function () {
+            if (!this.mapLoaded) {
+                return;
+            }
+
+            try {
+                // toggle map filters
+                await this.toggleMapFilters();
+                // toggle layers
+                await this.toggleMapLayers();
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
+            }
+        },
+
+        /**
+         * Update data and map.
+         */
+        update: async function () {
+            try {
+                await this.updateData();
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
+            }
+
+            this.updateMap();
+
+            const event = new Event('page-updated');
+            window.dispatchEvent(event);
+        },
+    },
+
+    /**
+     * Lifecycle hook called after the component has been mounted to the DOM.
+     */
+    mounted: async function () {
+        await this.initData();
+        await this.initMap();
+        await this.update();
+    },
+};
+
+// Create a new Vue application instance using the HomeDash root component.
+const app = Vue.createApp(HomeDash);
+
+// Mount the `HomeDash` Vue application to the DOM element with the ID 'home'.
+app.mount('#home');

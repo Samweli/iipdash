@@ -1,0 +1,32 @@
+{# Start: home extra body hidden content #}
+
+{# Start: layer item popover template #}
+{# See: https://getbootstrap.com/docs/5.0/components/popovers/#options #}
+<div id="layer-item-popover-template" class="d-none">
+    <div class="popover" role="tooltip">
+        <div class="popover-arrow"></div>
+        <h3 class="popover-header"></h3>
+        <div class="popover-body popover-body-p-0"></div>
+    </div>
+</div>
+{# End: layer item popover template #}
+
+{# Start: layer item popover content #}
+{% for catalog_layer in catalog_layers %}
+    <div id="layer-item-{{catalog_layer.uuid}}-popover-content" class="d-none">
+        <div class="card w-100 p-0 border-0">
+            <div class="card-header bg-dark text-white">{{catalog_layer.name}}</div>
+            <div class="card-body">
+                <p class="mb-1"><strong>Description:</strong></p>
+                <p>Displays population distribution per square km.</p>
+                <p class="mb-1"><strong>Source:</strong></p>
+                <p>Census Data 2023 <a href="#" target="_blank"><i class="bi bi-link fs-5"></i></a></p>
+                <p class="mb-1"><strong>Date:</strong></p>
+                <p>February 2024</p>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+{# End: layer item popover content #}
+
+{# End: home extra body hidden content #}

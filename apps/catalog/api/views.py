@@ -85,4 +85,4 @@ class LayerViewSet(ReadOnlyModelViewSet):
         if not self.request.user.is_authenticated:
             queryset = queryset.filter(is_public=True)
 
-        return queryset.order_by("-created_at")
+        return queryset.order_by("name")

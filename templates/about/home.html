@@ -6,12 +6,12 @@
 {% block head_title %}{% trans "Home" %}{% endblock %}
 
 {% block body_id %}home{% endblock %}
-
 {% block body_class %}{{ block.super }} home{% endblock %}
 
 {% block extra_map_sidebar_header_class %}{{ block.super }}{% endblock %}
-
 {% block extra_map_sidebar_tabs_class %}{{ block.super }}{% endblock %}
+
+{% block map_id %}home-map{% endblock %}
 
 {# Start: map sidebar header content #}
 {% block map_sidebar_header_content %}
@@ -83,6 +83,13 @@
 
 {% endblock %}
 {# End: map sidebar tabs content #}
+
+{# Start: extra body hidden content #}
+{% block extra_body %}
+    {{ block.super }}
+    {% include "about/includes/home_extra_body.html" %}
+{% endblock %}
+{# End: extra body hidden content #}
 
 {# Start: js #}
 {% block js %}

@@ -1,0 +1,6 @@
+//
+// Popover body with no padding
+//
+.popover-body-p-0 {
+    @extend .popover-body, .p-0;
+}
