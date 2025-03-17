@@ -25,6 +25,7 @@ from django.contrib.gis.db import models
 from django.contrib.gis.db.models.functions import Area
 from django.contrib.gis.geos import MultiPolygon, Polygon
 from django.db.models.functions import Now
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from django_countries.fields import CountryField
@@ -298,6 +299,11 @@ class Area(MP_Node):
             str: The name of the area.
         """
         return self.name
+
+    @cached_property
+    def bbox(self):
+        if self.geometry:
+            return self.geometry.extent
 
     def geometry2geom(self):
         """Transform geometry to simplified EPSG:3857"""
