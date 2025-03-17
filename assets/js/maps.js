@@ -5,7 +5,7 @@ import * as settings from './conf';
 export const defaultMinZoom = 1;
 export const defaultMaxZoom = 19;
 
-const colorPrimary = '#007fff';
+const colorPrimary = settings.COLOR_PRIMARY;
 const API_ROOT = settings.API_ROOT;
 
 // The default basemap style

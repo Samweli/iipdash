@@ -26,6 +26,7 @@ const InfrastructureDash = {
             countriesLookup: {},
             regions: { features: [] },
             regionOptions: { features: [] },
+            regionsMobileCoverage: { features: [] },
             mobileCoverageAggregates: {},
             mapLoaded: false,
             summaryLayerActive: true,
@@ -35,6 +36,9 @@ const InfrastructureDash = {
             charts: {
                 mobileCoverageSummary: {
                     id: 'mobile-coverage-summary-chart',
+                },
+                regionsMobileCoverage: {
+                    id: 'regions-mobile-coverage-chart',
                 },
             },
         };
@@ -104,6 +108,20 @@ const InfrastructureDash = {
 
             if (this.lookup.administrative_area) {
                 this.selectedRegion = _.find(this.regions.features, { id: this.lookup.administrative_area });
+            }
+
+            // coverage per region
+            try {
+                const regionsMobileCoverage = await axios.get(`${API_ROOT}administrative/areas-mobile-coverage/`, {
+                    params: {
+                        country: this.lookup.country || '',
+                        administrative_area_level: 3,
+                        exclude_geometry: true,
+                    },
+                });
+                this.regionsMobileCoverage = regionsMobileCoverage.data;
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
             }
 
             // areas coverage aggregations
@@ -262,6 +280,45 @@ const InfrastructureDash = {
                 .getElementById(this.charts.mobileCoverageSummary.id)
                 .getContext('2d');
             new Chart(mobileCoverageSummaryCtx, mobileCoverageSummaryConfig); // eslint-disable-line no-new
+
+            // regions mobile coverage
+            const regionsMobileCoverageData = {
+                datasets: [
+                    {
+                        label: '',
+                        data: this.regionsMobileCoverage.features.map((coverage) => {
+                            return {
+                                x: this.round(coverage.properties.population_density_hd_avg, 2),
+                                y: this.round(coverage.properties[`coverage_${this.selectedNetworkGeneration}`], 2),
+                                uuid: coverage.id,
+                            };
+                        }),
+                        backgroundColor: (context) => {
+                            const index = context.dataIndex;
+                            const value = context.dataset.data[index];
+
+                            if (value.uuid === this.selectedRegion?.id) {
+                                return settings.COLOR_PRIMARY;
+                            }
+
+                            return 'rgba(100, 100, 100, 0.5)';
+                        },
+                        pointRadius: 4,
+                        pointHoverRadius: 4.5,
+                    },
+                ],
+            };
+
+            const regionsMobileCoverageConfig = {
+                ...chartsConfig.regionsMobileCoverage,
+                data: regionsMobileCoverageData,
+            };
+
+            this.clearChart(this.charts.regionsMobileCoverage.id);
+            const regionsMobileCoverageCtx = document
+                .getElementById(this.charts.regionsMobileCoverage.id)
+                .getContext('2d');
+            new Chart(regionsMobileCoverageCtx, regionsMobileCoverageConfig); // eslint-disable-line no-new
         },
 
         update: async function () {
