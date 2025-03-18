@@ -701,7 +701,7 @@ class MobileCoverage(models.Model):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
 
-        transaction.on_commit(self.process_tiff)
+        transaction.on_commit(self.auto_process_tiff)
 
     @property
     def display_name(self):
@@ -725,18 +725,21 @@ class MobileCoverage(models.Model):
 
         return urljoin(settings.TILES_URL, f"{self.tiles_dir}/{{z}}/{{x}}/{{y}}.png")
 
-    def process_tiff(self):
+    def auto_process_tiff(self):
         """Process the TIFF in the background.
 
         This involves
-         - Ingesting the raster data into the database.
-         - Generation of raster tiles for utilization iin various applications
+         - Ingesting the raster data into the database (if the tiff file is less than ~10MB).
+         - Generation of raster tiles for utilization in various applications (if the tiff file is less than ~20MB)
         """
         if not self.tiff:
             return
 
-        update_mobile_coverage_raster.delay(pk=self.pk)
-        generate_mobile_coverage_tiles.delay(pk=self.pk)
+        if self.tiff.size <= 10000000:
+            update_mobile_coverage_raster.delay(pk=self.pk)
+
+        if self.tiff.size <= 20000000:
+            generate_mobile_coverage_tiles.delay(pk=self.pk)
 
     def set_raster(self):
         """Set raster attribute data based on assigned GeoTIFF file."""
