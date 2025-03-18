@@ -160,6 +160,15 @@ const EducationDash = {
             this._map.addSource('areas-education', maps.sources['areas-education']);
             this._map.addLayer(summaryLayer);
 
+            // regions boundaries
+            const regionsLayer = _.merge({}, maps.layers.regions, {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('regions', maps.sources.regions);
+            this._map.addLayer(regionsLayer);
+
             // education institutions
             const institutionsLayer = _.merge({}, maps.layers['education-institutions'], {
                 layout: {
@@ -255,6 +264,22 @@ const EducationDash = {
                     ['get', 'administrative_area_uuid'],
                     this.lookup.administrative_area,
                 ]);
+            }
+
+            // highlight selected region
+            if (this.lookup.administrative_area) {
+                this._map.setFilter('regions', ['==', ['get', 'uuid'], this.lookup.administrative_area]);
+                this._map.setLayoutProperty('regions', 'visibility', 'visible');
+            } else {
+                this._map.setLayoutProperty('regions', 'visibility', 'none');
+                this._map.setFilter('regions', null);
+            }
+
+            // highlight selected country
+            if (this.lookup.country) {
+                this._map.setFilter('countries', ['==', ['get', 'country'], this.lookup.country]);
+            } else {
+                this._map.setFilter('countries', null);
             }
 
             // pan to bounds

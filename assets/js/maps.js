@@ -35,6 +35,7 @@ export const basemap = {
 };
 
 export const countriesTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=2';
+export const regionsTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=3';
 export const populationDensityHDTilesURL = API_ROOT + 'demographics/population-density-hd/tiles/{z}/{x}/{y}.mvt/';
 export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/';
 export const fiberNodesTilesUrl = API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/';
@@ -61,6 +62,12 @@ export const sources = {
     countries: {
         type: 'vector',
         tiles: [countriesTilesURL],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
+    regions: {
+        type: 'vector',
+        tiles: [regionsTilesURL],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
@@ -109,6 +116,17 @@ const countriesLayer = {
     type: 'line',
     paint: {
         'line-width': 2.7,
+        'line-color': colorPrimary,
+    },
+};
+
+const regionsLayer = {
+    id: 'regions',
+    source: 'regions',
+    'source-layer': 'administrative-areas',
+    type: 'line',
+    paint: {
+        'line-width': 2.0,
         'line-color': colorPrimary,
     },
 };
@@ -297,6 +315,7 @@ const mobileCoverage3GLayer = {
 
 export const layers = {
     countries: countriesLayer,
+    regions: regionsLayer,
     'population-density-hd': populationDensityHDLayer,
     'areas-education': areasEducationLayer,
     'areas-mobile-coverage-3g': areasMobileCoverage3GLayer,

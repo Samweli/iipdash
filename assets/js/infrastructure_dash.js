@@ -174,6 +174,15 @@ const InfrastructureDash = {
             this._map.addSource('areas-mobile-coverage-3g', maps.sources['areas-mobile-coverage-3g']);
             this._map.addLayer(summaryLayer3gLayer);
 
+            // regions boundaries
+            const regionsLayer = _.merge({}, maps.layers.regions, {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('regions', maps.sources.regions);
+            this._map.addLayer(regionsLayer);
+
             // High resolution population density
             const populationDensityHDLayer = _.merge({}, maps.layers['population-density-hd'], {
                 layout: {
@@ -242,6 +251,22 @@ const InfrastructureDash = {
             }
 
             this.updateMobileCoverageLayer();
+
+            // highlight selected region
+            if (this.lookup.administrative_area) {
+                this._map.setFilter('regions', ['==', ['get', 'uuid'], this.lookup.administrative_area]);
+                this._map.setLayoutProperty('regions', 'visibility', 'visible');
+            } else {
+                this._map.setLayoutProperty('regions', 'visibility', 'none');
+                this._map.setFilter('regions', null);
+            }
+
+            // highlight selected country
+            if (this.lookup.country) {
+                this._map.setFilter('countries', ['==', ['get', 'country'], this.lookup.country]);
+            } else {
+                this._map.setFilter('countries', null);
+            }
 
             // pan to bounds
             if (this.lookup.administrative_area) {
