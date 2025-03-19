@@ -33,6 +33,7 @@ from django.utils.translation import gettext_lazy as _
 import gdal2tiles
 import numpy as np
 import rasterio
+from django_countries.fields import CountryField
 from rasterio.enums import ColorInterp
 
 from administrative.models import Area
@@ -862,3 +863,56 @@ class MobileCoverage(models.Model):
                 ]
 
         return rgb_path
+
+
+class ElectricityNetwork(models.Model):
+    """Electricity network"""
+
+    uuid = models.UUIDField(
+        _("UUID"),
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        help_text=_("A universally unique identifier (UUID)"),
+    )
+
+    voltage_kv = models.PositiveIntegerField(_("voltage KV"), blank=True, null=True)
+    status = models.CharField(_("status"), max_length=255, blank=True)
+    source = models.CharField(_("source"), max_length=255, blank=True)
+    from_nm = models.CharField(_("from nm"), max_length=255, blank=True)
+    to_nm = models.CharField(_("to nm"), max_length=255, blank=True)
+    network_type = models.CharField(_("network type"), max_length=255, blank=True)
+
+    country = CountryField(_("country"), blank=True)
+
+    geometry = models.MultiLineStringField(
+        _("geometry"),
+        geography=True,
+        blank=True,
+        null=True,
+        srid=4326,
+    )
+
+    #: The database level timestamp of when the area was created.
+    created_at = models.DateTimeField(
+        "created at",
+        auto_now_add=True,
+        db_default=Now(),
+        help_text=_("The database level timestamp of when the record was created."),
+    )
+
+    #: The database level timestamp of when the area was latest modified.
+    updated_at = models.DateTimeField(
+        _("updated at"),
+        auto_now=True,
+        null=True,
+        blank=True,
+        help_text=_("Timestamp of when the record was last modified."),
+    )
+
+    class Meta:
+        verbose_name = _("Electricity Network")
+        verbose_name_plural = _("Electricity Networks")
+
+    def __str__(self):
+        return f"{self.country}: {self.from_nm} - {self.to_nm}"

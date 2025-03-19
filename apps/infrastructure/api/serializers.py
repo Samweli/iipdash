@@ -5,7 +5,7 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from administrative.api.serializers import RelatedAreaSerializer
 
-from ..models import CellTower, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
+from ..models import CellTower, ElectricityNetwork, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
 
 __all__ = [
     "NetworkGenerationSerializer",
@@ -17,6 +17,7 @@ __all__ = [
     "FiberOpticCSVSerializer",
     "FiberOpticNodeSerializer",
     "FiberOpticNodeCSVSerializer",
+    "ElectricityNetworkSerializer",
 ]
 
 
@@ -191,3 +192,12 @@ class FiberOpticNodeCSVSerializer(serializers.ModelSerializer):
             "geometry",
         ]
         read_only_fields = fields
+
+
+class ElectricityNetworkSerializer(GeoFeatureModelSerializer):
+
+    class Meta:
+        model = ElectricityNetwork
+        id_field = "uuid"
+        geo_field = "geometry"
+        exclude = ["id"]
