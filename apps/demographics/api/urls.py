@@ -6,3 +6,4 @@ router = routers.SimpleRouter()
 
 
 router.register(r"population-density-hd", views.PopulationDensityHDViewSet, basename="population-density-hd")
+router.register(r"relative-wealth-index", views.RelativeWealthIndexViewSet, basename="relative-wealth-index")

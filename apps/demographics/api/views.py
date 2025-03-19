@@ -1,5 +1,7 @@
 from django.conf import settings
+from django.contrib.gis.db.models import PointField
 from django.db.models import F
+from django.db.models.functions import Cast
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import cache_page
@@ -14,9 +16,9 @@ from rest_framework_gis.pagination import GeoJsonPagination
 from vectortiles.backends.postgis import VectorLayer
 from vectortiles.rest_framework.renderers import MVTRenderer
 
-from ..models import PopulationDensityHD
+from ..models import PopulationDensityHD, RelativeWealthIndex
 from .filters import PopulationDensityHDFilter
-from .serializers import PopulationDensityHDSerializer
+from .serializers import PopulationDensityHDSerializer, RelativeWealthIndexSerializer
 
 MVT_CACHE_ALIAS = settings.CACHE_MVT_ALIAS
 MVT_CACHE_TIMEOUT = settings.CACHE_TIMEOUTS["mvt"]
@@ -91,4 +93,47 @@ class PopulationDensityHDViewSet(VectorLayer, ReadOnlyModelViewSet):
     @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:population-density-hd", cache=MVT_CACHE_ALIAS))
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for high resolution population density."""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
+
+
+class RelativeWealthIndexViewSet(VectorLayer, ReadOnlyModelViewSet):
+    """Relative wealth index API endpoint."""
+
+    serializer_class = RelativeWealthIndexSerializer
+    lookup_field = "uuid"
+    required_scopes = ["default"]
+    pagination_class = GeoJsonPagination
+
+    filter_backends = [OrderingFilter]
+    ordering_fields = ["created_at", "updated_at"]
+    ordering = ["-created_at"]
+
+    #: Vector tiles layer ID
+    id = "relative-wealth-index"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "rwi",
+        "error",
+    )
+    tile_buffer = 64
+
+    queryset = RelativeWealthIndex.objects.all()
+
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+        queryset = self.get_queryset().annotate(geom=Cast("geometry", PointField()))
+        queryset = self.filter_queryset(queryset)
+        return queryset
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:relative-wealth-index", cache=MVT_CACHE_ALIAS))
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for relative wealth index."""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))

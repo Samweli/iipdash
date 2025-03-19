@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 
 class PopulationDensityHD(models.Model):
-    """Hig resolution population density."""
+    """High resolution population density."""
 
     uuid = models.UUIDField(
         _("UUID"),
@@ -32,7 +32,7 @@ class PopulationDensityHD(models.Model):
         _("location"),
         geography=True,
         srid=4326,
-        help_text=_("The spatial location of the institution."),
+        help_text=_("The geospatial location."),
     )
 
     #: A version of geometry optimized for performant rendering.
@@ -91,3 +91,49 @@ class PopulationDensityHD(models.Model):
         if self.geometry:
             geom = self.geometry.transform(3857, clone=True)
             return Point(round(geom.x, 1), round(geom.y, 1), srid=geom.srid)
+
+
+class RelativeWealthIndex(models.Model):
+    """Relative wealth Index."""
+
+    uuid = models.UUIDField(
+        _("UUID"),
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+        help_text=_("A universally unique identifier (UUID)."),
+    )
+
+    geometry = models.PointField(
+        _("location"),
+        geography=True,
+        srid=4326,
+        help_text=_("The geo-spatial location."),
+    )
+
+    rwi = models.FloatField(_("rwi"))
+    error = models.FloatField(_("error"), blank=True, null=True)
+
+    #: The database level timestamp of when the area was created.
+    created_at = models.DateTimeField(
+        "created at",
+        auto_now_add=True,
+        db_default=Now(),
+        help_text=_("The database level timestamp of when the record was created."),
+    )
+
+    #: The database level timestamp of when the area was latest modified.
+    updated_at = models.DateTimeField(
+        _("updated at"),
+        auto_now=True,
+        null=True,
+        blank=True,
+        help_text=_("Timestamp of when the record was last modified."),
+    )
+
+    class Meta:
+        verbose_name = _("Relative Wealth Index")
+        verbose_name_plural = _("Relative Wealth Indexes")
+
+    def __str__(self):
+        return f"{str(self.geometry)}: {self.rwi}"

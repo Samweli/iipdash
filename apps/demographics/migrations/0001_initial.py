@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                     "geometry",
                     django.contrib.gis.db.models.fields.PointField(
                         geography=True,
-                        help_text="The spatial location of the institution.",
+                        help_text="The geospatial location.",
                         srid=4326,
                         verbose_name="location",
                     ),
