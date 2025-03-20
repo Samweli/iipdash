@@ -1,9 +1,21 @@
 import uuid
+from pathlib import Path
+from urllib.parse import urljoin
 
+from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
+
+from gdal2tiles import gdal2tiles
+
+
+def layer_tiff_path(instance, filename):
+    """Returns path for storing mobile coverage tiff files, i.e.
+    "infrastructure/mobile-coverage/{instance.uuid}/tiff/{filename}"
+    """
+    return f"catalog/layers/{instance.uuid}/tiff/{filename}"
 
 
 class Category(models.Model):
@@ -88,6 +100,14 @@ class Layer(models.Model):
 
     is_public = models.BooleanField(_("is public"), default=False, blank=True)
 
+    tiff = models.FileField(
+        _("GeoTIFF"),
+        upload_to=layer_tiff_path,
+        max_length=510,
+        blank=True,
+        help_text=_("The tiff file containing the data."),
+    )
+
     created_at = models.DateTimeField(
         _("created at"),
         blank=True,
@@ -114,3 +134,41 @@ class Layer(models.Model):
         if not self.code:
             self.code = str(self.uuid)
         super().save(*args, **kwargs)
+
+    @property
+    def tiles_dir(self):
+        if not self.tiff:
+            return None
+
+        return Path(f"layers/{self.uuid}/")
+
+    @property
+    def tiles_root(self):
+        if not self.tiff:
+            return None
+
+        return Path(settings.TILES_ROOT) / self.tiles_dir
+
+    @property
+    def tms_url(self):
+        if not self.tiff:
+            return None
+
+        return urljoin(settings.TILES_URL, f"{self.tiles_dir}/{{z}}/{{x}}/{{y}}.png")
+
+    def generate_tiles(self, **kwargs):
+        """Generate tiles for using web maps from TIFF file."""
+
+        if not self.tiff:
+            return
+
+        kwargs = {
+            "webviewer": "none",
+            "nb_processes": settings.GDAL2TILES_PROCESSES,
+            "profile": "mercator",
+            "tile_size": 256,
+            "tmscompatible": True,
+            "zoom": (1, 15),
+            **kwargs,
+        }
+        gdal2tiles.generate_tiles(self.tiff.path, str(self.tiles_root), **kwargs)
