@@ -4,11 +4,13 @@ from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
-from django.db import models
+from django.db import models, transaction
 from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
 
 from gdal2tiles import gdal2tiles
+
+from .tasks import generate_layer_tiff_tiles
 
 
 def layer_tiff_path(instance, filename):
@@ -133,7 +135,11 @@ class Layer(models.Model):
     def save(self, *args, **kwargs):
         if not self.code:
             self.code = str(self.uuid)
+
         super().save(*args, **kwargs)
+
+        if self.tiff:
+            transaction.on_commit(lambda: generate_layer_tiff_tiles.delay(pk=self.pk))
 
     @property
     def tiles_dir(self):
