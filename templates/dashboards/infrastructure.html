@@ -111,21 +111,44 @@
 
     </div>
 
-    <div class="map-pane map-legend-pane" v-if="summaryLayerActive">
+    <div class="map-pane map-legend-pane">
         <h5 class="text-primary">Active layers</h5>
-        <div class="">
-            <span class="text-uppercase" v-text="selectedNetworkGeneration"></span>
-            {% trans 'mobile coverage' %}
+
+        <div class="form-check ps-0">
+            <label class="form-check-label" for="selected-network-generation-3g">
+                {% trans '3G mobile coverage' %}
+            </label>
+            <input id="selected-network-generation-3g"
+                   class="form-check-input float-none ms-2"
+                   type="radio"
+                   value="3g"
+                   v-model="selectedNetworkGeneration"
+                   @change="update()">
         </div>
-        <div class="small text-muted">{% trans '% of population' %}</div>
-        <div class="d-flex align-items-center">
-            <div class="me-1">0</div>
-            <div>
-                <img src="{% static '/images/legend-choropleth-primary.png' %}"
-                     class="img-fluid choropleth-img">
+
+        <div class="form-check ps-0">
+            <label class="form-check-label" for="selected-network-generation-3g">
+                {% trans '4G mobile coverage' %}
+            </label>
+            <input id="selected-network-generation-4g"
+                   class="form-check-input float-none ms-2"
+                   type="radio"
+                   value="4g"
+                   v-model="selectedNetworkGeneration"
+                   @change="update()">
+        </div>
+
+        <template v-if="summaryLayerActive">
+            <div class="small text-muted">{% trans '% of population' %}</div>
+            <div class="d-flex align-items-center">
+                <div class="me-1">0</div>
+                <div>
+                    <img src="{% static '/images/legend-choropleth-primary.png' %}"
+                         class="img-fluid choropleth-img">
+                </div>
+                <div class="ms-1">70+</div>
             </div>
-            <div class="ms-1">70+</div>
-        </div>
+        </template>
 
         {# TODO: including other legend items #}
     </div>
