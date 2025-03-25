@@ -204,7 +204,7 @@ services:
   # amqp://iipdash:iipdash@iipdash-dev-rabbitmq:5672//
   # ```
   iipdash-dev-rabbitmq:
-    image: rabbitmq:4.0.4-management
+    image: rabbitmq:4.0.7-management
     container_name: iipdash-dev-rabbitmq
     environment:
       RABBITMQ_DEFAULT_USER: ${DEVELOPMENT_RABBITMQ_USER:-iipdash}

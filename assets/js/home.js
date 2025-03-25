@@ -1,3 +1,4 @@
+import * as bootstrap from 'bootstrap';
 import * as Vue from 'vue';
 import maplibregl from 'maplibre-gl';
 
@@ -138,6 +139,21 @@ const HomeDash = {
             const event = new Event('page-updated');
             window.dispatchEvent(event);
         },
+
+        initBootstrapUI: async function () {
+            // Init layers popovers
+            const layerItemPopoverTemplate = document.querySelector('#layer-item-popover-template').innerHTML;
+            document.querySelectorAll('.popover-trigger').forEach((el) => {
+                const popoverContentId = el.getAttribute('data-popover-content');
+                const popoverContent = document.querySelector(popoverContentId).innerHTML;
+                return new bootstrap.Popover(el, {
+                    html: true,
+                    content: popoverContent,
+                    placement: 'auto',
+                    template: layerItemPopoverTemplate,
+                });
+            });
+        },
     },
 
     /**
@@ -146,6 +162,7 @@ const HomeDash = {
     mounted: async function () {
         await this.initData();
         await this.initMap();
+        await this.initBootstrapUI();
         await this.update();
     },
 };

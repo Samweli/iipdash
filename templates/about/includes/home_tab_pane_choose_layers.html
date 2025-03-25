@@ -38,17 +38,24 @@
                 </button>
 
                 <div class="dropdown-menu p-3" aria-labelledby="layers-category-filter-dropdown" style="min-width: 250px;">
-                    <strong class="dropdown-header ps-0 text-muted mb-2">Category</strong>
+                    <strong class="dropdown-header ps-0 text-muted mb-2">{% trans "Category" %}</strong>
                     {% for catalog_category in catalog_categories %}
                         <div class="form-check mb-2">
-                            <input class="form-check-input category-filter" type="checkbox" id="{{catalog_category.uuid}}" value="{{catalog_category.name}}">
-                            <label class="form-check-label badge bg-light text-dark text-uppercase px-2 py-1 rounded-pill"
-                                   data-category="Climate" for="{{catalog_category.uuid}}">{{catalog_category.name}}</label>
+                            <input
+                                class="form-check-input category-filter"
+                                type="checkbox"
+                                id="{{catalog_category.uuid}}"
+                                value="{{catalog_category.name}}">
+                            <label
+                                class="form-check-label badge bg-light text-dark text-uppercase px-2 py-1 rounded-pill"
+                                data-category="{{catalog_category.uuid}}" for="{{catalog_category.uuid}}">
+                                {{catalog_category.name}}
+                            </label>
                         </div>
                     {% endfor %}
                     <div class="d-flex justify-content-between mt-4">
-                        <button class="btn btn-sm btn-light px-3" id="layers-category-clear-filter">Clear</button>
-                        <button class="btn btn-sm btn-primary px-3" id="layers-category-apply-filter">Apply</button>
+                        <button class="btn btn-sm btn-light px-3" id="layers-category-clear-filter">{% trans "Clear" %}</button>
+                        <button class="btn btn-sm btn-primary px-3" id="layers-category-apply-filter">{% trans "Apply" %}</button>
                     </div>
                 </div>
 
@@ -80,8 +87,8 @@
                             {% endfor %}
                         </div>
                         <div class="d-flex align-items-center">
-                            <i class="fa-solid fa-info mx-3 text-secondary popover-trigger" tabindex="0"
-                               data-bs-toggle="popover" data-bs-trigger="focus"
+                            <i class="fa-solid fa-info mx-3 text-secondary popover-trigger"
+                               data-bs-toggle="popover"
                                data-popover-content="#layer-item-{{catalog_layer.uuid}}-popover-content"></i>
                             <input class="form-check-input layer-checkbox" type="checkbox">
                         </div>
