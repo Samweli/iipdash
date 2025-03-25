@@ -1,3 +1,6 @@
+{% load i18n %}
+
+
 {# Start: home extra body hidden content #}
 
 {# Start: layer item popover template #}
@@ -17,11 +20,16 @@
         <div class="card w-100 p-0 border-0">
             <div class="card-header bg-dark text-white">{{catalog_layer.name}}</div>
             <div class="card-body">
-                <p class="mb-1"><strong>Description:</strong></p>
-                <p>Displays population distribution per square km.</p>
-                <p class="mb-1"><strong>Source:</strong></p>
-                <p>Census Data 2023 <a href="#" target="_blank"><i class="bi bi-link fs-5"></i></a></p>
-                <p class="mb-1"><strong>Date:</strong></p>
+                <p class="mb-1 text-uppercase"><strong>{% trans "Description" %}</strong></p>
+                <p>{{ catalog_layer.description|default:"N/A" }}</p>
+                <p class="mb-1 text-uppercase"><strong>{% trans "Source" %}</strong></p>
+                <p>
+                    {{ catalog_layer.source|default:"N/A" }}
+                    {% if catalog_layer.source_url %}
+                        <a href="{{catalog_layer.source_url}}" target="_blank"><i class="fa-solid fa-link ms-1"></i></a>
+                    {% endif %}
+                </p>
+                <p class="mb-1 text-uppercase"><strong>{% trans "Date" %}</strong></p>
                 <p>February 2024</p>
             </div>
         </div>

@@ -1,2 +1,47 @@
 // Home page styles.
 //
+
+// Layers list
+//
+.layers-list {
+    // Layers list search
+    .layers-list-search {
+        // Layers list search input
+        .layers-list-search-input {
+            padding-left: 1.8rem !important;
+        }
+    }
+
+    // Layers category filter
+    .layers-category-filter {
+        // Layer category dropdown menu
+        .layers-category-filter-dropdown-menu {
+            min-width: 250px !important;
+        }
+    }
+
+    // Layers list group
+    .layers-list-group-container {
+        max-height: 300px !important;
+
+        // Layers list group
+        .layers-list-group {
+            // Layers list group item
+            .layers-list-group-item {
+                // border-left: 4px solid #82a5ff !important;
+                border-left: 3px solid #007fff !important;
+            }
+        }
+    }
+
+    // Layers category pills
+    .layers-category-climate-pill {
+        background-color: $climate-color !important;
+    }
+    .layers-category-infrastructure-pill {
+        background-color: $infrastructure-color !important;
+    }
+    .layers-category-socio-economic-pill {
+        background-color: $socio-economic-color !important;
+    }
+}

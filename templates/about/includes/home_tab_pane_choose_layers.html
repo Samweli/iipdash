@@ -9,25 +9,24 @@
     aria-labelledby="tab-link-choose-layers">
 
     {# Start: layers list content #}
-    <div class="mt-3">
+    <div class="mt-3 layers-list">
 
         {# Start: layers list actions #}
         <div class="d-flex align-items-center mb-3">
 
-            {# Start: search input with icon #}
-            <div class="position-relative flex-grow-1 me-2">
+            {# Start: layers search input with icon #}
+            <div class="position-relative flex-grow-1 me-2 layers-list-search">
                 <i class="fa-solid fa-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
                 <input
                     type="text"
                     id="layers-list-search-input"
-                    class="form-control ps-4"
-                    placeholder="{% trans "Search layers..." %}"
-                    style="padding-left: 1.8rem !important;">
+                    class="form-control ps-4 layers-list-search-input"
+                    placeholder="{% trans "Search layers..." %}">
             </div>
-            {# End: search input with icon #}
+            {# End: layers search input with icon #}
 
-            {# Start: category dropdown filter #}
-            <div class="dropdown me-2">
+            {# Start: layers category dropdown filter #}
+            <div class="dropdown layers-category-filter">
                 <button
                     id="layers-category-filter-dropdown"
                     class="btn btn-light border"
@@ -37,17 +36,20 @@
                     <i class="fa-solid fa-filter"></i>
                 </button>
 
-                <div class="dropdown-menu p-3" aria-labelledby="layers-category-filter-dropdown" style="min-width: 250px;">
+                <div
+                    id="layers-category-filter-dropdown-menu"
+                    class="dropdown-menu p-3 layers-category-filter-dropdown-menu"
+                    aria-labelledby="layers-category-filter-dropdown">
                     <strong class="dropdown-header ps-0 text-muted mb-2">{% trans "Category" %}</strong>
                     {% for catalog_category in catalog_categories %}
                         <div class="form-check mb-2">
                             <input
-                                class="form-check-input category-filter"
-                                type="checkbox"
                                 id="{{catalog_category.uuid}}"
+                                class="form-check-input layers-category-filter-input"
+                                type="checkbox"
                                 value="{{catalog_category.name}}">
                             <label
-                                class="form-check-label badge bg-light text-dark text-uppercase px-2 py-1 rounded-pill"
+                                class="form-check-label badge bg-light text-dark text-uppercase px-2 py-1 rounded-pill layers-category-{{catalog_category.code}}-pill"
                                 data-category="{{catalog_category.uuid}}" for="{{catalog_category.uuid}}">
                                 {{catalog_category.name}}
                             </label>
@@ -55,12 +57,12 @@
                     {% endfor %}
                     <div class="d-flex justify-content-between mt-4">
                         <button class="btn btn-sm btn-light px-3" id="layers-category-clear-filter">{% trans "Clear" %}</button>
-                        <button class="btn btn-sm btn-primary px-3" id="layers-category-apply-filter">{% trans "Apply" %}</button>
+                        <button class="btn btn-sm btn-primary px-3 text-white" id="layers-category-apply-filter">{% trans "Apply" %}</button>
                     </div>
                 </div>
 
             </div>
-            {# Start: category dropdown filter #}
+            {# Start: layers category dropdown filter #}
 
             {# Start: clear all selected layers #}
             {% comment %} <button
@@ -75,15 +77,16 @@
         {# End: layers list actions #}
 
         {# Start: layers list group (list of layers) #}
-        <div class="overflow-auto" style="max-height: 300px;">
-            <ul class="list-group" id="layers-list">
-                {% for catalog_layer in  catalog_layers %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center border shadow-sm p-3 mb-2 rounded"
-                        style="border-left: 4px solid #82A5FF !important;" data-category="Socio-Economic">
+        <div class="overflow-auto layers-list-group-container">
+            <ul class="list-group layers-list-group" id="layers-list-group">
+                {% for catalog_layer in catalog_layers %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center border shadow-sm p-3 mb-2 rounded layers-list-group-item">
                         <div>
                             <strong>{{catalog_layer.name}}</strong><br>
                             {% for catalog_category in catalog_layer.categories.all %}
-                                <span class="badge text-white text-uppercase rounded-pill" style="background-color: #82A5FF;">{{catalog_category.name}}</span>
+                                <span class="badge text-white text-uppercase rounded-pill layers-category-{{catalog_category.code}}-pill">
+                                    {{catalog_category.name}}
+                                </span>
                             {% endfor %}
                         </div>
                         <div class="d-flex align-items-center">
