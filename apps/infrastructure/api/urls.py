@@ -8,3 +8,4 @@ router.register(r"mobile-coverage", views.MobileCoverageViewSet, basename="mobil
 router.register(r"cell-towers", views.CellTowerViewSet, basename="cell-tower")
 router.register(r"fiber-optics", views.FiberOpticViewSet, basename="fiber-optic")
 router.register(r"fiber-nodes", views.FiberOpticNodeViewSet, basename="fiber-node")
+router.register(r"electricity-networks", views.ElectricityNetworkViewSet, basename="electricity-network")

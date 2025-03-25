@@ -10,4 +10,4 @@ class AreaFilter(filters.FilterSet):
 
     class Meta:
         model = Area
-        fields = ["level", "country"]
+        fields = ["uuid", "level", "country"]

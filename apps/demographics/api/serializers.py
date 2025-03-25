@@ -2,9 +2,9 @@ from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from administrative.api.serializers import RelatedAreaSerializer
 
-from ..models import PopulationDensityHD
+from ..models import PopulationDensityHD, RelativeWealthIndex
 
-__all__ = ["PopulationDensityHDSerializer"]
+__all__ = ["PopulationDensityHDSerializer", "RelativeWealthIndexSerializer"]
 
 
 class PopulationDensityHDSerializer(GeoFeatureModelSerializer):
@@ -15,3 +15,12 @@ class PopulationDensityHDSerializer(GeoFeatureModelSerializer):
         id_field = "uuid"
         geo_field = "geometry"
         exclude = ["id", "geom"]
+
+
+class RelativeWealthIndexSerializer(GeoFeatureModelSerializer):
+
+    class Meta:
+        model = RelativeWealthIndex
+        id_field = "uuid"
+        geo_field = "geometry"
+        exclude = ["id"]

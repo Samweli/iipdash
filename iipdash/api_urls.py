@@ -1,3 +1,4 @@
+from health.api.urls import router as health_router
 from rest_framework import routers
 
 from administrative.api.urls import router as administrative_router
@@ -28,4 +29,5 @@ router.include_router(r"catalog/", catalog_router)
 router.include_router(r"administrative/", administrative_router)
 router.include_router(r"demographics/", demographics_router)
 router.include_router(r"education/", education_router)
+router.include_router(r"health/", health_router)
 router.include_router(r"infrastructure/", infrastructure_router)

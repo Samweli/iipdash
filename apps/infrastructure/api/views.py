@@ -21,12 +21,13 @@ from vectortiles.rest_framework.renderers import MVTRenderer
 from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
 from core.api.mixins import CSVDownloadMixin
 
-from ..models import CellTower, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
+from ..models import CellTower, ElectricityNetwork, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
 from .filters import CellTowerFilter, FiberOpticFilter, MobileCoverageFilter
 from .openapi import examples
 from .serializers import (
     CellTowerCSVSerializer,
     CellTowerSerializer,
+    ElectricityNetworkSerializer,
     FiberOpticCSVSerializer,
     FiberOpticNodeCSVSerializer,
     FiberOpticNodeSerializer,
@@ -529,4 +530,47 @@ class FiberOpticNodeViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyMode
     @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:fiber-nodes", cache=MVT_CACHE_ALIAS))
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for fiber optic nodes"""
+        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
+
+
+class ElectricityNetworkViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
+    """Electricity networks API endpoint."""
+
+    serializer_class = ElectricityNetworkSerializer
+    lookup_field = "uuid"
+    required_scopes = ["default"]
+    pagination_class = GeoJsonPagination
+
+    #: Vector tiles layer ID
+    id = "electricity-network"
+
+    #: A tuple of fields to be included in vector tiles data.
+    tile_fields = (
+        "voltage_kv",
+        "status",
+        "source",
+        "from_nm",
+        "to_nm",
+        "network_type",
+        "country",
+    )
+
+    queryset = ElectricityNetwork.objects.order_by("-created_at")
+
+    def get_vector_tile_queryset(self, *args, **kwargs):
+        """Returns a queryset used to generate vector tiles."""
+        queryset = self.get_queryset().annotate(geom=Cast("geometry", MultiLineStringField()))
+        queryset = self.filter_queryset(queryset)
+        return queryset
+
+    @action(
+        detail=False,
+        methods=["get"],
+        renderer_classes=(MVTRenderer,),
+        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
+        url_name="tile",
+    )
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:relative-wealth-index", cache=MVT_CACHE_ALIAS))
+    def tile(self, request, *args, **kwargs):
+        """Provides Mapbox Vector Tiles for relative wealth index."""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))

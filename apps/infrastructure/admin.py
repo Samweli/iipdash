@@ -17,7 +17,7 @@ from django.contrib.gis.admin import GISModelAdmin
 
 from import_export.admin import ImportExportModelAdmin
 
-from .models import CellTower, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
+from .models import CellTower, ElectricityNetwork, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
 
 
 @admin.register(FiberOptic)
@@ -114,3 +114,8 @@ class MobileCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
     raw_id_fields = ["administrative_area"]
     search_fields = ["id", "uuid", "administrative_area__name"]
     readonly_fields = ["id", "uuid", "tms_url", "created_at", "updated_at"]
+
+
+@admin.register(ElectricityNetwork)
+class ElectricityNetworkAdmin(GISModelAdmin, ImportExportModelAdmin):
+    pass

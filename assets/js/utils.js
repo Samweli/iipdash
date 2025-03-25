@@ -1,7 +1,10 @@
 export const updateURLParams = (url, params) => {
     const _url = new URL(url);
     for (const key in params) {
-        _url.searchParams.set(key, params[key]);
+        const value = params[key];
+        if (value != null) {
+            _url.searchParams.set(key, value);
+        }
     }
     return _url;
 };

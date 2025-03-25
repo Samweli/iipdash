@@ -77,6 +77,7 @@ INSTALLED_APPS = [
     "administrative",
     "demographics",
     "education",
+    "health",
     "infrastructure",
     "dashboards",
     "debug_toolbar",

@@ -2,6 +2,7 @@ from typing import List, Type
 
 from rest_framework import serializers
 from rest_framework.fields import empty
+from rest_framework_gis.fields import GeometrySerializerMethodField
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
 from ..models import Area
@@ -24,6 +25,9 @@ __all__ = [
 
 class BaseGeoFeatureModelSerializer(GeoFeatureModelSerializer):
 
+    geometry = GeometrySerializerMethodField()
+    country = serializers.CharField()
+
     def __init__(self, instance=None, data=empty, exclude_geometry=False, **kwargs):
         """If ``exclude_geometry`` is True, the serializer output when reading the instances won't include
         geometry coordinates.
@@ -31,15 +35,16 @@ class BaseGeoFeatureModelSerializer(GeoFeatureModelSerializer):
         self.exclude_geometry = exclude_geometry
         super().__init__(instance=instance, data=data, **kwargs)
 
-    def to_representation(self, instance):
+    def get_geometry(self, obj):
         if self.exclude_geometry is True:
-            instance.geometry = None
-        data = super().to_representation(instance)
-        return data
+            return None
+        return obj.geometry
 
 
 class RelatedAreaSerializer(serializers.ModelSerializer):
     """A related administrative area."""
+
+    country = serializers.CharField()
 
     class Meta:
         """Metadata for the :class:`RelatedAreaSerializer`.
@@ -58,6 +63,8 @@ class RelatedAreaSerializer(serializers.ModelSerializer):
 
 class AreaSerializer(BaseGeoFeatureModelSerializer):
     """GeoJSON serializer for administrative areas."""
+
+    bbox = serializers.ListField(read_only=True)
 
     class Meta:
         model = Area

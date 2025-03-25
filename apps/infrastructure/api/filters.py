@@ -236,6 +236,8 @@ class MobileCoverageFilter(filters.FilterSet):
         help_text=_("Filter by multiple administrative area UUIDs."),
     )
 
+    administrative_area_level = filters.NumberFilter(field_name="administrative_area__depth")
+
     network_generation = filters.UUIDFilter(field_name="network_generation__uuid")
     network_generation_code = filters.CharFilter(field_name="network_generation__code")
 

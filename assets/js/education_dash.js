@@ -62,6 +62,15 @@ const EducationDash = {
 
             return locations.join(', ');
         },
+
+        summaryCSVDownloadURL() {
+            const params = {
+                country: this.lookup.country,
+                uuid: this.lookup.administrative_area,
+                level: 3,
+            };
+            return utils.updateURLParams(`${API_ROOT}administrative/areas-education/download`, params);
+        },
     },
 
     methods: {
@@ -72,7 +81,7 @@ const EducationDash = {
             // countries
             try {
                 const countries = await axios.get(`${API_ROOT}administrative/areas`, {
-                    params: { level: 1, exclude_geometry: 1 },
+                    params: { level: 2, exclude_geometry: 1 },
                 });
                 this.countries = countries.data;
                 this.countries.features.forEach((feature) => {
@@ -85,7 +94,7 @@ const EducationDash = {
             // regions
             try {
                 const regions = await axios.get(`${API_ROOT}administrative/areas`, {
-                    params: { level: 2, exclude_geometry: 1 },
+                    params: { level: 3, exclude_geometry: 1 },
                 });
                 this.regions = regions.data;
                 this.regionOptions = _.cloneDeep(this.regions);
@@ -150,6 +159,15 @@ const EducationDash = {
 
             this._map.addSource('areas-education', maps.sources['areas-education']);
             this._map.addLayer(summaryLayer);
+
+            // regions boundaries
+            const regionsLayer = _.merge({}, maps.layers.regions, {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('regions', maps.sources.regions);
+            this._map.addLayer(regionsLayer);
 
             // education institutions
             const institutionsLayer = _.merge({}, maps.layers['education-institutions'], {
@@ -246,6 +264,29 @@ const EducationDash = {
                     ['get', 'administrative_area_uuid'],
                     this.lookup.administrative_area,
                 ]);
+            }
+
+            // highlight selected region
+            if (this.lookup.administrative_area) {
+                this._map.setFilter('regions', ['==', ['get', 'uuid'], this.lookup.administrative_area]);
+                this._map.setLayoutProperty('regions', 'visibility', 'visible');
+            } else {
+                this._map.setLayoutProperty('regions', 'visibility', 'none');
+                this._map.setFilter('regions', null);
+            }
+
+            // highlight selected country
+            if (this.lookup.country) {
+                this._map.setFilter('countries', ['==', ['get', 'country'], this.lookup.country]);
+            } else {
+                this._map.setFilter('countries', null);
+            }
+
+            // pan to bounds
+            if (this.lookup.administrative_area) {
+                this.fitMapBounds(this.selectedRegion.properties.bbox);
+            } else if (this.lookup.country) {
+                this.fitMapBounds(this.selectedCountry.properties.bbox);
             }
         },
 
@@ -387,6 +428,16 @@ const EducationDash = {
             this.legendControl = Vue.markRaw(legendControl);
 
             this._map.addControl(this.legendControl, 'bottom-left');
+        },
+
+        fitMapBounds(bbox, options = {}) {
+            this._map.fitBounds(
+                [
+                    [bbox[0], bbox[1]],
+                    [bbox[2], bbox[3]],
+                ],
+                options,
+            );
         },
 
         meters2km: utils.meters2km,

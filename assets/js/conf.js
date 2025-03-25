@@ -9,3 +9,5 @@ export const BASEMAP_ATTRIBUTION = window.settings.BASEMAP_ATTRIBUTION;
 
 export const MAPBOX_STYLE_ID = window.settings.MAPBOX_STYLE_ID;
 export const MAPBOX_ACCESS_TOKEN = window.settings.MAPBOX_ACCESS_TOKEN;
+
+export const COLOR_PRIMARY = '#007fff';

@@ -5,7 +5,7 @@ import * as settings from './conf';
 export const defaultMinZoom = 1;
 export const defaultMaxZoom = 19;
 
-const colorPrimary = '#007fff';
+const colorPrimary = settings.COLOR_PRIMARY;
 const API_ROOT = settings.API_ROOT;
 
 // The default basemap style
@@ -34,11 +34,14 @@ export const basemap = {
     zoom: settings.MAP_DEFAULT_ZOOM,
 };
 
-export const countriesTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=1';
+export const countriesTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=2';
+export const regionsTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=3';
 export const populationDensityHDTilesURL = API_ROOT + 'demographics/population-density-hd/tiles/{z}/{x}/{y}.mvt/';
 export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/';
 export const fiberNodesTilesUrl = API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/';
-export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=2';
+export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=3';
+export const areasMobileCoverageTilesURL =
+    API_ROOT + 'administrative/areas-mobile-coverage/tiles/{z}/{x}/{y}.mvt/?level=3';
 
 export const getMobileCoverageTMSURLs = async (lookup) => {
     try {
@@ -62,6 +65,12 @@ export const sources = {
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
+    regions: {
+        type: 'vector',
+        tiles: [regionsTilesURL],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
     'population-density-hd': {
         type: 'vector',
         tiles: [populationDensityHDTilesURL],
@@ -71,6 +80,12 @@ export const sources = {
     'areas-education': {
         type: 'vector',
         tiles: [areasEducationTilesURL],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
+    'areas-mobile-coverage': {
+        type: 'vector',
+        tiles: [areasMobileCoverageTilesURL],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
@@ -88,7 +103,13 @@ export const sources = {
     },
     'mobile-coverage-3g': {
         type: 'raster',
-        tiles: await getMobileCoverageTMSURLs({ network_generation_code: '3g' }),
+        tiles: await getMobileCoverageTMSURLs({ network_generation_code: '3g', administrative_area_level: 1 }),
+        tileSize: 256,
+        scheme: 'tms',
+    },
+    'mobile-coverage-4g': {
+        type: 'raster',
+        tiles: await getMobileCoverageTMSURLs({ network_generation_code: '4g', administrative_area_level: 1 }),
         tileSize: 256,
         scheme: 'tms',
     },
@@ -101,6 +122,17 @@ const countriesLayer = {
     type: 'line',
     paint: {
         'line-width': 2.7,
+        'line-color': colorPrimary,
+    },
+};
+
+const regionsLayer = {
+    id: 'regions',
+    source: 'regions',
+    'source-layer': 'administrative-areas',
+    type: 'line',
+    paint: {
+        'line-width': 2.0,
         'line-color': colorPrimary,
     },
 };
@@ -165,6 +197,84 @@ const areasEducationLayer = {
                 1000,
                 '#dae1ff',
                 30000,
+                colorPrimary,
+            ],
+        ],
+        'fill-opacity': [
+            // Zoom-dependent opacity
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0,
+            1.0, // Opacity at zoom level 0
+            5,
+            0.7, // Opacity at zoom level 5
+            10,
+            0.3, // Opacity at zoom level 10
+        ],
+    },
+};
+
+const areasMobileCoverage3GLayer = {
+    id: 'areas-mobile-coverage-3g',
+    source: 'areas-mobile-coverage',
+    'source-layer': 'areas-mobile-coverage',
+    type: 'fill',
+    paint: {
+        'fill-outline-color': colorPrimary,
+        'fill-color': [
+            'case',
+            ['==', ['get', 'coverage_3g'], null],
+            'rgba(0, 0, 0, 0)',
+            [
+                'interpolate', // interpolation expression
+                ['linear'], // interpolation type
+                ['get', 'coverage_3g'], // value to be used for interpolation
+                // color stops,
+                0,
+                '#ffffff',
+                1,
+                '#dae1ff',
+                70,
+                colorPrimary,
+            ],
+        ],
+        'fill-opacity': [
+            // Zoom-dependent opacity
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0,
+            1.0, // Opacity at zoom level 0
+            5,
+            0.7, // Opacity at zoom level 5
+            10,
+            0.3, // Opacity at zoom level 10
+        ],
+    },
+};
+
+const areasMobileCoverage4GLayer = {
+    id: 'areas-mobile-coverage-4g',
+    source: 'areas-mobile-coverage',
+    'source-layer': 'areas-mobile-coverage',
+    type: 'fill',
+    paint: {
+        'fill-outline-color': colorPrimary,
+        'fill-color': [
+            'case',
+            ['==', ['get', 'coverage_4g'], null],
+            'rgba(0, 0, 0, 0)',
+            [
+                'interpolate', // interpolation expression
+                ['linear'], // interpolation type
+                ['get', 'coverage_4g'], // value to be used for interpolation
+                // color stops,
+                0,
+                '#ffffff',
+                1,
+                '#dae1ff',
+                70,
                 colorPrimary,
             ],
         ],
@@ -248,11 +358,23 @@ const mobileCoverage3GLayer = {
     maxzoom: defaultMaxZoom,
 };
 
+const mobileCoverage4GLayer = {
+    id: 'mobile-coverage-4g',
+    type: 'raster',
+    source: 'mobile-coverage-4g',
+    minzoom: defaultMinZoom,
+    maxzoom: defaultMaxZoom,
+};
+
 export const layers = {
     countries: countriesLayer,
+    regions: regionsLayer,
     'population-density-hd': populationDensityHDLayer,
     'areas-education': areasEducationLayer,
+    'areas-mobile-coverage-3g': areasMobileCoverage3GLayer,
+    'areas-mobile-coverage-4g': areasMobileCoverage4GLayer,
     'education-institutions': educationInstitutionsLayer,
     'fiber-nodes': fiberNodesLayer,
     'mobile-coverage-3g': mobileCoverage3GLayer,
+    'mobile-coverage-4g': mobileCoverage4GLayer,
 };

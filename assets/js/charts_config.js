@@ -90,3 +90,34 @@ export const mobileCoverageSummary = {
         },
     },
 };
+
+export const regionsMobileCoverage = {
+    type: 'scatter',
+    options: {
+        indexAxis: 'y', // Horizontal bar
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                grid: { display: false },
+                title: {
+                    text: 'POPULATION DENSITY',
+                    display: true,
+                },
+            },
+            y: {
+                grid: { display: false },
+                title: {
+                    text: 'COVERAGE %',
+                    display: true,
+                },
+            },
+        },
+        plugins: {
+            legend: {
+                display: false,
+            },
+            tooltip: { enabled: false },
+        },
+    },
+};

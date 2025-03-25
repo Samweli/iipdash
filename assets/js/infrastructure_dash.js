@@ -26,6 +26,7 @@ const InfrastructureDash = {
             countriesLookup: {},
             regions: { features: [] },
             regionOptions: { features: [] },
+            regionsMobileCoverage: { features: [] },
             mobileCoverageAggregates: {},
             mapLoaded: false,
             summaryLayerActive: true,
@@ -35,6 +36,9 @@ const InfrastructureDash = {
             charts: {
                 mobileCoverageSummary: {
                     id: 'mobile-coverage-summary-chart',
+                },
+                regionsMobileCoverage: {
+                    id: 'regions-mobile-coverage-chart',
                 },
             },
         };
@@ -56,6 +60,15 @@ const InfrastructureDash = {
 
             return locations.join(', ');
         },
+
+        summaryCSVDownloadURL() {
+            const params = {
+                country: this.lookup.country,
+                uuid: this.lookup.administrative_area,
+                level: 3,
+            };
+            return utils.updateURLParams(`${API_ROOT}administrative/areas-mobile-coverage/download`, params);
+        },
     },
 
     methods: {
@@ -66,7 +79,7 @@ const InfrastructureDash = {
             // countries
             try {
                 const countries = await axios.get(`${API_ROOT}administrative/areas`, {
-                    params: { level: 1, exclude_geometry: 1 },
+                    params: { level: 2, exclude_geometry: 1 },
                 });
                 this.countries = countries.data;
                 this.countries.features.forEach((feature) => {
@@ -79,7 +92,7 @@ const InfrastructureDash = {
             // regions
             try {
                 const regions = await axios.get(`${API_ROOT}administrative/areas`, {
-                    params: { level: 2, exclude_geometry: 1 },
+                    params: { level: 3, exclude_geometry: 1 },
                 });
                 this.regions = regions.data;
                 this.regionOptions = _.cloneDeep(this.regions);
@@ -97,12 +110,26 @@ const InfrastructureDash = {
                 this.selectedRegion = _.find(this.regions.features, { id: this.lookup.administrative_area });
             }
 
+            // coverage per region
+            try {
+                const regionsMobileCoverage = await axios.get(`${API_ROOT}administrative/areas-mobile-coverage/`, {
+                    params: {
+                        country: this.lookup.country || '',
+                        administrative_area_level: 3,
+                        exclude_geometry: true,
+                    },
+                });
+                this.regionsMobileCoverage = regionsMobileCoverage.data;
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
+            }
+
             // areas coverage aggregations
             try {
                 const mobileCoverageAggregates = await axios.get(
                     `${API_ROOT}infrastructure/mobile-coverage/aggregates`,
                     {
-                        params: this.lookup,
+                        params: { ...this.lookup, administrative_area_level: 3 },
                     },
                 );
                 this.mobileCoverageAggregates = mobileCoverageAggregates.data;
@@ -138,10 +165,38 @@ const InfrastructureDash = {
             this._map.addSource('countries', maps.sources.countries);
             this._map.addLayer(maps.layers.countries);
 
+            // Areas coverage
+            this._map.addSource('areas-mobile-coverage', maps.sources['areas-mobile-coverage']);
+
+            const summaryLayer3gLayer = _.merge({}, maps.layers['areas-mobile-coverage-3g'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addLayer(summaryLayer3gLayer);
+
+            const summaryLayer4gLayer = _.merge({}, maps.layers['areas-mobile-coverage-4g'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addLayer(summaryLayer4gLayer);
+
+            this.updateMobileCoverageSummaryLayer();
+
+            // regions boundaries
+            const regionsLayer = _.merge({}, maps.layers.regions, {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('regions', maps.sources.regions);
+            this._map.addLayer(regionsLayer);
+
             // High resolution population density
             const populationDensityHDLayer = _.merge({}, maps.layers['population-density-hd'], {
                 layout: {
-                    visibility: 'visible',
+                    visibility: 'none',
                 },
             });
             this._map.addSource('population-density-hd', maps.sources['population-density-hd']);
@@ -150,23 +205,96 @@ const InfrastructureDash = {
             // 3G mobile coverage
             const mobileCoverage3GLayer = _.merge({}, maps.layers['mobile-coverage-3g'], {
                 layout: {
-                    visibility: 'visible',
+                    visibility: 'none',
                 },
             });
             this._map.addSource('mobile-coverage-3g', maps.sources['mobile-coverage-3g']);
             this._map.addLayer(mobileCoverage3GLayer);
 
+            // 4G mobile coverage
+            const mobileCoverage4GLayer = _.merge({}, maps.layers['mobile-coverage-4g'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('mobile-coverage-4g', maps.sources['mobile-coverage-4g']);
+            this._map.addLayer(mobileCoverage4GLayer);
+
             // fiber nodes
             const fiberNodesLayer = _.merge({}, maps.layers['fiber-nodes'], {
                 layout: {
-                    visibility: 'visible',
+                    visibility: 'none',
                 },
             });
             this._map.addSource('fiber-nodes', maps.sources['fiber-nodes']);
             this._map.addLayer(fiberNodesLayer);
         },
 
-        updateMap: async function () {},
+        updateMap: async function () {
+            if (!this.mapLoaded) {
+                return;
+            }
+
+            if (this.lookup.country) {
+                this._map.setFilter('countries', ['==', ['get', 'country'], this.lookup.country]);
+                this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, [
+                    '==',
+                    ['get', 'country'],
+                    this.lookup.country,
+                ]);
+                this._map.setFilter('fiber-nodes', ['==', ['get', 'country'], this.lookup.country]);
+                this._map.setFilter('population-density-hd', ['==', ['get', 'country'], this.lookup.country]);
+            } else {
+                this._map.setFilter('countries', null);
+                this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, null);
+                this._map.setFilter('fiber-nodes', null);
+                this._map.setFilter('population-density-hd', null);
+            }
+
+            if (this.lookup.administrative_area) {
+                this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, [
+                    '==',
+                    ['get', 'uuid'],
+                    this.lookup.administrative_area,
+                ]);
+                this._map.setFilter('fiber-nodes', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+                this._map.setFilter('population-density-hd', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+            }
+
+            this.updateMobileCoverageLayer();
+            this.updateMobileCoverageSummaryLayer();
+
+            // highlight selected region
+            if (this.lookup.administrative_area) {
+                this._map.setFilter('regions', ['==', ['get', 'uuid'], this.lookup.administrative_area]);
+                this._map.setLayoutProperty('regions', 'visibility', 'visible');
+            } else {
+                this._map.setLayoutProperty('regions', 'visibility', 'none');
+                this._map.setFilter('regions', null);
+            }
+
+            // highlight selected country
+            if (this.lookup.country) {
+                this._map.setFilter('countries', ['==', ['get', 'country'], this.lookup.country]);
+            } else {
+                this._map.setFilter('countries', null);
+            }
+
+            // pan to bounds
+            if (this.lookup.administrative_area) {
+                this.fitMapBounds(this.selectedRegion.properties.bbox);
+            } else if (this.lookup.country) {
+                this.fitMapBounds(this.selectedCountry.properties.bbox);
+            }
+        },
 
         updateCharts() {
             // summary mobile coverage bar
@@ -197,6 +325,45 @@ const InfrastructureDash = {
                 .getElementById(this.charts.mobileCoverageSummary.id)
                 .getContext('2d');
             new Chart(mobileCoverageSummaryCtx, mobileCoverageSummaryConfig); // eslint-disable-line no-new
+
+            // regions mobile coverage
+            const regionsMobileCoverageData = {
+                datasets: [
+                    {
+                        label: '',
+                        data: this.regionsMobileCoverage.features.map((coverage) => {
+                            return {
+                                x: this.round(coverage.properties.population_density_hd_avg, 2),
+                                y: this.round(coverage.properties[`coverage_${this.selectedNetworkGeneration}`], 2),
+                                uuid: coverage.id,
+                            };
+                        }),
+                        backgroundColor: (context) => {
+                            const index = context.dataIndex;
+                            const value = context.dataset.data[index];
+
+                            if (value.uuid === this.selectedRegion?.id) {
+                                return settings.COLOR_PRIMARY;
+                            }
+
+                            return 'rgba(100, 100, 100, 0.5)';
+                        },
+                        pointRadius: 4,
+                        pointHoverRadius: 4.5,
+                    },
+                ],
+            };
+
+            const regionsMobileCoverageConfig = {
+                ...chartsConfig.regionsMobileCoverage,
+                data: regionsMobileCoverageData,
+            };
+
+            this.clearChart(this.charts.regionsMobileCoverage.id);
+            const regionsMobileCoverageCtx = document
+                .getElementById(this.charts.regionsMobileCoverage.id)
+                .getContext('2d');
+            new Chart(regionsMobileCoverageCtx, regionsMobileCoverageConfig); // eslint-disable-line no-new
         },
 
         update: async function () {
@@ -228,7 +395,75 @@ const InfrastructureDash = {
             this.update();
         },
 
-        toggleSummaryLayer() {},
+        toggleSummaryLayer() {
+            const summaryVisibility = this._map.getLayoutProperty(
+                `areas-mobile-coverage-${this.selectedNetworkGeneration}`,
+                'visibility',
+            );
+
+            if (summaryVisibility === 'visible') {
+                this._map.setLayoutProperty(
+                    `areas-mobile-coverage-${this.selectedNetworkGeneration}`,
+                    'visibility',
+                    'none',
+                );
+                this._map.setLayoutProperty('fiber-nodes', 'visibility', 'visible');
+                this._map.setLayoutProperty('population-density-hd', 'visibility', 'visible');
+                this.summaryLayerActive = false;
+                this.updateMobileCoverageLayer();
+            } else {
+                this._map.setLayoutProperty(`mobile-coverage-${this.selectedNetworkGeneration}`, 'visibility', 'none');
+                this._map.setLayoutProperty('fiber-nodes', 'visibility', 'none');
+                this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
+                this._map.setLayoutProperty(
+                    `areas-mobile-coverage-${this.selectedNetworkGeneration}`,
+                    'visibility',
+                    'visible',
+                );
+                this.summaryLayerActive = true;
+            }
+        },
+
+        updateMobileCoverageSummaryLayer: async function () {
+            if (!this.summaryLayerActive) {
+                return;
+            }
+
+            if (this.selectedNetworkGeneration === '4g') {
+                this._map.setLayoutProperty('areas-mobile-coverage-3g', 'visibility', 'none');
+                this._map.setLayoutProperty('areas-mobile-coverage-4g', 'visibility', 'visible');
+            } else {
+                this._map.setLayoutProperty('areas-mobile-coverage-4g', 'visibility', 'none');
+                this._map.setLayoutProperty('areas-mobile-coverage-3g', 'visibility', 'visible');
+            }
+        },
+
+        updateMobileCoverageLayer: async function () {
+            if (this.summaryLayerActive) {
+                return;
+            }
+
+            const tilesLookup = { network_generation_code: this.selectedNetworkGeneration };
+
+            if (this.lookup.country && !this.lookup.administrative_area) {
+                tilesLookup.administrative_area = this.selectedCountry.id;
+            } else if (this.lookup.administrative_area) {
+                tilesLookup.administrative_area = this.selectedRegion.id;
+            } else {
+                tilesLookup.administrative_area_level = 1;
+            }
+
+            const tilesURLs = await maps.getMobileCoverageTMSURLs(tilesLookup);
+            this._map.getSource(`mobile-coverage-${this.selectedNetworkGeneration}`).setTiles(tilesURLs);
+
+            if (this.selectedNetworkGeneration === '4g') {
+                this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'none');
+                this._map.setLayoutProperty('mobile-coverage-4g', 'visibility', 'visible');
+            } else {
+                this._map.setLayoutProperty('mobile-coverage-4g', 'visibility', 'none');
+                this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'visible');
+            }
+        },
 
         clearChart(elementID) {
             const ctx = document.getElementById(elementID);
@@ -238,6 +473,16 @@ const InfrastructureDash = {
             } catch (e) {
                 // chart didn't exist yet
             }
+        },
+
+        fitMapBounds(bbox, options = {}) {
+            this._map.fitBounds(
+                [
+                    [bbox[0], bbox[1]],
+                    [bbox[2], bbox[3]],
+                ],
+                options,
+            );
         },
 
         meters2km: utils.meters2km,
