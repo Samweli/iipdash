@@ -133,12 +133,15 @@ class Layer(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
+
+        is_new = not bool(self.id)
+
         if not self.code:
             self.code = str(self.uuid)
 
         super().save(*args, **kwargs)
 
-        if self.tiff:
+        if self.tiff and is_new:
             transaction.on_commit(lambda: generate_layer_tiff_tiles.delay(pk=self.pk))
 
     @property
