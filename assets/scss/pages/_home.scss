@@ -22,7 +22,7 @@
 
     // Layers list group
     .layers-list-group-container {
-        max-height: 300px !important;
+        max-height: calc(100vh - 650px);
 
         // Layers list group
         .layers-list-group {
