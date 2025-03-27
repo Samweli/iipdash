@@ -18,10 +18,11 @@
             <div class="position-relative flex-grow-1 me-2 layers-list-search">
                 <i class="fa-solid fa-search position-absolute top-50 start-0 translate-middle-y ms-2 text-muted"></i>
                 <input
-                    type="text"
                     id="layers-list-search-input"
+                    type="text"
                     class="form-control ps-4 layers-list-search-input"
-                    placeholder="{% trans "Search layers..." %}">
+                    placeholder="{% trans "Search layers..." %}"
+                    v-model="catalogLayerSearchTerm">
             </div>
             {# End: layers search input with icon #}
 
@@ -41,37 +42,35 @@
                     class="dropdown-menu p-3 layers-category-filter-dropdown-menu"
                     aria-labelledby="layers-category-filter-dropdown">
                     <strong class="dropdown-header ps-0 text-muted mb-2">{% trans "Category" %}</strong>
-                    {% for catalog_category in catalog_categories %}
-                        <div class="form-check mb-2">
-                            <input
-                                id="{{catalog_category.uuid}}"
-                                class="form-check-input layers-category-filter-input"
-                                type="checkbox"
-                                value="{{catalog_category.name}}">
-                            <label
-                                class="form-check-label badge bg-light text-dark text-uppercase px-2 py-1 rounded-pill layers-category-{{catalog_category.code}}-pill"
-                                data-category="{{catalog_category.uuid}}" for="{{catalog_category.uuid}}">
-                                {{catalog_category.name}}
-                            </label>
-                        </div>
-                    {% endfor %}
+                    <div class="form-check mb-2" v-for="catalogCategory in catalogCategories" :key="catalogCategory.uuid">
+                        <input
+                            :id="catalogCategory.uuid"
+                            class="form-check-input layers-category-filter-input"
+                            type="checkbox"
+                            v-model="catalogSelectedCategories"
+                            :value="catalogCategory.uuid">
+                        <label
+                            class="form-check-label badge text-uppercase px-2 py-1 rounded-pill"
+                            data-category="{{catalog_category.uuid}}"
+                            :class="catalogSelectedCategories.includes(catalogCategory.uuid) ? catalogCategory.activeClass : 'bg-light text-dark'"
+                            :for="catalogCategory.uuid"
+                            v-text="catalogCategory.name">
+                        </label>
+                    </div>
                     <div class="d-flex justify-content-between mt-4">
-                        <button class="btn btn-sm btn-light px-3" id="layers-category-clear-filter">{% trans "Clear" %}</button>
-                        <button class="btn btn-sm btn-primary px-3 text-white" id="layers-category-apply-filter">{% trans "Apply" %}</button>
+                        <button
+                            id="layers-category-clear-filter"
+                            class="btn btn-sm btn-light px-3"
+                            @click="handleClearCatalogLayersCategoryFilter()">{% trans "Clear" %}</button>
+                        <button
+                            id="layers-category-apply-filter"
+                            class="btn btn-sm btn-primary px-3 text-white"
+                            @click="handleApplyCatalogLayersCategoryFilter()">{% trans "Apply" %}</button>
                     </div>
                 </div>
 
             </div>
             {# Start: layers category dropdown filter #}
-
-            {# Start: clear all selected layers #}
-            {% comment %} <button
-                id="layers-list-clear-selected"
-                class="btn btn-light border"
-                title="{% trans "Clear all selected layers" %}">
-                <i class="fa-solid fa-xmark"></i>
-            </button> {% endcomment %}
-            {# End: clear all selected layers #}
 
         </div>
         {# End: layers list actions #}
@@ -79,24 +78,28 @@
         {# Start: layers list group (list of layers) #}
         <div class="overflow-auto layers-list-group-container">
             <ul class="list-group layers-list-group" id="layers-list-group">
-                {% for catalog_layer in catalog_layers %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center border shadow-sm p-3 mb-2 rounded layers-list-group-item">
-                        <div>
-                            <strong>{{catalog_layer.name}}</strong><br>
-                            {% for catalog_category in catalog_layer.categories.all %}
-                                <span class="badge text-white text-uppercase rounded-pill layers-category-{{catalog_category.code}}-pill">
-                                    {{catalog_category.name}}
-                                </span>
-                            {% endfor %}
-                        </div>
-                        <div class="d-flex align-items-center">
-                            <i class="fa-solid fa-info mx-3 text-secondary popover-trigger"
-                               data-bs-toggle="popover"
-                               data-popover-content="#layer-item-{{catalog_layer.uuid}}-popover-content"></i>
-                            <input class="form-check-input layer-checkbox" type="checkbox">
-                        </div>
-                    </li>
-                {% endfor %}
+                <li class="list-group-item d-flex justify-content-between align-items-center border shadow-sm p-3 mb-2 rounded layers-list-group-item"
+                    v-for="catalogLayer in catalogFilteredLayers" :key="catalogLayer.uuid">
+                    <div>
+                        <strong v-text="catalogLayer.name"></strong><br>
+                        <span
+                            class="badge text-white text-uppercase rounded-pill"
+                            :class="catalogLayer.category.activeClass"
+                            v-text="catalogLayer.category.name">
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fa-solid fa-info mx-3 text-secondary popover-trigger"
+                           data-bs-toggle="popover"
+                           :data-popover-content="catalogLayer.dataPopoverContent"></i>
+                        <input
+                            class="form-check-input layer-checkbox"
+                            type="checkbox"
+                            :value="catalogLayer.uuid"
+                            :checked="catalogSelectedLayers.includes(catalogLayer.uuid)"
+                            @change="handleCatalogLayerChecked(catalogLayer)">
+                    </div>
+                </li>
             </ul>
         </div>
         {# End: layers list group (list of layers) #}
