@@ -97,6 +97,11 @@ class Layer(models.Model):
         blank=True,
         help_text=_("link of the data source"),
     )
+    source_year = models.PositiveIntegerField(
+        _("source year"),
+        blank=True,
+        null=True,
+    )
     attribution = models.CharField(_("attribution"), max_length=255, blank=True)
     license = models.TextField(_("license"), blank=True)
 
