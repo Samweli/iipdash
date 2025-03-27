@@ -33,7 +33,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class LayerSerializer(serializers.ModelSerializer):
     """Layer Serializer"""
 
-    categories = RelatedCategorySerializer(read_only=True)
+    categories = RelatedCategorySerializer(read_only=True, many=True)
 
     class Meta:
         model = Layer

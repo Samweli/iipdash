@@ -24,13 +24,30 @@ const HomeDash = {
             mapLoaded: false,
             catalogCategories: [],
             catalogLayers: [],
+            catalogSelectedCategories: [],
+            catalogSelectedLayers: [],
+            catalogLayerSearchTerm: '',
         };
     },
 
     /**
      * Defines computed properties derived from the component's data.
      */
-    computed: {},
+    computed: {
+        // Filtered catalog layers based on search term and selected catalog categories
+        catalogFilteredLayers() {
+            return this.catalogLayers.filter((layer) => {
+                // TODO: throttle
+                const matchesCatalogLayerSearch = layer?.name
+                    .toLowerCase()
+                    .includes(this.catalogLayerSearchTerm.toLowerCase());
+                const matchesCatalogCategory =
+                    this.catalogSelectedCategories?.length === 0 ||
+                    this.catalogSelectedCategories?.includes(layer?.category.uuid);
+                return matchesCatalogLayerSearch && matchesCatalogCategory;
+            });
+        },
+    },
 
     /**
      * Defines methods that handle user interactions and component logic.
@@ -48,14 +65,19 @@ const HomeDash = {
                 fetchCatalogCategories(),
                 fetchCatalogLayers(),
             ]);
-            this.catalogCategories = catalogCategories;
-            this.catalogLayers = catalogLayers;
+            this.catalogCategories = catalogCategories.map((category) => {
+                const activeClass = `layers-category-${category.code}-pill`;
+                return { ...category, activeClass };
+            });
+            this.catalogLayers = catalogLayers.map((layer) => {
+                const category = layer?.categories?.[0] || null;
+                if (category) {
+                    category.activeClass = `layers-category-${category.code}-pill`;
+                }
+                const dataPopoverContent = `#layer-item-${layer.uuid}-popover-content`;
+                return { ...layer, dataPopoverContent, category };
+            });
         },
-
-        /**
-         * Update data.
-         */
-        updateData: async function () {},
 
         /**
          * Initalize `maplibregl.Map` and load layers.
@@ -107,6 +129,11 @@ const HomeDash = {
         toggleMapLayers: async function () {},
 
         /**
+         * Update data.
+         */
+        updateData: async function () {},
+
+        /**
          * Update (set filters, unset filters) map.
          */
         updateMap: async function () {
@@ -114,14 +141,10 @@ const HomeDash = {
                 return;
             }
 
-            try {
-                // toggle map filters
-                await this.toggleMapFilters();
-                // toggle layers
-                await this.toggleMapLayers();
-            } catch (e) {
-                console.log(e); // eslint-disable-line no-console
-            }
+            // toggle map filters
+            await this.toggleMapFilters();
+            // toggle layers
+            await this.toggleMapLayers();
         },
 
         /**
@@ -130,30 +153,91 @@ const HomeDash = {
         update: async function () {
             try {
                 await this.updateData();
+                await this.updateMap();
+
+                const event = new Event('page-updated');
+                window.dispatchEvent(event);
             } catch (e) {
                 console.log(e); // eslint-disable-line no-console
             }
-
-            this.updateMap();
-
-            const event = new Event('page-updated');
-            window.dispatchEvent(event);
         },
+
+        // Start: UI event handlers
+
+        /**
+         * Clear layers category filter once clear button clicked
+         */
+        handleClearCatalogLayersCategoryFilter: async function () {
+            this.catalogSelectedCategories = [];
+            await this.closeCatalogLayersCategoryFilterDropdownUI();
+            // TODO: update map & ui
+        },
+
+        /**
+         * Apply layers category filter once apply button clicked
+         */
+        handleApplyCatalogLayersCategoryFilter: async function () {
+            await this.closeCatalogLayersCategoryFilterDropdownUI();
+            // TODO: update map & ui
+        },
+
+        /**
+         * Handle catalog layer checked once a checkbox checked or unchecked
+         */
+        handleCatalogLayerChecked: async function (catalogLayer) {
+            const index = this.catalogSelectedLayers.indexOf(catalogLayer.uuid);
+            if (index === -1) {
+                this.catalogSelectedLayers.push(catalogLayer.uuid);
+            } else {
+                this.catalogSelectedLayers.splice(index, 1);
+            }
+            // TODO: handle selected/unselected layer
+            // TODO: update map & ui
+            // TODO: await this.update()
+        },
+
+        // End: UI event handlers
+
+        // Start: Boostrap UI
 
         initBootstrapUI: async function () {
-            // Init layers popovers
-            const layerItemPopoverTemplate = document.querySelector('#layer-item-popover-template').innerHTML;
+            // Init layer item popovers ui
+            await this.initLayerItemPopoversUI();
+            // TODO: init other bootstrap uis
+        },
+
+        /**
+         * Setup layer item popovers.
+         */
+        initLayerItemPopoversUI: async function () {
+            const layerItemPopoverTemplate = document.querySelector('#layer-item-popover-template')?.innerHTML;
             document.querySelectorAll('.popover-trigger').forEach((el) => {
-                const popoverContentId = el.getAttribute('data-popover-content');
-                const popoverContent = document.querySelector(popoverContentId).innerHTML;
-                return new bootstrap.Popover(el, {
-                    html: true,
-                    content: popoverContent,
-                    placement: 'auto',
-                    template: layerItemPopoverTemplate,
-                });
+                const layerItemPopoverContentId = el.getAttribute('data-popover-content');
+                const layerItemPopoverContent = document.querySelector(layerItemPopoverContentId)?.innerHTML;
+                if (layerItemPopoverTemplate && layerItemPopoverContent) {
+                    // eslint-disable-next-line no-new
+                    new bootstrap.Popover(el, {
+                        html: true,
+                        content: layerItemPopoverContent,
+                        placement: 'auto',
+                        template: layerItemPopoverTemplate,
+                    });
+                }
             });
         },
+
+        /**
+         * Close layers category filter dropdown menu
+         */
+        closeCatalogLayersCategoryFilterDropdownUI: async function () {
+            const layersCategoryFilterDropdownEl = document.getElementById('layers-category-filter-dropdown');
+            if (layersCategoryFilterDropdownEl) {
+                const instance = bootstrap.Dropdown.getOrCreateInstance(layersCategoryFilterDropdownEl);
+                instance.hide();
+            }
+        },
+
+        // End: Boostrap UI
     },
 
     /**
@@ -164,6 +248,13 @@ const HomeDash = {
         await this.initMap();
         await this.initBootstrapUI();
         await this.update();
+    },
+
+    /**
+     * Lifecycle hook called after the component has updated its DOM tree due to a reactive state change.
+     */
+    updated: async function () {
+        await this.initBootstrapUI();
     },
 };
 
