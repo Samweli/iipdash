@@ -53,7 +53,10 @@
                     MAPBOX_STYLE_ID: "{{ MAPBOX_STYLE_ID }}"
                 };
             </script>
-            <script src="{% static 'main.js' %}"></script>
+
+            {% block main_js %}
+                <script src="{% static 'main.js' %}"></script>
+            {% endblock main_js %}
         {% endblock js %}
 
         {% block extra_js %}{% endblock %}

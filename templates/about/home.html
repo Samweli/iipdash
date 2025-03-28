@@ -91,9 +91,7 @@
 {% endblock %}
 {# End: extra body hidden content #}
 
-{# Start: js #}
-{% block js %}
-    {{ block.super }}
+
+{% block main_js %}
     <script src="{% static 'home.js' %}"></script>
-{% endblock js %}
-{# End: js #}
+{% endblock main_js %}
