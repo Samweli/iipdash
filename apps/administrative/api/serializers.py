@@ -19,6 +19,8 @@ __all__ = [
     "BaseAreaMobileCoverageSerializer",
     "AreaMobileCoverageSerializer",
     "AreaMobileCoverageCSVSerializer",
+    "AreaInternetSpeedSerializer",
+    "AreaInternetSpeedCSVSerializer",
     "RelatedAreaSerializer",
 ]
 
@@ -344,5 +346,45 @@ class AreaMobileCoverageCSVSerializer(BaseAreaMobileCoverageSerializer):
             "no_coverage_3g",
             "no_coverage_4g",
             "no_coverage_5g",
+        ]
+        read_only_fields = fields
+
+
+class AreaInternetSpeedSerializer(BaseGeoFeatureModelSerializer):
+    fixed_speed = serializers.IntegerField(read_only=True)
+    mobile_speed = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = Area
+        id_field = "uuid"
+        geo_field = "geometry"
+        exclude = [
+            "id",
+            "depth",
+            "path",
+            "numchild",
+            "geom",
+            "area",
+            "population_male",
+            "population_female",
+        ]
+
+
+class AreaInternetSpeedCSVSerializer(serializers.ModelSerializer):
+    """Serializer for administrative areas internet speed CSV export."""
+
+    class Meta:
+        model = Area
+        fields = [
+            "uuid",
+            "type_code",
+            "country",
+            "name",
+            "code",
+            "description",
+            "mobile_speed",
+            "fixed_speed",
+            "created_at",
+            "updated_at",
         ]
         read_only_fields = fields

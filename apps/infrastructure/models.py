@@ -865,6 +865,63 @@ class MobileCoverage(models.Model):
         return rgb_path
 
 
+class InternetSpeed(models.Model):
+    """Internet information per administrative area."""
+
+    uuid = models.UUIDField(
+        _("UUID"),
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+    )
+
+    administrative_area = models.ForeignKey(
+        "administrative.Area",
+        blank=True,
+        null=True,
+        related_name="internet_speeds",
+        related_query_name="internet_speed",
+        on_delete=models.SET_NULL,
+        verbose_name=_("administrative area"),
+    )
+
+    mobile_speed = models.PositiveIntegerField(_("mobile speed (Mbps)"), blank=True, null=True)
+    fixed_speed = models.FloatField(_("mobile speed (Mbps)"), blank=True, null=True)
+
+    created_at = models.DateTimeField(
+        _("created at"),
+        auto_now_add=True,
+        db_default=Now(),
+        db_index=True,
+    )
+
+    updated_at = models.DateTimeField(
+        _("updated at"),
+        auto_now=True,
+        null=True,
+        blank=True,
+    )
+
+    extras = models.JSONField(
+        _("extras"),
+        blank=True,
+        default=dict,
+    )
+
+    class Meta:
+        verbose_name = _("Internet Speed")
+        verbose_name_plural = _("Internet Speeds")
+
+    def __str__(self):
+        return self.display_name
+
+    @property
+    def display_name(self):
+        return _("%(area)s internet speed") % {
+            "area": str(self.administrative_area),
+        }
+
+
 class ElectricityNetwork(models.Model):
     """Electricity network"""
 

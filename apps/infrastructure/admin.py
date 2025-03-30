@@ -17,7 +17,15 @@ from django.contrib.gis.admin import GISModelAdmin
 
 from import_export.admin import ImportExportModelAdmin
 
-from .models import CellTower, ElectricityNetwork, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
+from .models import (
+    CellTower,
+    ElectricityNetwork,
+    FiberOptic,
+    FiberOpticNode,
+    InternetSpeed,
+    MobileCoverage,
+    NetworkGeneration,
+)
 
 
 @admin.register(FiberOptic)
@@ -118,4 +126,9 @@ class MobileCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
 
 @admin.register(ElectricityNetwork)
 class ElectricityNetworkAdmin(GISModelAdmin, ImportExportModelAdmin):
+    pass
+
+
+@admin.register(InternetSpeed)
+class InternetSpeedAdmin(ImportExportModelAdmin):
     pass
