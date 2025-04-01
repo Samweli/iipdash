@@ -885,8 +885,8 @@ class InternetSpeed(models.Model):
         verbose_name=_("administrative area"),
     )
 
-    mobile_speed = models.PositiveIntegerField(_("mobile speed (Mbps)"), blank=True, null=True)
-    fixed_speed = models.FloatField(_("mobile speed (Mbps)"), blank=True, null=True)
+    mobile_speed = models.FloatField(_("mobile speed (Mbps)"), blank=True, null=True)
+    fixed_speed = models.FloatField(_("fixed speed (Mbps)"), blank=True, null=True)
 
     created_at = models.DateTimeField(
         _("created at"),
