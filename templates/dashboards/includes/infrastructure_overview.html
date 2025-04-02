@@ -14,9 +14,9 @@
         </p>
 
         {# Start: statistics rectangle #}
-        <div class="my-4 d-flex">
+        <div class="my-4 d-flex d-flex align-items-center">
 
-            <div class="mb-3" style="height: 60px">
+            <div class="mb-3 col-sm-9" style="height: 50px">
                 <canvas id="mobile-coverage-summary-chart"></canvas>
                 <p class="p-txt-stats-description">
                     {% trans "Covered population" %}
@@ -24,7 +24,7 @@
             </div>
 
             <div class="">
-                <p class="p-txt-stats-value-primary ms-3">
+                <p class="h2 fw-bold text-primary ms-3 text-nowrap">
                     <span v-text="round(mobileCoverageAggregates[`coverage_${selectedNetworkGeneration}`] * 100)"></span> %
                 </p>
             </div>
