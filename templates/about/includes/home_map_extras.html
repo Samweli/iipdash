@@ -1,0 +1,34 @@
+{% load i18n %}
+
+
+{# Start: country & region top map filter #}
+<div class="map-pane map-top-pane">
+
+    <div class="m-1">
+        <select class="form-select"
+                v-model="lookup.country"
+                @change="handleCountrySelected()">
+            <option value="">{% trans 'Country' %}</option>
+            <option v-if="countries.features"
+                    v-for="option in countries.features"
+                    v-text="option.properties.name"
+                    :value="option.properties.country">
+            </option>
+        </select>
+    </div>
+
+    <div class="m-1">
+        <select class="form-select"
+                v-model="lookup.administrative_area"
+                @change="handleRegionSelected()">
+            <option value="">{% trans 'Region' %}</option>
+            <option v-if="regionOptions.features"
+                    v-for="option in regionOptions.features"
+                    v-text="option.properties.name"
+                    :value="option.id">
+            </option>
+        </select>
+    </div>
+
+</div>
+{# Start: country & region top map filter #}

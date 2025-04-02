@@ -11,3 +11,6 @@ export const MAPBOX_STYLE_ID = window.settings.MAPBOX_STYLE_ID;
 export const MAPBOX_ACCESS_TOKEN = window.settings.MAPBOX_ACCESS_TOKEN;
 
 export const COLOR_PRIMARY = '#007fff';
+
+export const ADMINISTRATIVE_AREA_COUNTRY_LEVEL = 2;
+export const ADMINISTRATIVE_AREA_REGION_LEVEL = 3;

@@ -1,9 +1,11 @@
+import _ from 'lodash';
 import * as bootstrap from 'bootstrap';
 import * as Vue from 'vue';
 import maplibregl from 'maplibre-gl';
 
+import * as settings from './conf';
 import * as maps from './maps';
-import { fetchCatalogCategories, fetchCatalogLayers } from './api';
+import { fetchCatalogCategories, fetchCatalogLayers, fetchCountries, fetchRegions } from './api';
 
 /**
  *  HomeDash Vue application.
@@ -22,11 +24,20 @@ const HomeDash = {
             _map: null,
             _mapId: 'home-map',
             mapLoaded: false,
+            lookup: {
+                administrative_area: '',
+                country: '',
+            },
             catalogCategories: [],
             catalogLayers: [],
             catalogSelectedCategories: [],
             catalogSelectedLayers: [],
             catalogLayerSearchTerm: '',
+            countries: { features: [] },
+            regions: { features: [] },
+            regionOptions: { features: [] },
+            selectedCountry: null,
+            selectedRegion: null,
         };
     },
 
@@ -59,11 +70,15 @@ const HomeDash = {
          * This loads:
          * - Catalog categories
          * - Catalog layers
+         * - Countries
+         * - Regions
          */
         initData: async function () {
-            const [catalogCategories, catalogLayers] = await Promise.all([
+            const [catalogCategories, catalogLayers, countries, regions] = await Promise.all([
                 fetchCatalogCategories(),
                 fetchCatalogLayers(),
+                fetchCountries(),
+                fetchRegions(),
             ]);
             this.catalogCategories = catalogCategories.map((category) => {
                 const activeClass = `layers-category-${category.code}-pill`;
@@ -77,6 +92,9 @@ const HomeDash = {
                 const dataPopoverContent = `#layer-item-${layer.uuid}-popover-content`;
                 return { ...layer, dataPopoverContent, category };
             });
+            this.countries = countries;
+            this.regions = _.cloneDeep(regions);
+            this.regionOptions = _.cloneDeep(regions);
         },
 
         /**
@@ -111,6 +129,15 @@ const HomeDash = {
             // country boundaries
             this._map.addSource(maps.layers.countries.id, maps.sources.countries);
             this._map.addLayer(maps.layers.countries);
+
+            // regions boundaries
+            const regionsLayer = _.merge({}, maps.layers.regions, {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('regions', maps.sources.regions);
+            this._map.addLayer(regionsLayer);
         },
 
         /**
@@ -119,19 +146,91 @@ const HomeDash = {
         addMapLegend: async function () {},
 
         /**
-         * Toggle (set or unset) map filters
-         */
-        toggleMapFilters: async function () {},
-
-        /**
          * Toggle map layers
          */
         toggleMapLayers: async function () {},
 
         /**
          * Update data.
+         *
+         * This:
+         * - Set current selected country
+         * - Set current selected region
          */
-        updateData: async function () {},
+        updateData: async function () {
+            // Update selected region
+            if (this.lookup.country) {
+                this.selectedCountry = _.find(this.countries.features, ['properties.country', this.lookup.country]);
+            }
+
+            // Update selected country
+            if (this.lookup.administrative_area) {
+                this.selectedRegion = _.find(this.regions.features, { id: this.lookup.administrative_area });
+            }
+        },
+
+        /**
+         * Update (set or unset) map filters to control which features
+         */
+        updateMapFilters: async function () {
+            // Update map filter based on current country
+            if (this.lookup.country) {
+                this._map.setFilter('countries', ['==', ['get', 'country'], this.lookup.country]);
+            } else {
+                this._map.setFilter('countries', null);
+            }
+
+            // Update map filter based on current administrative region
+            if (this.lookup.administrative_area) {
+                this._map.setFilter('regions', ['==', ['get', 'uuid'], this.lookup.administrative_area]);
+                this._map.setLayoutProperty('regions', 'visibility', 'visible');
+            } else {
+                this._map.setLayoutProperty('regions', 'visibility', 'none');
+                this._map.setFilter('regions', null);
+            }
+        },
+
+        /**
+         * Update map to fit the bounds
+         *
+         * This pans and zooms the map to contain its visible area within the specified geographical bounding box.
+         *
+         * This:
+         * - Fit map to current selected region or,
+         * - Fit map to current selected country
+         */
+        updateMapFitBounds: async function (options = {}) {
+            // Obtain bound box
+            let bbox;
+
+            // If there is region selected
+            if (this.lookup.administrative_area && this.selectedRegion) {
+                bbox = this.selectedRegion.properties.bbox;
+            }
+            // If there is country selected
+            else if (this.lookup.country && this.selectedCountry) {
+                bbox = this.selectedCountry.properties.bbox;
+            }
+
+            // Pan map to bounds
+            if (bbox && (this.lookup.country || this.lookup.administrative_area)) {
+                this._map.fitBounds(
+                    [
+                        [bbox[0], bbox[1]],
+                        [bbox[2], bbox[3]],
+                    ],
+                    options,
+                );
+            }
+
+            // Restore exact map zoom and center
+            else {
+                this._map.flyTo({
+                    center: settings.MAP_DEFAULT_CENTER,
+                    zoom: settings.MAP_DEFAULT_ZOOM,
+                });
+            }
+        },
 
         /**
          * Update (set filters, unset filters) map.
@@ -142,9 +241,13 @@ const HomeDash = {
             }
 
             // toggle map filters
-            await this.toggleMapFilters();
+            await this.updateMapFilters();
+
             // toggle layers
             await this.toggleMapLayers();
+
+            // fit map to bound
+            await this.updateMapFitBounds();
         },
 
         /**
@@ -163,6 +266,44 @@ const HomeDash = {
         },
 
         // Start: UI event handlers
+
+        /**
+         * Update ui and data once country selected in top map pane country selection
+         *
+         * This:
+         * - Update regionOptions
+         * - Update data and map by calling `update`
+         */
+        handleCountrySelected: async function () {
+            // Clear current selected administrative region
+            this.lookup.administrative_area = null;
+
+            // Update `regionOptions` to country specific region
+            if (this.lookup.country) {
+                this.regionOptions.features = _.filter(this.regions.features, [
+                    'properties.country',
+                    this.lookup.country,
+                ]);
+            }
+
+            // Update `regionOptions` to all regions
+            else {
+                this.regionOptions.features = [...this.regions.features];
+            }
+
+            // Update map and data
+            await this.update();
+        },
+
+        /**
+         * Update ui and data once region selected in top map pane country selection
+         *
+         * This:
+         * - Update data and map by calling `update`
+         */
+        handleRegionSelected: async function () {
+            await this.update();
+        },
 
         /**
          * Clear layers category filter once clear button clicked

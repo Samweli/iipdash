@@ -91,6 +91,13 @@
 {% endblock %}
 {# End: extra body hidden content #}
 
+{# Start: map extras content #}
+{% block map_extras %}
+    {{ block.super }}
+    {% include "about/includes/home_map_extras.html" %}
+{% endblock %}
+{# End: map extras content #}
+
 
 {% block main_js %}
     <script src="{% static 'home.js' %}"></script>
