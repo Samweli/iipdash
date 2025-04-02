@@ -1,0 +1,24 @@
+.chart-container-md {
+    height: 140px;
+}
+
+
+@include media-breakpoint-up(lg) {
+    .chart-container-md {
+        height: 160px;
+    }
+ }
+
+
+@include media-breakpoint-up(xl) {
+    .chart-container-md {
+        height: 175px;
+    }
+ }
+
+
+@include media-breakpoint-up(xxl) {
+    .chart-container-md {
+        height: 250px;
+    }
+ }
