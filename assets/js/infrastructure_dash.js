@@ -219,15 +219,6 @@ const InfrastructureDash = {
             });
             this._map.addSource('mobile-coverage-4g', maps.sources['mobile-coverage-4g']);
             this._map.addLayer(mobileCoverage4GLayer);
-
-            // fiber nodes
-            const fiberNodesLayer = _.merge({}, maps.layers['fiber-nodes'], {
-                layout: {
-                    visibility: 'none',
-                },
-            });
-            this._map.addSource('fiber-nodes', maps.sources['fiber-nodes']);
-            this._map.addLayer(fiberNodesLayer);
         },
 
         updateMap: async function () {
@@ -242,12 +233,10 @@ const InfrastructureDash = {
                     ['get', 'country'],
                     this.lookup.country,
                 ]);
-                this._map.setFilter('fiber-nodes', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('population-density-hd', ['==', ['get', 'country'], this.lookup.country]);
             } else {
                 this._map.setFilter('countries', null);
                 this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, null);
-                this._map.setFilter('fiber-nodes', null);
                 this._map.setFilter('population-density-hd', null);
             }
 
@@ -255,11 +244,6 @@ const InfrastructureDash = {
                 this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, [
                     '==',
                     ['get', 'uuid'],
-                    this.lookup.administrative_area,
-                ]);
-                this._map.setFilter('fiber-nodes', [
-                    '==',
-                    ['get', 'administrative_area_uuid'],
                     this.lookup.administrative_area,
                 ]);
                 this._map.setFilter('population-density-hd', [
@@ -407,13 +391,11 @@ const InfrastructureDash = {
                     'visibility',
                     'none',
                 );
-                this._map.setLayoutProperty('fiber-nodes', 'visibility', 'visible');
                 this._map.setLayoutProperty('population-density-hd', 'visibility', 'visible');
                 this.summaryLayerActive = false;
                 this.updateMobileCoverageLayer();
             } else {
                 this._map.setLayoutProperty(`mobile-coverage-${this.selectedNetworkGeneration}`, 'visibility', 'none');
-                this._map.setLayoutProperty('fiber-nodes', 'visibility', 'none');
                 this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
                 this._map.setLayoutProperty(
                     `areas-mobile-coverage-${this.selectedNetworkGeneration}`,
