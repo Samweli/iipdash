@@ -34,6 +34,7 @@ class LayerSerializer(serializers.ModelSerializer):
     """Layer Serializer"""
 
     categories = RelatedCategorySerializer(read_only=True, many=True)
+    tms_url = serializers.URLField(read_only=True)
 
     class Meta:
         model = Layer
