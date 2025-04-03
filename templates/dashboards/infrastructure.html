@@ -103,9 +103,11 @@
         </div>
 
         <div class="m-1">
-            <button type="button" class="btn btn-outline-primary bg-light"
+            <button type="button" class="btn btn-map-default"
                     @click="toggleSummaryLayer()">
-                <i class="fas fa-layer-group"></i> {% trans 'Reveal underlying data' %}
+                <i class="fas fa-layer-group me-1"></i>
+                <template v-if="summaryLayerActive">{% trans 'Reveal underlying data' %}</template>
+                <template v-else>{% trans 'Hide underlying data' %}</template>
             </button>
         </div>
 

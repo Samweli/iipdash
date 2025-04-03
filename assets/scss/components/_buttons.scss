@@ -21,3 +21,19 @@
     --#{$prefix}btn-close-hover-opacity: none;
     // scss-docs-end close-css-vars
 }
+
+.btn-map-default {
+    --bs-bg-opacity: 1;
+    background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity));
+    border: var(--bs-border-width) solid var(--bs-border-color);
+
+    &:active,
+    &:hover,
+    &.btn:active {
+        --bs-text-opacity: 1;
+        background-color: rgba(var(--bs-white-rgb), var(--bs-bg-opacity));
+        color: rgba(var(--bs-primary-rgb), var(--bs-text-opacity));
+        border: var(--bs-border-width) solid var(--bs-primary);
+    }
+
+}
