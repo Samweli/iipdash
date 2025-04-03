@@ -316,7 +316,7 @@ const EducationDash = {
                     { label: '10KM', data: [schoolsFONDistanceSummaryCount.km10], backgroundColor: '#007FFF' },
                     { label: '20KM', data: [schoolsFONDistanceSummaryCount.km20], backgroundColor: '#82A5FF' },
                     { label: '30KM', data: [schoolsFONDistanceSummaryCount.km30], backgroundColor: '#BFCCFF' },
-                    { label: '', data: [schoolsFONDistanceSummaryCount.other], backgroundColor: '#D9D9D9' },
+                    { label: '>30KM', data: [schoolsFONDistanceSummaryCount.other], backgroundColor: '#D9D9D9' },
                 ],
             };
 
