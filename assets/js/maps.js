@@ -144,23 +144,26 @@ const populationDensityHDLayer = {
     type: 'circle',
     paint: {
         'circle-blur': 0,
-        'circle-color': colorPrimary,
+        'circle-color': [
+            'case',
+            ['==', ['get', 'population_density'], null],
+            'rgba(0, 0, 0, 0)',
+            [
+                'interpolate', // interpolation expression
+                ['linear'], // interpolation type
+                ['get', 'population_density'], // value to be used for interpolation
+                // color stops,
+                0,
+                '#ffffff',
+                1,
+                '#dae1ff',
+                30,
+                colorPrimary,
+            ],
+        ],
         'circle-stroke-opacity': 0,
         'circle-stroke-width': 0,
-        'circle-opacity': [
-            // Zoom-dependent opacity
-            'interpolate',
-            ['linear'],
-            ['get', 'population_density'],
-            10,
-            0.3, // Opacity population density 10
-            20,
-            0.6, // Opacity population density 20
-            30,
-            0.8, // Opacity population density 30
-            50,
-            0.9, // Opacity population density 50+
-        ],
+        'circle-opacity': 0.9,
         'circle-radius': [
             // Zoom-dependent circle radius
             'interpolate',
