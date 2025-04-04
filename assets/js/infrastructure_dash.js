@@ -219,6 +219,9 @@ const InfrastructureDash = {
             });
             this._map.addSource('mobile-coverage-4g', maps.sources['mobile-coverage-4g']);
             this._map.addLayer(mobileCoverage4GLayer);
+
+            this._map.on('click', 'areas-mobile-coverage-3g', this.showSummaryMapPopup);
+            this._map.on('click', 'areas-mobile-coverage-4g', this.showSummaryMapPopup);
         },
 
         updateMap: async function () {
@@ -465,6 +468,48 @@ const InfrastructureDash = {
                 ],
                 options,
             );
+        },
+
+        showSummaryMapPopup(e) {
+            const countryName = this.countriesLookup[e.features[0].properties.country];
+            const name = `${e.features[0].properties.name}, ${countryName}`;
+
+            let coverage3G = this.round(e.features[0].properties.coverage_3g);
+            if (isNaN(coverage3G)) {
+                coverage3G = '-';
+            }
+
+            let coverage4G = this.round(e.features[0].properties.coverage_4g);
+            if (isNaN(coverage4G)) {
+                coverage4G = '-';
+            }
+
+            new maplibregl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(
+                    `<div class="card border-0" style="width: 22rem;">
+                        <div class="card-header text-bg-primary">
+                          <h5 class="text-white">${name}</h5>
+                        </div>
+
+                        <div class="card-body">
+                            <p class="p-txt-stats-description">
+                                covered population <strong>(3G)</strong>
+                            </p>
+                            <div class="d-flex flex-row align-items-center">
+                                <p class="p-txt-stats-value-primary">${coverage3G} %</p>
+                            </div>
+
+                            <p class="p-txt-stats-description">
+                                covered population <strong>(4G)</strong>
+                            </p>
+                            <div class="d-flex flex-row align-items-center">
+                                <p class="p-txt-stats-value-primary">${coverage4G} %</p>
+                            </div>
+                        </div>
+                    </div>`,
+                )
+                .addTo(this._map);
         },
 
         meters2km: utils.meters2km,
