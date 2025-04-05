@@ -80,7 +80,12 @@ class MobileCoverageViewSet(viewsets.ReadOnlyModelViewSet):
     required_scopes = ["default"]
     filterset_class = MobileCoverageFilter
 
-    queryset = MobileCoverage.objects.all().order_by("id")
+    def get_queryset(self):
+        return (
+            MobileCoverage.objects.defer("raster")
+            .select_related("network_generation", "administrative_area")
+            .order_by("administrative_area")
+        )
 
     @action(
         detail=False,
