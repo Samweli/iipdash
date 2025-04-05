@@ -700,9 +700,12 @@ class MobileCoverage(models.Model):
         return self.display_name
 
     def save(self, *args, **kwargs):
+        is_new = not bool(self.id)
+
         super().save(*args, **kwargs)
 
-        transaction.on_commit(self.auto_process_tiff)
+        if is_new:
+            transaction.on_commit(self.auto_process_tiff)
 
     @property
     def display_name(self):
