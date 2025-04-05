@@ -40,6 +40,7 @@ export const populationDensityHDTilesURL = API_ROOT + 'demographics/population-d
 export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/';
 export const healthFacilitiesTilesUrl = API_ROOT + 'health/health-facilities/tiles/{z}/{x}/{y}.mvt/';
 export const fiberNodesTilesUrl = API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/';
+export const cellTowersTilesUrl = API_ROOT + 'infrastructure/cell-towers/tiles/{z}/{x}/{y}.mvt/';
 export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=3';
 export const areasMobileCoverageTilesURL =
     API_ROOT + 'administrative/areas-mobile-coverage/tiles/{z}/{x}/{y}.mvt/?level=3';
@@ -105,6 +106,12 @@ export const sources = {
     'fiber-nodes': {
         type: 'vector',
         tiles: [fiberNodesTilesUrl],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
+    'cell-towers': {
+        type: 'vector',
+        tiles: [cellTowersTilesUrl],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
@@ -395,6 +402,48 @@ const fiberNodesLayer = {
     },
 };
 
+const cellTowersLayer = {
+    id: 'cell-towers',
+    source: 'cell-towers',
+    'source-layer': 'cell-towers',
+    type: 'circle',
+    paint: {
+        'circle-blur': 0,
+        // Fill color
+        'circle-color': '#82A5FF',
+        // Fill opacity
+        'circle-opacity': 0.5,
+        // Border color
+        'circle-stroke-color': '#007FFF',
+        'circle-stroke-opacity': 1,
+        'circle-stroke-width': 2,
+        // Radius based on "range" property
+        'circle-radius': [
+            'interpolate',
+            ['linear'],
+            ['get', 'range'], // value to be used for interpolation
+            0,
+            1,
+            100,
+            2,
+            500,
+            3,
+            2000,
+            6,
+            5000,
+            8,
+            10000,
+            10,
+            20000,
+            12,
+            40000,
+            14,
+            80000,
+            15, // Flattens the growth beyond 80,000 meters
+        ],
+    },
+};
+
 const mobileCoverage3GLayer = {
     id: 'mobile-coverage-3g',
     type: 'raster',
@@ -421,6 +470,7 @@ export const layers = {
     'education-institutions': educationInstitutionsLayer,
     'health-facilities': healthFacilitiesLayer,
     'fiber-nodes': fiberNodesLayer,
+    'cell-towers': cellTowersLayer,
     'mobile-coverage-3g': mobileCoverage3GLayer,
     'mobile-coverage-4g': mobileCoverage4GLayer,
 };
