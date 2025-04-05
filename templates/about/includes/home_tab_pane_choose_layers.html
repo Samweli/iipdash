@@ -95,8 +95,8 @@
                         <input
                             class="form-check-input layer-checkbox"
                             type="checkbox"
-                            :value="catalogLayer.uuid"
-                            :checked="catalogSelectedLayers.includes(catalogLayer.uuid)"
+                            :value="catalogLayer.code"
+                            :checked="catalogSelectedLayers.includes(catalogLayer.code)"
                             @change="handleCatalogLayerChecked(catalogLayer)">
                     </div>
                 </li>

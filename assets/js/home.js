@@ -126,11 +126,11 @@ const HomeDash = {
          * Add map layers.
          */
         addMapLayers: async function () {
-            // country boundaries
+            // country boundaries layer
             this._map.addSource(maps.layers.countries.id, maps.sources.countries);
             this._map.addLayer(maps.layers.countries);
 
-            // regions boundaries
+            // regions boundaries layer
             const regionsLayer = _.merge({}, maps.layers.regions, {
                 layout: {
                     visibility: 'none',
@@ -138,17 +138,57 @@ const HomeDash = {
             });
             this._map.addSource('regions', maps.sources.regions);
             this._map.addLayer(regionsLayer);
+
+            // High resolution population density
+            const populationDensityHDLayer = _.merge({}, maps.layers['population-density-hd'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('population-density-hd', maps.sources['population-density-hd']);
+            this._map.addLayer(populationDensityHDLayer);
+
+            // Education institutions layer
+            const educationInstitutionsLayer = _.merge({}, maps.layers['education-institutions'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('education-institutions', maps.sources['education-institutions']);
+            this._map.addLayer(educationInstitutionsLayer);
+
+            // Fiber nodes layer
+            const fiberNodesLayer = _.merge({}, maps.layers['fiber-nodes'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('fiber-nodes', maps.sources['fiber-nodes']);
+            this._map.addLayer(fiberNodesLayer);
+
+            // 3G mobile coverage layer
+            const mobileCoverage3GLayer = _.merge({}, maps.layers['mobile-coverage-3g'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('mobile-coverage-3g', maps.sources['mobile-coverage-3g']);
+            this._map.addLayer(mobileCoverage3GLayer);
+
+            // 4G mobile coverage layer
+            const mobileCoverage4GLayer = _.merge({}, maps.layers['mobile-coverage-4g'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('mobile-coverage-4g', maps.sources['mobile-coverage-4g']);
+            this._map.addLayer(mobileCoverage4GLayer);
         },
 
         /**
          * Add map layers legend.
          */
         addMapLegend: async function () {},
-
-        /**
-         * Toggle map layers
-         */
-        toggleMapLayers: async function () {},
 
         /**
          * Update data.
@@ -170,9 +210,20 @@ const HomeDash = {
         },
 
         /**
-         * Update (set or unset) map filters to control which features
+         * Update (set or unset) map filters and visibilities to control administrative boundaries layers.
+         *
+         * Controlled layers are:
+         *
+         * - `countries`
+         * - `regions`.
+         *
+         * This:
+         *
+         * - Filter `country` layers based on current selected `country`
+         * - Filter `regions` layers based on current selected `country` and `administrative_area`
+         * - Toggle `regions` layer visibility based on current selected `administrative_area`
          */
-        updateMapFilters: async function () {
+        updateMapAdministrativeBoundaryLayers: async function () {
             // Update map filter based on current country
             if (this.lookup.country) {
                 this._map.setFilter('countries', ['==', ['get', 'country'], this.lookup.country]);
@@ -187,6 +238,131 @@ const HomeDash = {
             } else {
                 this._map.setLayoutProperty('regions', 'visibility', 'none');
                 this._map.setFilter('regions', null);
+            }
+        },
+
+        /**
+         * Update (set or unset) map filters and visibilities to control catalog layers.
+         *
+         * Controlled catalog layers are:
+         *
+         * - `education-institutions`
+         * - `fiber-nodes`
+         * - `mobile-coverage-3g`
+         * - `mobile-coverage-4g`
+         *
+         * This:
+         *
+         * - Filter catalog layers based on current selected `country` and `region`
+         * - Toggle catalog layer visibility based on current selected catalog layers, if any exists in `catalogSelectedLayers`
+         */
+        updateMapCatalogLayers: async function () {
+            // 1. Filter catalog layers based on current selected `country` and `region`
+
+            // 1.0 Lookup for mobile coverage layers i.e `mobile-coverage-3g` or `mobile-coverage-4g`
+            const mobileCoverageTilesLookup = {};
+
+            // 1.1 Filter catalog layers based on current selected `country`
+            if (this.lookup.country) {
+                this._map.setFilter('population-density-hd', ['==', ['get', 'country'], this.lookup.country]);
+                this._map.setFilter('education-institutions', ['==', ['get', 'country'], this.lookup.country]);
+                this._map.setFilter('fiber-nodes', ['==', ['get', 'country'], this.lookup.country]);
+                mobileCoverageTilesLookup.administrative_area = this.selectedCountry.id;
+            } else {
+                this._map.setFilter('education-institutions', null);
+                this._map.setFilter('fiber-nodes', null);
+            }
+
+            // 1.2 Filter catalog layers based on current selected `region`
+            if (this.lookup.administrative_area) {
+                this._map.setFilter('population-density-hd', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+                this._map.setFilter('education-institutions', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+                this._map.setFilter('fiber-nodes', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+                mobileCoverageTilesLookup.administrative_area = this.selectedRegion.id;
+            }
+
+            // 1.3 Filter mobile coverage layers i.e `mobile-coverage-3g` or `mobile-coverage-4g`
+            // based on current selected `country` and `region`
+            if (!this.lookup.country && !this.lookup.administrative_area) {
+                mobileCoverageTilesLookup.administrative_area_level = settings.ADMINISTRATIVE_AREA_ALL_COUNTRIES_LEVEL;
+                delete mobileCoverageTilesLookup.administrative_area;
+            }
+
+            // 1.3.1 Filter `mobile-coverage-3g` based on current selected `country` and `region`
+            if (this.catalogSelectedLayers.includes('mobile-coverage-3g')) {
+                const mobileCoverage3gTilesLookup = _.merge({}, mobileCoverageTilesLookup, {
+                    network_generation_code: '3g',
+                });
+                const mobileCoverage3gTilesURLs = await maps.getMobileCoverageTMSURLs(mobileCoverage3gTilesLookup);
+                this._map.getSource('mobile-coverage-3g').setTiles(mobileCoverage3gTilesURLs);
+            }
+
+            // 1.3.2 Filter `mobile-coverage-4g` based on current selected `country` and `region`
+            if (this.catalogSelectedLayers.includes('mobile-coverage-4g')) {
+                const mobileCoverage4gTilesLookup = _.merge({}, mobileCoverageTilesLookup, {
+                    network_generation_code: '4g',
+                });
+                const mobileCoverage4gTilesURLs = await maps.getMobileCoverageTMSURLs(mobileCoverage4gTilesLookup);
+                this._map.getSource('mobile-coverage-4g').setTiles(mobileCoverage4gTilesURLs);
+            }
+
+            // 2. Toggle catalog layer visibility based on current selected catalog layers
+            // if any exists in `catalogSelectedLayers`
+
+            // 2.1 There are `catalogSelectedLayers`, show only selected catalog layers
+            if (this.catalogSelectedLayers && this.catalogSelectedLayers.length >= 1) {
+                // 2.1.1 Toggle `education-institutions` layer visibility
+                const showEducationInstitutionsLayer = this.catalogSelectedLayers.includes('education-institutions');
+                if (showEducationInstitutionsLayer) {
+                    this._map.setLayoutProperty('education-institutions', 'visibility', 'visible');
+                } else {
+                    this._map.setLayoutProperty('education-institutions', 'visibility', 'none');
+                }
+
+                // 2.1.2 Toggle `fiber-nodes` layer visibility
+                const showFiberNodesLayer = this.catalogSelectedLayers.includes('fiber-nodes');
+                if (showFiberNodesLayer) {
+                    this._map.setLayoutProperty('fiber-nodes', 'visibility', 'visible');
+                } else {
+                    this._map.setLayoutProperty('fiber-nodes', 'visibility', 'none');
+                }
+
+                // 2.1.3 Toggle `mobile-coverage-3g` layer visibility
+                const showMobileCoverage3GLayer = this.catalogSelectedLayers.includes('mobile-coverage-3g');
+                if (showMobileCoverage3GLayer) {
+                    this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'visible');
+                } else {
+                    this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'none');
+                }
+
+                // 2.1.4 Toggle `mobile-coverage-4g` layer visibility
+                const showMobileCoverage4GLayer = this.catalogSelectedLayers.includes('mobile-coverage-4g');
+                if (showMobileCoverage4GLayer) {
+                    this._map.setLayoutProperty('mobile-coverage-4g', 'visibility', 'visible');
+                } else {
+                    this._map.setLayoutProperty('mobile-coverage-4g', 'visibility', 'none');
+                }
+            }
+
+            // 2.2 No `catalogSelectedLayers`, hide all catalog layers always
+            else {
+                this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
+                this._map.setLayoutProperty('education-institutions', 'visibility', 'none');
+                this._map.setLayoutProperty('fiber-nodes', 'visibility', 'none');
+                this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'none');
+                this._map.setLayoutProperty('mobile-coverage-4g', 'visibility', 'none');
             }
         },
 
@@ -240,11 +416,9 @@ const HomeDash = {
                 return;
             }
 
-            // toggle map filters
-            await this.updateMapFilters();
-
-            // toggle layers
-            await this.toggleMapLayers();
+            // filter, toggle visibility of map layers
+            await this.updateMapCatalogLayers();
+            await this.updateMapAdministrativeBoundaryLayers();
 
             // fit map to bound
             await this.updateMapFitBounds();
@@ -276,7 +450,7 @@ const HomeDash = {
          */
         handleCountrySelected: async function () {
             // Clear current selected administrative region
-            this.lookup.administrative_area = null;
+            this.lookup.administrative_area = '';
 
             // Update `regionOptions` to country specific region
             if (this.lookup.country) {
@@ -311,7 +485,6 @@ const HomeDash = {
         handleClearCatalogLayersCategoryFilter: async function () {
             this.catalogSelectedCategories = [];
             await this.closeCatalogLayersCategoryFilterDropdownUI();
-            // TODO: update map & ui
         },
 
         /**
@@ -319,32 +492,34 @@ const HomeDash = {
          */
         handleApplyCatalogLayersCategoryFilter: async function () {
             await this.closeCatalogLayersCategoryFilterDropdownUI();
-            // TODO: update map & ui
         },
 
         /**
          * Handle catalog layer checked once a checkbox checked or unchecked
          */
         handleCatalogLayerChecked: async function (catalogLayer) {
-            const index = this.catalogSelectedLayers.indexOf(catalogLayer.uuid);
+            // Collect and update catalog selected layers
+            const index = this.catalogSelectedLayers.indexOf(catalogLayer.code);
             if (index === -1) {
-                this.catalogSelectedLayers.push(catalogLayer.uuid);
+                this.catalogSelectedLayers.push(catalogLayer.code);
             } else {
                 this.catalogSelectedLayers.splice(index, 1);
             }
-            // TODO: handle selected/unselected layer
-            // TODO: update map & ui
-            // TODO: await this.update()
+
+            // Update map & data
+            await this.update();
         },
 
         // End: UI event handlers
 
         // Start: Boostrap UI
 
+        /**
+         * Initialize or update bootstap UI
+         */
         initBootstrapUI: async function () {
             // Init layer item popovers ui
             await this.initLayerItemPopoversUI();
-            // TODO: init other bootstrap uis
         },
 
         /**

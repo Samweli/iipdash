@@ -103,13 +103,19 @@ export const sources = {
     },
     'mobile-coverage-3g': {
         type: 'raster',
-        tiles: await getMobileCoverageTMSURLs({ network_generation_code: '3g', administrative_area_level: 1 }),
+        tiles: await getMobileCoverageTMSURLs({
+            network_generation_code: '3g',
+            administrative_area_level: settings.ADMINISTRATIVE_AREA_ALL_COUNTRIES_LEVEL,
+        }),
         tileSize: 256,
         scheme: 'tms',
     },
     'mobile-coverage-4g': {
         type: 'raster',
-        tiles: await getMobileCoverageTMSURLs({ network_generation_code: '4g', administrative_area_level: 1 }),
+        tiles: await getMobileCoverageTMSURLs({
+            network_generation_code: '4g',
+            administrative_area_level: settings.ADMINISTRATIVE_AREA_ALL_COUNTRIES_LEVEL,
+        }),
         tileSize: 256,
         scheme: 'tms',
     },
