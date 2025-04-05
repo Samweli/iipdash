@@ -38,6 +38,7 @@ export const countriesTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/
 export const regionsTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=3';
 export const populationDensityHDTilesURL = API_ROOT + 'demographics/population-density-hd/tiles/{z}/{x}/{y}.mvt/';
 export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/';
+export const healthFacilitiesTilesUrl = API_ROOT + 'health/health-facilities/tiles/{z}/{x}/{y}.mvt/';
 export const fiberNodesTilesUrl = API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/';
 export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=3';
 export const areasMobileCoverageTilesURL =
@@ -92,6 +93,12 @@ export const sources = {
     'education-institutions': {
         type: 'vector',
         tiles: [educationInstitutionsTilesUrl],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
+    'health-facilities': {
+        type: 'vector',
+        tiles: [healthFacilitiesTilesUrl],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
@@ -330,6 +337,35 @@ const educationInstitutionsLayer = {
     },
 };
 
+const healthFacilitiesLayer = {
+    id: 'health-facilities',
+    source: 'health-facilities',
+    'source-layer': 'health-facilities',
+    type: 'circle',
+    paint: {
+        'circle-blur': 0,
+        'circle-color': '#ffffff',
+        'circle-opacity': 0.8,
+        'circle-stroke-color': '#007FFF',
+        'circle-stroke-opacity': 0.9,
+        'circle-stroke-width': 2,
+        'circle-radius': [
+            // Zoom-dependent circle radius
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0,
+            1.0, // zoom level 0
+            5,
+            5.0, // zoom level 5
+            10,
+            10.0, // zoom level 10
+            14,
+            14.0, // zoom level 14
+        ],
+    },
+};
+
 const fiberNodesLayer = {
     id: 'fiber-nodes',
     source: 'fiber-nodes',
@@ -383,6 +419,7 @@ export const layers = {
     'areas-mobile-coverage-3g': areasMobileCoverage3GLayer,
     'areas-mobile-coverage-4g': areasMobileCoverage4GLayer,
     'education-institutions': educationInstitutionsLayer,
+    'health-facilities': healthFacilitiesLayer,
     'fiber-nodes': fiberNodesLayer,
     'mobile-coverage-3g': mobileCoverage3GLayer,
     'mobile-coverage-4g': mobileCoverage4GLayer,

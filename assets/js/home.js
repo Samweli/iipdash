@@ -157,6 +157,15 @@ const HomeDash = {
             this._map.addSource('education-institutions', maps.sources['education-institutions']);
             this._map.addLayer(educationInstitutionsLayer);
 
+            // Health care facilities layer
+            const healthFacilitiesLayer = _.merge({}, maps.layers['health-facilities'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('health-facilities', maps.sources['health-facilities']);
+            this._map.addLayer(healthFacilitiesLayer);
+
             // Fiber nodes layer
             const fiberNodesLayer = _.merge({}, maps.layers['fiber-nodes'], {
                 layout: {
@@ -247,6 +256,7 @@ const HomeDash = {
          * Controlled catalog layers are:
          *
          * - `education-institutions`
+         * - `health-facilities`
          * - `fiber-nodes`
          * - `mobile-coverage-3g`
          * - `mobile-coverage-4g`
@@ -266,10 +276,12 @@ const HomeDash = {
             if (this.lookup.country) {
                 this._map.setFilter('population-density-hd', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('education-institutions', ['==', ['get', 'country'], this.lookup.country]);
+                this._map.setFilter('health-facilities', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('fiber-nodes', ['==', ['get', 'country'], this.lookup.country]);
                 mobileCoverageTilesLookup.administrative_area = this.selectedCountry.id;
             } else {
                 this._map.setFilter('education-institutions', null);
+                this._map.setFilter('health-facilities', null);
                 this._map.setFilter('fiber-nodes', null);
             }
 
@@ -281,6 +293,11 @@ const HomeDash = {
                     this.lookup.administrative_area,
                 ]);
                 this._map.setFilter('education-institutions', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+                this._map.setFilter('health-facilities', [
                     '==',
                     ['get', 'administrative_area_uuid'],
                     this.lookup.administrative_area,
@@ -339,7 +356,15 @@ const HomeDash = {
                     this._map.setLayoutProperty('education-institutions', 'visibility', 'none');
                 }
 
-                // 2.1.3 Toggle `fiber-nodes` layer visibility
+                // 2.1.3 Toggle `health-facilities` layer visibility
+                const showHealthFacilitiesLayer = this.catalogSelectedLayers.includes('health-facilities');
+                if (showHealthFacilitiesLayer) {
+                    this._map.setLayoutProperty('health-facilities', 'visibility', 'visible');
+                } else {
+                    this._map.setLayoutProperty('health-facilities', 'visibility', 'none');
+                }
+
+                // 2.1.4 Toggle `fiber-nodes` layer visibility
                 const showFiberNodesLayer = this.catalogSelectedLayers.includes('fiber-nodes');
                 if (showFiberNodesLayer) {
                     this._map.setLayoutProperty('fiber-nodes', 'visibility', 'visible');
@@ -347,7 +372,7 @@ const HomeDash = {
                     this._map.setLayoutProperty('fiber-nodes', 'visibility', 'none');
                 }
 
-                // 2.1.4 Toggle `mobile-coverage-3g` layer visibility
+                // 2.1.5 Toggle `mobile-coverage-3g` layer visibility
                 const showMobileCoverage3GLayer = this.catalogSelectedLayers.includes('mobile-coverage-3g');
                 if (showMobileCoverage3GLayer) {
                     this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'visible');
@@ -355,7 +380,7 @@ const HomeDash = {
                     this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'none');
                 }
 
-                // 2.1.5 Toggle `mobile-coverage-4g` layer visibility
+                // 2.1.6 Toggle `mobile-coverage-4g` layer visibility
                 const showMobileCoverage4GLayer = this.catalogSelectedLayers.includes('mobile-coverage-4g');
                 if (showMobileCoverage4GLayer) {
                     this._map.setLayoutProperty('mobile-coverage-4g', 'visibility', 'visible');
@@ -368,6 +393,7 @@ const HomeDash = {
             else {
                 this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
                 this._map.setLayoutProperty('education-institutions', 'visibility', 'none');
+                this._map.setLayoutProperty('health-facilities', 'visibility', 'none');
                 this._map.setLayoutProperty('fiber-nodes', 'visibility', 'none');
                 this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'none');
                 this._map.setLayoutProperty('mobile-coverage-4g', 'visibility', 'none');

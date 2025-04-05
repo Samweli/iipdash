@@ -30,10 +30,10 @@ class HealthFacilityCSVSerializer(serializers.ModelSerializer):
         model = HealthFacility
         fields = [
             "uuid",
-            "osm_id",
-            "osm_type",
             "name",
             "amenity",
+            "osm_id",
+            "osm_type",
             "administrative_area_name",
             "country",
             "created_at",

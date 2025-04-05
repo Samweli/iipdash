@@ -59,7 +59,7 @@ class HealthFacilityViewSet(CSVDownloadMixin, VectorLayer, ReadOnlyModelViewSet)
         DistanceToPointFilter,
     ]
 
-    filter_fields = ["amenity", "osm_type"]  # TODO: "country", "administrative_area"
+    filter_fields = ["amenity", "osm_type", "administrative_area"]
 
     #: A `HealthFacility` geometry field used in performing bounding box filtering
     #: on the queryset of `HealthFacility` objects via query parameters
@@ -82,10 +82,14 @@ class HealthFacilityViewSet(CSVDownloadMixin, VectorLayer, ReadOnlyModelViewSet)
 
     #: A tuple of fields to be included in vector tiles data.
     tile_fields = (
+        "uuid",
         "name",
         "amenity",
-        "osm_type",
         "osm_id",
+        "osm_type",
+        "country",
+        "administrative_area_uuid",
+        "administrative_area_name",
     )
 
     def get_vector_tile_queryset(self, *args, **kwargs):
