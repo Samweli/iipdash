@@ -39,6 +39,7 @@ export const regionsTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y
 export const populationDensityHDTilesURL = API_ROOT + 'demographics/population-density-hd/tiles/{z}/{x}/{y}.mvt/';
 export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/';
 export const healthFacilitiesTilesUrl = API_ROOT + 'health/health-facilities/tiles/{z}/{x}/{y}.mvt/';
+export const fiberOpticsTilesUrl = API_ROOT + 'infrastructure/fiber-optics/tiles/{z}/{x}/{y}.mvt/';
 export const fiberNodesTilesUrl = API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/';
 export const cellTowersTilesUrl = API_ROOT + 'infrastructure/cell-towers/tiles/{z}/{x}/{y}.mvt/';
 export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=3';
@@ -70,6 +71,12 @@ export const sources = {
     regions: {
         type: 'vector',
         tiles: [regionsTilesURL],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
+    'fiber-optics': {
+        type: 'vector',
+        tiles: [fiberOpticsTilesUrl],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
@@ -154,6 +161,17 @@ const regionsLayer = {
     paint: {
         'line-width': 2.0,
         'line-color': colorPrimary,
+    },
+};
+
+const fiberOpticsLayer = {
+    id: 'fiber-optics',
+    source: 'fiber-optics',
+    'source-layer': 'fiber-optics',
+    type: 'line',
+    paint: {
+        'line-width': 2.0,
+        'line-color': '#64687A',
     },
 };
 
@@ -463,6 +481,7 @@ const mobileCoverage4GLayer = {
 export const layers = {
     countries: countriesLayer,
     regions: regionsLayer,
+    'fiber-optics': fiberOpticsLayer,
     'population-density-hd': populationDensityHDLayer,
     'areas-education': areasEducationLayer,
     'areas-mobile-coverage-3g': areasMobileCoverage3GLayer,

@@ -108,9 +108,9 @@ const HomeDash = {
 
             this._map = Vue.markRaw(map);
 
-            this._map.on('load', () => {
+            this._map.on('load', async () => {
                 this.mapLoaded = true;
-                this.addMapLayers();
+                await this.addMapLayers();
             });
 
             const navigationControl = new maplibregl.NavigationControl({
@@ -139,7 +139,16 @@ const HomeDash = {
             this._map.addSource('regions', maps.sources.regions);
             this._map.addLayer(regionsLayer);
 
-            // High resolution population density
+            // Fiber optics layer
+            const fiberOpticsLayer = _.merge({}, maps.layers['fiber-optics'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('fiber-optics', maps.sources['fiber-optics']);
+            this._map.addLayer(fiberOpticsLayer);
+
+            // High resolution population density layer
             const populationDensityHDLayer = _.merge({}, maps.layers['population-density-hd'], {
                 layout: {
                     visibility: 'none',
@@ -264,6 +273,8 @@ const HomeDash = {
          *
          * Controlled catalog layers are:
          *
+         * - `fiber-optics`
+         * - `population-density-hd`
          * - `education-institutions`
          * - `health-facilities`
          * - `fiber-nodes`
@@ -284,6 +295,7 @@ const HomeDash = {
 
             // 1.1 Filter catalog layers based on current selected `country`
             if (this.lookup.country) {
+                this._map.setFilter('fiber-optics', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('population-density-hd', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('education-institutions', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('health-facilities', ['==', ['get', 'country'], this.lookup.country]);
@@ -291,6 +303,7 @@ const HomeDash = {
                 this._map.setFilter('cell-towers', ['==', ['get', 'country'], this.lookup.country]);
                 mobileCoverageTilesLookup.administrative_area = this.selectedCountry.id;
             } else {
+                this._map.setFilter('fiber-optics', null);
                 this._map.setFilter('population-density-hd', null);
                 this._map.setFilter('education-institutions', null);
                 this._map.setFilter('health-facilities', null);
@@ -300,6 +313,11 @@ const HomeDash = {
 
             // 1.2 Filter catalog layers based on current selected `region`
             if (this.lookup.administrative_area) {
+                this._map.setFilter('fiber-optics', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
                 this._map.setFilter('population-density-hd', [
                     '==',
                     ['get', 'administrative_area_uuid'],
@@ -358,7 +376,15 @@ const HomeDash = {
 
             // 2.1 There are `catalogSelectedLayers`, show only selected catalog layers
             if (this.catalogSelectedLayers && this.catalogSelectedLayers.length >= 1) {
-                // 2.1.1 Toggle `population-density-hd` layer visibility
+                // 2.1.1 Toggle `fiber-optics` layer visibility
+                const showFiberOpticsLayer = this.catalogSelectedLayers.includes('fiber-optics');
+                if (showFiberOpticsLayer) {
+                    this._map.setLayoutProperty('fiber-optics', 'visibility', 'visible');
+                } else {
+                    this._map.setLayoutProperty('fiber-optics', 'visibility', 'none');
+                }
+
+                // 2.1.2 Toggle `population-density-hd` layer visibility
                 const showPopulationDensityHDLayer = this.catalogSelectedLayers.includes('population-density-hd');
                 if (showPopulationDensityHDLayer) {
                     this._map.setLayoutProperty('population-density-hd', 'visibility', 'visible');
@@ -366,7 +392,7 @@ const HomeDash = {
                     this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
                 }
 
-                // 2.1.2 Toggle `education-institutions` layer visibility
+                // 2.1.3 Toggle `education-institutions` layer visibility
                 const showEducationInstitutionsLayer = this.catalogSelectedLayers.includes('education-institutions');
                 if (showEducationInstitutionsLayer) {
                     this._map.setLayoutProperty('education-institutions', 'visibility', 'visible');
@@ -374,7 +400,7 @@ const HomeDash = {
                     this._map.setLayoutProperty('education-institutions', 'visibility', 'none');
                 }
 
-                // 2.1.3 Toggle `health-facilities` layer visibility
+                // 2.1.4 Toggle `health-facilities` layer visibility
                 const showHealthFacilitiesLayer = this.catalogSelectedLayers.includes('health-facilities');
                 if (showHealthFacilitiesLayer) {
                     this._map.setLayoutProperty('health-facilities', 'visibility', 'visible');
@@ -382,7 +408,7 @@ const HomeDash = {
                     this._map.setLayoutProperty('health-facilities', 'visibility', 'none');
                 }
 
-                // 2.1.4 Toggle `fiber-nodes` layer visibility
+                // 2.1.5 Toggle `fiber-nodes` layer visibility
                 const showFiberNodesLayer = this.catalogSelectedLayers.includes('fiber-nodes');
                 if (showFiberNodesLayer) {
                     this._map.setLayoutProperty('fiber-nodes', 'visibility', 'visible');
@@ -390,7 +416,7 @@ const HomeDash = {
                     this._map.setLayoutProperty('fiber-nodes', 'visibility', 'none');
                 }
 
-                // 2.1.5 Toggle `cell-towers` layer visibility
+                // 2.1.6 Toggle `cell-towers` layer visibility
                 const showCellTowersLayer = this.catalogSelectedLayers.includes('cell-towers');
                 if (showCellTowersLayer) {
                     this._map.setLayoutProperty('cell-towers', 'visibility', 'visible');
@@ -398,7 +424,7 @@ const HomeDash = {
                     this._map.setLayoutProperty('cell-towers', 'visibility', 'none');
                 }
 
-                // 2.1.6 Toggle `mobile-coverage-3g` layer visibility
+                // 2.1.7 Toggle `mobile-coverage-3g` layer visibility
                 const showMobileCoverage3GLayer = this.catalogSelectedLayers.includes('mobile-coverage-3g');
                 if (showMobileCoverage3GLayer) {
                     this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'visible');
@@ -406,7 +432,7 @@ const HomeDash = {
                     this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'none');
                 }
 
-                // 2.1.7 Toggle `mobile-coverage-4g` layer visibility
+                // 2.1.8 Toggle `mobile-coverage-4g` layer visibility
                 const showMobileCoverage4GLayer = this.catalogSelectedLayers.includes('mobile-coverage-4g');
                 if (showMobileCoverage4GLayer) {
                     this._map.setLayoutProperty('mobile-coverage-4g', 'visibility', 'visible');
@@ -417,6 +443,7 @@ const HomeDash = {
 
             // 2.2 No `catalogSelectedLayers`, hide all catalog layers always
             else {
+                this._map.setLayoutProperty('fiber-optics', 'visibility', 'none');
                 this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
                 this._map.setLayoutProperty('education-institutions', 'visibility', 'none');
                 this._map.setLayoutProperty('health-facilities', 'visibility', 'none');
