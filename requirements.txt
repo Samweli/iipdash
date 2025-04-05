@@ -1,4 +1,4 @@
-Django[argon2]>=5.1.8
+Django[argon2]>=5.1.8,<5.2
 psycopg
 django-environ
 
