@@ -238,6 +238,21 @@ const HomeDash = {
                 }
             }
 
+            // mobile and fixed internet speed layer (choropleth)
+            const areasInternetSpeedMobile = _.merge({}, maps.layers['areas-internet-speed-mobile'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            const areasInternetSpeedFixed = _.merge({}, maps.layers['areas-internet-speed-fixed'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('areas-internet-speed', mapSources['areas-internet-speed']);
+            this._map.addLayer(areasInternetSpeedMobile);
+            this._map.addLayer(areasInternetSpeedFixed);
+
             // country boundaries layer
             this._map.addSource(maps.layers.countries.id, mapSources.countries);
             this._map.addLayer(maps.layers.countries);

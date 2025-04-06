@@ -48,6 +48,8 @@ export const cellTowersTilesUrl = API_ROOT + 'infrastructure/cell-towers/tiles/{
 export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=3';
 export const areasMobileCoverageTilesURL =
     API_ROOT + 'administrative/areas-mobile-coverage/tiles/{z}/{x}/{y}.mvt/?level=3';
+export const areasInternetSpeedTilesURL =
+    API_ROOT + 'administrative/areas-internet-speed/tiles/{z}/{x}/{y}.mvt/?level=3';
 
 const predefinedSources = {
     countries: {
@@ -95,6 +97,12 @@ const predefinedSources = {
     'areas-mobile-coverage': {
         type: 'vector',
         tiles: [areasMobileCoverageTilesURL],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
+    'areas-internet-speed': {
+        type: 'vector',
+        tiles: [areasInternetSpeedTilesURL],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
@@ -421,6 +429,84 @@ const areasMobileCoverage3GLayer = {
     },
 };
 
+const areasInternetSpeedMobile = {
+    id: 'areas-internet-speed-mobile',
+    source: 'areas-internet-speed',
+    'source-layer': 'areas-internet-speed',
+    type: 'fill',
+    paint: {
+        'fill-outline-color': colorPrimary,
+        'fill-color': [
+            'case',
+            ['==', ['get', 'mobile_speed'], null],
+            'rgba(0, 0, 0, 0)',
+            [
+                'interpolate', // interpolation expression
+                ['linear'], // interpolation type
+                ['get', 'mobile_speed'], // value to be used for interpolation
+                // color stops,
+                0,
+                '#ffffff',
+                1,
+                '#dae1ff',
+                40,
+                colorPrimary,
+            ],
+        ],
+        'fill-opacity': [
+            // Zoom-dependent opacity
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0,
+            1.0, // Opacity at zoom level 0
+            5,
+            0.7, // Opacity at zoom level 5
+            10,
+            0.3, // Opacity at zoom level 10
+        ],
+    },
+};
+
+const areasInternetSpeedFixed = {
+    id: 'areas-internet-speed-fixed',
+    source: 'areas-internet-speed',
+    'source-layer': 'areas-internet-speed',
+    type: 'fill',
+    paint: {
+        'fill-outline-color': colorPrimary,
+        'fill-color': [
+            'case',
+            ['==', ['get', 'fixed_speed'], null],
+            'rgba(0, 0, 0, 0)',
+            [
+                'interpolate', // interpolation expression
+                ['linear'], // interpolation type
+                ['get', 'fixed_speed'], // value to be used for interpolation
+                // color stops,
+                0,
+                '#ffffff',
+                1,
+                '#dae1ff',
+                40,
+                colorPrimary,
+            ],
+        ],
+        'fill-opacity': [
+            // Zoom-dependent opacity
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0,
+            1.0, // Opacity at zoom level 0
+            5,
+            0.7, // Opacity at zoom level 5
+            10,
+            0.3, // Opacity at zoom level 10
+        ],
+    },
+};
+
 const areasMobileCoverage4GLayer = {
     id: 'areas-mobile-coverage-4g',
     source: 'areas-mobile-coverage',
@@ -638,6 +724,8 @@ export const layers = {
     'areas-education': areasEducationLayer,
     'areas-mobile-coverage-3g': areasMobileCoverage3GLayer,
     'areas-mobile-coverage-4g': areasMobileCoverage4GLayer,
+    'areas-internet-speed-mobile': areasInternetSpeedMobile,
+    'areas-internet-speed-fixed': areasInternetSpeedFixed,
     'education-institutions': educationInstitutionsLayer,
     'health-facilities': healthFacilitiesLayer,
     'fiber-nodes': fiberNodesLayer,
