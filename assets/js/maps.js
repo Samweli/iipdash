@@ -40,7 +40,8 @@ export const wealthIndexTilesURL = API_ROOT + 'demographics/relative-wealth-inde
 export const populationDensityHDTilesURL = API_ROOT + 'demographics/population-density-hd/tiles/{z}/{x}/{y}.mvt/';
 export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/';
 export const healthFacilitiesTilesUrl = API_ROOT + 'health/health-facilities/tiles/{z}/{x}/{y}.mvt/';
-export const fiberOpticsTilesUrl = API_ROOT + 'infrastructure/fiber-optics/tiles/{z}/{x}/{y}.mvt/';
+export const fiberOpticsTilesUrl =
+    API_ROOT + 'infrastructure/fiber-optics/tiles/{z}/{x}/{y}.mvt/?administrative_area_level=2';
 export const electricityNetworksUrl = API_ROOT + 'infrastructure/electricity-networks/tiles/{z}/{x}/{y}.mvt/';
 export const fiberNodesTilesUrl = API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/';
 export const cellTowersTilesUrl = API_ROOT + 'infrastructure/cell-towers/tiles/{z}/{x}/{y}.mvt/';
@@ -238,7 +239,7 @@ const fiberOpticsLayer = {
     paint: {
         'line-width': 2.0,
         'line-color': '#64687A',
-        'line-opacity': 0.3,
+        'line-opacity': 0.8,
     },
 };
 
@@ -250,7 +251,7 @@ const electricityNetworks = {
     paint: {
         'line-width': 2.0,
         'line-color': '#a2b8ff',
-        'line-opacity': 0.5,
+        'line-opacity': 0.8,
     },
 };
 

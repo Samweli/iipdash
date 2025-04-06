@@ -187,6 +187,11 @@ class FiberOpticFilter(filters.FilterSet):
         help_text=_("Filter by multiple country codes."),
     )
 
+    administrative_area_level = filters.NumberFilter(
+        field_name="administrative_area__depth",
+        help_text=_("Filter by administrative area level."),
+    )
+
     #: Filter by operational status (exact match, case-insensitive)
     status: filters.ChoiceFilter = filters.ChoiceFilter(
         field_name="status",
