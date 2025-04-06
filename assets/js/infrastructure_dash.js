@@ -161,12 +161,14 @@ const InfrastructureDash = {
         },
 
         addMapLayers: async function () {
+            const mapSources = await maps.getSources();
+
             // country boundaries
-            this._map.addSource('countries', maps.sources.countries);
+            this._map.addSource('countries', mapSources.countries);
             this._map.addLayer(maps.layers.countries);
 
             // Areas coverage
-            this._map.addSource('areas-mobile-coverage', maps.sources['areas-mobile-coverage']);
+            this._map.addSource('areas-mobile-coverage', mapSources['areas-mobile-coverage']);
 
             const summaryLayer3gLayer = _.merge({}, maps.layers['areas-mobile-coverage-3g'], {
                 layout: {
@@ -190,7 +192,7 @@ const InfrastructureDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('regions', maps.sources.regions);
+            this._map.addSource('regions', mapSources.regions);
             this._map.addLayer(regionsLayer);
 
             // High resolution population density
@@ -199,7 +201,7 @@ const InfrastructureDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('population-density-hd', maps.sources['population-density-hd']);
+            this._map.addSource('population-density-hd', mapSources['population-density-hd']);
             this._map.addLayer(populationDensityHDLayer);
 
             // 3G mobile coverage
@@ -208,7 +210,7 @@ const InfrastructureDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('mobile-coverage-3g', maps.sources['mobile-coverage-3g']);
+            this._map.addSource('mobile-coverage-3g', mapSources['mobile-coverage-3g']);
             this._map.addLayer(mobileCoverage3GLayer);
 
             // 4G mobile coverage
@@ -217,7 +219,7 @@ const InfrastructureDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('mobile-coverage-4g', maps.sources['mobile-coverage-4g']);
+            this._map.addSource('mobile-coverage-4g', mapSources['mobile-coverage-4g']);
             this._map.addLayer(mobileCoverage4GLayer);
 
             this._map.on('click', 'areas-mobile-coverage-3g', this.showSummaryMapPopup);

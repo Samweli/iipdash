@@ -146,8 +146,10 @@ const EducationDash = {
         },
 
         addMapLayers: async function () {
+            const mapSources = await maps.getSources();
+
             // country boundaries
-            this._map.addSource('countries', maps.sources.countries);
+            this._map.addSource('countries', mapSources.countries);
             this._map.addLayer(maps.layers.countries);
 
             // education summary statistics by area
@@ -157,7 +159,7 @@ const EducationDash = {
                 },
             });
 
-            this._map.addSource('areas-education', maps.sources['areas-education']);
+            this._map.addSource('areas-education', mapSources['areas-education']);
             this._map.addLayer(summaryLayer);
 
             // regions boundaries
@@ -166,7 +168,7 @@ const EducationDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('regions', maps.sources.regions);
+            this._map.addSource('regions', mapSources.regions);
             this._map.addLayer(regionsLayer);
 
             // education institutions
@@ -175,7 +177,7 @@ const EducationDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('education-institutions', maps.sources['education-institutions']);
+            this._map.addSource('education-institutions', mapSources['education-institutions']);
             this._map.addLayer(institutionsLayer);
 
             this._map.on('click', 'areas-education', (e) => {
@@ -231,7 +233,7 @@ const EducationDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('fiber-nodes', maps.sources['fiber-nodes']);
+            this._map.addSource('fiber-nodes', mapSources['fiber-nodes']);
             this._map.addLayer(fiberNodesLayer);
         },
 

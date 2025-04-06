@@ -37,7 +37,7 @@ export const fetchCatalogLayers = async function (params = {}) {
  */
 export const fetchCountries = async function (params = {}) {
     const response = await axios.get(`${settings.API_ROOT}administrative/areas`, {
-        params: { level: settings.ADMINISTRATIVE_AREA_COUNTRY_LEVEL, exclude_geometry: 1, ...params },
+        params: { level: settings.ADMINISTRATIVE_AREAS_COUNTRY_LEVEL, exclude_geometry: 1, ...params },
     });
     const countries = response.data;
     return countries;
@@ -48,7 +48,7 @@ export const fetchCountries = async function (params = {}) {
  */
 export const fetchRegions = async function (params = {}) {
     const response = await axios.get(`${settings.API_ROOT}administrative/areas`, {
-        params: { level: settings.ADMINISTRATIVE_AREA_REGION_LEVEL, exclude_geometry: 1, ...params },
+        params: { level: settings.ADMINISTRATIVE_AREAS_REGION_LEVEL, exclude_geometry: 1, ...params },
     });
     const regions = response.data;
     return regions;

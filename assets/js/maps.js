@@ -46,22 +46,7 @@ export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education
 export const areasMobileCoverageTilesURL =
     API_ROOT + 'administrative/areas-mobile-coverage/tiles/{z}/{x}/{y}.mvt/?level=3';
 
-export const getMobileCoverageTMSURLs = async (lookup) => {
-    try {
-        const mobileCoverages = await axios.get(`${API_ROOT}infrastructure/mobile-coverage/`, {
-            params: { ...lookup, tiff_empty: false },
-        });
-
-        return mobileCoverages.data.results.map((coverage) => {
-            return coverage.tms_url;
-        });
-    } catch (e) {
-        console.log(e); // eslint-disable-line no-console
-        return [];
-    }
-};
-
-export const sources = {
+const predefinedSources = {
     countries: {
         type: 'vector',
         tiles: [countriesTilesURL],
@@ -122,24 +107,91 @@ export const sources = {
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
-    'mobile-coverage-3g': {
-        type: 'raster',
-        tiles: await getMobileCoverageTMSURLs({
-            network_generation_code: '3g',
-            administrative_area_level: settings.ADMINISTRATIVE_AREA_ALL_COUNTRIES_LEVEL,
-        }),
-        tileSize: 256,
-        scheme: 'tms',
-    },
-    'mobile-coverage-4g': {
-        type: 'raster',
-        tiles: await getMobileCoverageTMSURLs({
-            network_generation_code: '4g',
-            administrative_area_level: settings.ADMINISTRATIVE_AREA_ALL_COUNTRIES_LEVEL,
-        }),
-        tileSize: 256,
-        scheme: 'tms',
-    },
+};
+
+export const getMobileCoverageTMSURLs = async (lookup) => {
+    try {
+        const mobileCoverages = await axios.get(`${API_ROOT}infrastructure/mobile-coverage/`, {
+            params: { ...lookup, tiff_empty: false },
+        });
+
+        return mobileCoverages.data.results.map((coverage) => {
+            return coverage.tms_url;
+        });
+    } catch (e) {
+        console.log(e); // eslint-disable-line no-console
+        return [];
+    }
+};
+
+export const getCatalogSources = async (lookup = {}) => {
+    try {
+        const catalogLayers = await axios.get(`${API_ROOT}catalog/layers/`, { params: lookup });
+
+        return Object.fromEntries(
+            catalogLayers.data.results.map((layer) => {
+                let sourceType = 'vector';
+                let tilesUrls = [];
+
+                if (layer.tms_url) {
+                    sourceType = 'raster';
+                    tilesUrls = [layer.tms_url];
+                }
+
+                return [
+                    layer.code,
+                    {
+                        type: sourceType,
+                        tiles: tilesUrls,
+                        minzoom: defaultMinZoom,
+                        maxzoom: defaultMaxZoom,
+                    },
+                ];
+            }),
+        );
+    } catch (e) {
+        console.log(e); // eslint-disable-line no-console
+        return [];
+    }
+};
+
+export const getSources = async (catalogLookup = {}) => {
+    let catalogSources = {};
+    let mobileCoverage3GTilesUrls = [];
+    let mobileCoverage4GTilesUrls = [];
+
+    try {
+        [catalogSources, mobileCoverage3GTilesUrls, mobileCoverage4GTilesUrls] = await Promise.all([
+            getCatalogSources(catalogLookup),
+            getMobileCoverageTMSURLs({
+                network_generation_code: '3g',
+                administrative_area_level: settings.ADMINISTRATIVE_AREAS_ROOT_LEVEL,
+            }),
+            getMobileCoverageTMSURLs({
+                network_generation_code: '4g',
+                administrative_area_level: settings.ADMINISTRATIVE_AREAS_ROOT_LEVEL,
+            }),
+        ]);
+    } catch (e) {
+        console.log(e); // eslint-disable-line no-console
+    }
+
+    return {
+        ...catalogSources,
+        ...predefinedSources,
+        'mobile-coverage-3g': {
+            type: 'raster',
+            tiles: mobileCoverage3GTilesUrls,
+            tileSize: 256,
+            scheme: 'tms',
+        },
+        'mobile-coverage-4g': {
+            type: 'raster',
+            tiles: mobileCoverage4GTilesUrls,
+            tileSize: 256,
+            scheme: 'tms',
+        },
+    };
 };
 
 const countriesLayer = {

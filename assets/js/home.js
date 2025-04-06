@@ -126,8 +126,10 @@ const HomeDash = {
          * Add map layers.
          */
         addMapLayers: async function () {
+            const mapSources = await maps.getSources();
+
             // country boundaries layer
-            this._map.addSource(maps.layers.countries.id, maps.sources.countries);
+            this._map.addSource(maps.layers.countries.id, mapSources.countries);
             this._map.addLayer(maps.layers.countries);
 
             // regions boundaries layer
@@ -136,7 +138,7 @@ const HomeDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('regions', maps.sources.regions);
+            this._map.addSource('regions', mapSources.regions);
             this._map.addLayer(regionsLayer);
 
             // Fiber optics layer
@@ -145,7 +147,7 @@ const HomeDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('fiber-optics', maps.sources['fiber-optics']);
+            this._map.addSource('fiber-optics', mapSources['fiber-optics']);
             this._map.addLayer(fiberOpticsLayer);
 
             // High resolution population density layer
@@ -154,7 +156,7 @@ const HomeDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('population-density-hd', maps.sources['population-density-hd']);
+            this._map.addSource('population-density-hd', mapSources['population-density-hd']);
             this._map.addLayer(populationDensityHDLayer);
 
             // Education institutions layer
@@ -163,7 +165,7 @@ const HomeDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('education-institutions', maps.sources['education-institutions']);
+            this._map.addSource('education-institutions', mapSources['education-institutions']);
             this._map.addLayer(educationInstitutionsLayer);
 
             // Health care facilities layer
@@ -172,7 +174,7 @@ const HomeDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('health-facilities', maps.sources['health-facilities']);
+            this._map.addSource('health-facilities', mapSources['health-facilities']);
             this._map.addLayer(healthFacilitiesLayer);
 
             // Fiber nodes layer
@@ -181,7 +183,7 @@ const HomeDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('fiber-nodes', maps.sources['fiber-nodes']);
+            this._map.addSource('fiber-nodes', mapSources['fiber-nodes']);
             this._map.addLayer(fiberNodesLayer);
 
             // Cell towers layer
@@ -190,7 +192,7 @@ const HomeDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('cell-towers', maps.sources['cell-towers']);
+            this._map.addSource('cell-towers', mapSources['cell-towers']);
             this._map.addLayer(cellTowersLayer);
 
             // 3G mobile coverage layer
@@ -199,7 +201,7 @@ const HomeDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('mobile-coverage-3g', maps.sources['mobile-coverage-3g']);
+            this._map.addSource('mobile-coverage-3g', mapSources['mobile-coverage-3g']);
             this._map.addLayer(mobileCoverage3GLayer);
 
             // 4G mobile coverage layer
@@ -208,7 +210,7 @@ const HomeDash = {
                     visibility: 'none',
                 },
             });
-            this._map.addSource('mobile-coverage-4g', maps.sources['mobile-coverage-4g']);
+            this._map.addSource('mobile-coverage-4g', mapSources['mobile-coverage-4g']);
             this._map.addLayer(mobileCoverage4GLayer);
         },
 
@@ -349,7 +351,7 @@ const HomeDash = {
             // 1.3 Filter mobile coverage layers i.e `mobile-coverage-3g` or `mobile-coverage-4g`
             // based on current selected `country` and `region`
             if (!this.lookup.country && !this.lookup.administrative_area) {
-                mobileCoverageTilesLookup.administrative_area_level = settings.ADMINISTRATIVE_AREA_ALL_COUNTRIES_LEVEL;
+                mobileCoverageTilesLookup.administrative_area_level = settings.ADMINISTRATIVE_AREAS_ROOT_LEVEL;
                 delete mobileCoverageTilesLookup.administrative_area;
             }
 
