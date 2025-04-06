@@ -128,19 +128,6 @@ const HomeDash = {
         addMapLayers: async function () {
             const mapSources = await maps.getSources();
 
-            // country boundaries layer
-            this._map.addSource(maps.layers.countries.id, mapSources.countries);
-            this._map.addLayer(maps.layers.countries);
-
-            // regions boundaries layer
-            const regionsLayer = _.merge({}, maps.layers.regions, {
-                layout: {
-                    visibility: 'none',
-                },
-            });
-            this._map.addSource('regions', mapSources.regions);
-            this._map.addLayer(regionsLayer);
-
             // Fiber optics layer
             const fiberOpticsLayer = _.merge({}, maps.layers['fiber-optics'], {
                 layout: {
@@ -149,6 +136,15 @@ const HomeDash = {
             });
             this._map.addSource('fiber-optics', mapSources['fiber-optics']);
             this._map.addLayer(fiberOpticsLayer);
+
+            // Relative wealth index layer
+            const relativeWealthIndexLayer = _.merge({}, maps.layers['relative-wealth-index'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('relative-wealth-index', mapSources['relative-wealth-index']);
+            this._map.addLayer(relativeWealthIndexLayer);
 
             // High resolution population density layer
             const populationDensityHDLayer = _.merge({}, maps.layers['population-density-hd'], {
@@ -231,6 +227,19 @@ const HomeDash = {
                     this._map.addLayer(newLayer);
                 }
             }
+
+            // country boundaries layer
+            this._map.addSource(maps.layers.countries.id, mapSources.countries);
+            this._map.addLayer(maps.layers.countries);
+
+            // regions boundaries layer
+            const regionsLayer = _.merge({}, maps.layers.regions, {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('regions', mapSources.regions);
+            this._map.addLayer(regionsLayer);
         },
 
         /**

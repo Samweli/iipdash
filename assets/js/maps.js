@@ -36,6 +36,7 @@ export const basemap = {
 
 export const countriesTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=2';
 export const regionsTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=3';
+export const wealthIndexTilesURL = API_ROOT + 'demographics/relative-wealth-index/tiles/{z}/{x}/{y}.mvt/';
 export const populationDensityHDTilesURL = API_ROOT + 'demographics/population-density-hd/tiles/{z}/{x}/{y}.mvt/';
 export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/';
 export const healthFacilitiesTilesUrl = API_ROOT + 'health/health-facilities/tiles/{z}/{x}/{y}.mvt/';
@@ -68,6 +69,12 @@ const predefinedSources = {
     'population-density-hd': {
         type: 'vector',
         tiles: [populationDensityHDTilesURL],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
+    'relative-wealth-index': {
+        type: 'vector',
+        tiles: [wealthIndexTilesURL],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
@@ -143,8 +150,8 @@ export const getCatalogSources = async (lookup = {}) => {
                     {
                         type: sourceType,
                         tiles: tilesUrls,
-                        minzoom: defaultMinZoom,
-                        maxzoom: defaultMaxZoom,
+                        tileSize: 256,
+                        scheme: 'tms',
                     },
                 ];
             }),
@@ -265,6 +272,52 @@ const populationDensityHDLayer = {
             1.0, // zoom level 10
             14,
             3.0, // zoom level 14
+        ],
+    },
+};
+
+const wealthIndexLayer = {
+    id: 'relative-wealth-index',
+    source: 'relative-wealth-index',
+    'source-layer': 'relative-wealth-index',
+    type: 'circle',
+    paint: {
+        'circle-blur': 0,
+        'circle-color': [
+            'case',
+            ['==', ['get', 'rwi'], null],
+            'rgba(0, 0, 0, 0)',
+            [
+                'interpolate', // interpolation expression
+                ['linear'], // interpolation type
+                ['get', 'rwi'], // value to be used for interpolation
+                // color stops,
+                -2,
+                '#ffffff',
+                0,
+                '#dae1ff',
+                2,
+                colorPrimary,
+            ],
+        ],
+        'circle-stroke-opacity': 0,
+        'circle-stroke-width': 0,
+        'circle-opacity': 0.8,
+        'circle-radius': [
+            // Zoom-dependent circle radius
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0,
+            1, // zoom level 0
+            7,
+            2, // zoom level 7
+            8,
+            4, // zoom level 8
+            9,
+            9, // zoom level 9
+            14,
+            14, // zoom level 14
         ],
     },
 };
@@ -535,6 +588,7 @@ export const layers = {
     regions: regionsLayer,
     'fiber-optics': fiberOpticsLayer,
     'population-density-hd': populationDensityHDLayer,
+    'relative-wealth-index': wealthIndexLayer,
     'areas-education': areasEducationLayer,
     'areas-mobile-coverage-3g': areasMobileCoverage3GLayer,
     'areas-mobile-coverage-4g': areasMobileCoverage4GLayer,
