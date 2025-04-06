@@ -137,6 +137,16 @@ const HomeDash = {
             this._map.addSource('fiber-optics', mapSources['fiber-optics']);
             this._map.addLayer(fiberOpticsLayer);
 
+            // Electricity networks layer
+            const electricityNetworksLayer = _.merge({}, maps.layers['electricity-networks'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('electricity-networks', mapSources['electricity-networks']);
+
+            this._map.addLayer(electricityNetworksLayer);
+
             // Relative wealth index layer
             const relativeWealthIndexLayer = _.merge({}, maps.layers['relative-wealth-index'], {
                 layout: {

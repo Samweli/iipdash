@@ -41,6 +41,7 @@ export const populationDensityHDTilesURL = API_ROOT + 'demographics/population-d
 export const educationInstitutionsTilesUrl = API_ROOT + 'education/institutions/tiles/{z}/{x}/{y}.mvt/';
 export const healthFacilitiesTilesUrl = API_ROOT + 'health/health-facilities/tiles/{z}/{x}/{y}.mvt/';
 export const fiberOpticsTilesUrl = API_ROOT + 'infrastructure/fiber-optics/tiles/{z}/{x}/{y}.mvt/';
+export const electricityNetworksUrl = API_ROOT + 'infrastructure/electricity-networks/tiles/{z}/{x}/{y}.mvt/';
 export const fiberNodesTilesUrl = API_ROOT + 'infrastructure/fiber-nodes/tiles/{z}/{x}/{y}.mvt/';
 export const cellTowersTilesUrl = API_ROOT + 'infrastructure/cell-towers/tiles/{z}/{x}/{y}.mvt/';
 export const areasEducationTilesURL = API_ROOT + 'administrative/areas-education/tiles/{z}/{x}/{y}.mvt/?level=3';
@@ -63,6 +64,12 @@ const predefinedSources = {
     'fiber-optics': {
         type: 'vector',
         tiles: [fiberOpticsTilesUrl],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
+    'electricity-networks': {
+        type: 'vector',
+        tiles: [electricityNetworksUrl],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
@@ -231,6 +238,19 @@ const fiberOpticsLayer = {
     paint: {
         'line-width': 2.0,
         'line-color': '#64687A',
+        'line-opacity': 0.3,
+    },
+};
+
+const electricityNetworks = {
+    id: 'electricity-networks',
+    source: 'electricity-networks',
+    'source-layer': 'electricity-networks',
+    type: 'line',
+    paint: {
+        'line-width': 2.0,
+        'line-color': '#a2b8ff',
+        'line-opacity': 0.5,
     },
 };
 
@@ -611,6 +631,7 @@ export const layers = {
     countries: countriesLayer,
     regions: regionsLayer,
     'fiber-optics': fiberOpticsLayer,
+    'electricity-networks': electricityNetworks,
     'population-density-hd': populationDensityHDLayer,
     'relative-wealth-index': wealthIndexLayer,
     'areas-education': areasEducationLayer,

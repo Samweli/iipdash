@@ -547,7 +547,7 @@ class ElectricityNetworkViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
     pagination_class = GeoJsonPagination
 
     #: Vector tiles layer ID
-    id = "electricity-network"
+    id = "electricity-networks"
 
     #: A tuple of fields to be included in vector tiles data.
     tile_fields = (
@@ -575,7 +575,7 @@ class ElectricityNetworkViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
         url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
         url_name="tile",
     )
-    @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:relative-wealth-index", cache=MVT_CACHE_ALIAS))
+    @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:electricity-networks", cache=MVT_CACHE_ALIAS))
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for relative wealth index."""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
