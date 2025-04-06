@@ -475,9 +475,9 @@ const healthFacilitiesLayer = {
     paint: {
         'circle-blur': 0,
         'circle-color': '#ffffff',
-        'circle-opacity': 0.8,
+        'circle-opacity': 0.1,
         'circle-stroke-color': '#007FFF',
-        'circle-stroke-opacity': 0.9,
+        'circle-stroke-opacity': 0.5,
         'circle-stroke-width': 2,
         'circle-radius': [
             // Zoom-dependent circle radius
@@ -487,11 +487,11 @@ const healthFacilitiesLayer = {
             0,
             1.0, // zoom level 0
             5,
-            5.0, // zoom level 5
+            2.0, // zoom level 5
             10,
-            10.0, // zoom level 10
+            5.0, // zoom level 10
             14,
-            14.0, // zoom level 14
+            7.0, // zoom level 14
         ],
     },
 };
@@ -533,36 +533,60 @@ const cellTowersLayer = {
     paint: {
         'circle-blur': 0,
         // Fill color
-        'circle-color': '#82A5FF',
+        'circle-color': '#64687A',
         // Fill opacity
-        'circle-opacity': 0.5,
+        'circle-opacity': 0.1,
         // Border color
-        'circle-stroke-color': '#007FFF',
+        'circle-stroke-color': '#64687A',
         'circle-stroke-opacity': 1,
-        'circle-stroke-width': 2,
+        'circle-stroke-width': 0.5,
         // Radius based on "range" property
         'circle-radius': [
             'interpolate',
             ['linear'],
-            ['get', 'range'], // value to be used for interpolation
+            ['zoom'],
             0,
             1,
-            100,
+            5,
             2,
-            500,
-            3,
-            2000,
-            6,
-            5000,
+            7,
+            [
+                'interpolate',
+                ['linear'],
+                ['get', 'range'], // value to be used for interpolation
+                500,
+                1,
+                2000,
+                2,
+                10000,
+                4,
+                80000,
+                8, // Flattens the growth beyond 80,000 meters
+            ],
             8,
-            10000,
-            10,
-            20000,
-            12,
-            40000,
-            14,
-            80000,
-            15, // Flattens the growth beyond 80,000 meters
+            [
+                'interpolate',
+                ['linear'],
+                ['get', 'range'], // value to be used for interpolation
+                0,
+                1,
+                100,
+                2,
+                500,
+                3,
+                2000,
+                6,
+                5000,
+                8,
+                10000,
+                10,
+                20000,
+                12,
+                40000,
+                14,
+                80000,
+                15, // Flattens the growth beyond 80,000 meters
+            ],
         ],
     },
 };
