@@ -212,6 +212,25 @@ const HomeDash = {
             });
             this._map.addSource('mobile-coverage-4g', mapSources['mobile-coverage-4g']);
             this._map.addLayer(mobileCoverage4GLayer);
+
+            // add catalog raster layers
+            for (const catalogLayer of this.catalogLayers) {
+                if (catalogLayer.tms_url) {
+                    const newLayer = {
+                        id: catalogLayer.code,
+                        type: 'raster',
+                        source: catalogLayer.code,
+                        minzoom: maps.defaultMinZoom,
+                        maxzoom: maps.defaultMaxZoom,
+                        layout: {
+                            visibility: 'none',
+                        },
+                    };
+
+                    this._map.addSource(catalogLayer.code, mapSources[catalogLayer.code]);
+                    this._map.addLayer(newLayer);
+                }
+            }
         },
 
         /**
@@ -374,85 +393,17 @@ const HomeDash = {
             }
 
             // 2. Toggle catalog layer visibility based on current selected catalog layers
-            // if any exists in `catalogSelectedLayers`
-
-            // 2.1 There are `catalogSelectedLayers`, show only selected catalog layers
-            if (this.catalogSelectedLayers && this.catalogSelectedLayers.length >= 1) {
-                // 2.1.1 Toggle `fiber-optics` layer visibility
-                const showFiberOpticsLayer = this.catalogSelectedLayers.includes('fiber-optics');
-                if (showFiberOpticsLayer) {
-                    this._map.setLayoutProperty('fiber-optics', 'visibility', 'visible');
-                } else {
-                    this._map.setLayoutProperty('fiber-optics', 'visibility', 'none');
+            for (const catalogLayer of this.catalogLayers) {
+                // ignore layers that are not in the map
+                if (!this._map.getLayer(catalogLayer.code)) {
+                    continue;
                 }
 
-                // 2.1.2 Toggle `population-density-hd` layer visibility
-                const showPopulationDensityHDLayer = this.catalogSelectedLayers.includes('population-density-hd');
-                if (showPopulationDensityHDLayer) {
-                    this._map.setLayoutProperty('population-density-hd', 'visibility', 'visible');
+                if (this.catalogSelectedLayers.includes(catalogLayer.code)) {
+                    this._map.setLayoutProperty(catalogLayer.code, 'visibility', 'visible');
                 } else {
-                    this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
+                    this._map.setLayoutProperty(catalogLayer.code, 'visibility', 'none');
                 }
-
-                // 2.1.3 Toggle `education-institutions` layer visibility
-                const showEducationInstitutionsLayer = this.catalogSelectedLayers.includes('education-institutions');
-                if (showEducationInstitutionsLayer) {
-                    this._map.setLayoutProperty('education-institutions', 'visibility', 'visible');
-                } else {
-                    this._map.setLayoutProperty('education-institutions', 'visibility', 'none');
-                }
-
-                // 2.1.4 Toggle `health-facilities` layer visibility
-                const showHealthFacilitiesLayer = this.catalogSelectedLayers.includes('health-facilities');
-                if (showHealthFacilitiesLayer) {
-                    this._map.setLayoutProperty('health-facilities', 'visibility', 'visible');
-                } else {
-                    this._map.setLayoutProperty('health-facilities', 'visibility', 'none');
-                }
-
-                // 2.1.5 Toggle `fiber-nodes` layer visibility
-                const showFiberNodesLayer = this.catalogSelectedLayers.includes('fiber-nodes');
-                if (showFiberNodesLayer) {
-                    this._map.setLayoutProperty('fiber-nodes', 'visibility', 'visible');
-                } else {
-                    this._map.setLayoutProperty('fiber-nodes', 'visibility', 'none');
-                }
-
-                // 2.1.6 Toggle `cell-towers` layer visibility
-                const showCellTowersLayer = this.catalogSelectedLayers.includes('cell-towers');
-                if (showCellTowersLayer) {
-                    this._map.setLayoutProperty('cell-towers', 'visibility', 'visible');
-                } else {
-                    this._map.setLayoutProperty('cell-towers', 'visibility', 'none');
-                }
-
-                // 2.1.7 Toggle `mobile-coverage-3g` layer visibility
-                const showMobileCoverage3GLayer = this.catalogSelectedLayers.includes('mobile-coverage-3g');
-                if (showMobileCoverage3GLayer) {
-                    this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'visible');
-                } else {
-                    this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'none');
-                }
-
-                // 2.1.8 Toggle `mobile-coverage-4g` layer visibility
-                const showMobileCoverage4GLayer = this.catalogSelectedLayers.includes('mobile-coverage-4g');
-                if (showMobileCoverage4GLayer) {
-                    this._map.setLayoutProperty('mobile-coverage-4g', 'visibility', 'visible');
-                } else {
-                    this._map.setLayoutProperty('mobile-coverage-4g', 'visibility', 'none');
-                }
-            }
-
-            // 2.2 No `catalogSelectedLayers`, hide all catalog layers always
-            else {
-                this._map.setLayoutProperty('fiber-optics', 'visibility', 'none');
-                this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
-                this._map.setLayoutProperty('education-institutions', 'visibility', 'none');
-                this._map.setLayoutProperty('health-facilities', 'visibility', 'none');
-                this._map.setLayoutProperty('fiber-nodes', 'visibility', 'none');
-                this._map.setLayoutProperty('cell-towers', 'visibility', 'none');
-                this._map.setLayoutProperty('mobile-coverage-3g', 'visibility', 'none');
-                this._map.setLayoutProperty('mobile-coverage-4g', 'visibility', 'none');
             }
         },
 
