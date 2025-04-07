@@ -489,9 +489,9 @@ const InfrastructureDash = {
             new maplibregl.Popup()
                 .setLngLat(e.lngLat)
                 .setHTML(
-                    `<div class="card border-0" style="width: 22rem;">
+                    `<div class="card border-0">
                         <div class="card-header text-bg-primary">
-                          <h5 class="text-white">${name}</h5>
+                          <h5 class="text-white pe-3">${name}</h5>
                         </div>
 
                         <div class="card-body">

@@ -79,6 +79,24 @@
 
 .maplibregl-popup-content {
     padding: 0;
+    background: transparent;
+}
+
+.maplibregl-popup {
+    max-width: 24rem !important;
+
+    .maplibregl-popup-close-button {
+        color: darken($primary, 15%);
+        font-size: 2rem;
+        margin: 0.3rem 0.4rem 0 0;
+    }
+}
+
+.maplibregl-popup-anchor-top {
+
+    .maplibregl-popup-tip {
+        border-bottom-color: $primary;
+    }
 }
 
 .map-pane {
