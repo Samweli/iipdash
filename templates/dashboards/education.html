@@ -22,7 +22,7 @@
         </div>
         <p class="p-txt-24-white">{% trans "Connected schools" %}</p>
         <p class="p-txt-20-white mb-0">{% trans "Location selected:" %}</p>
-        <p class="p-txt-24-white" v-text="selectedLocation || '-'"></p>
+        <p class="p-txt-24-white" v-text="selectedLocation || 'All'"></p>
     </div>
 {% endblock map_sidebar_header_content %}
 
@@ -92,7 +92,7 @@
         <div class="m-1">
             <select class="form-select"
                     v-model="lookup.administrative_area"
-                    @change="update()">
+                    @change="updateRegion()">
                 <option value="">{% trans 'Region' %}</option>
                 <option v-if="regionOptions.features"
                         v-for="option in regionOptions.features"

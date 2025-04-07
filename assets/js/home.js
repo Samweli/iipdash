@@ -494,9 +494,6 @@ const HomeDash = {
             // filter, toggle visibility of map layers
             await this.updateMapCatalogLayers();
             await this.updateMapAdministrativeBoundaryLayers();
-
-            // fit map to bound
-            await this.updateMapFitBounds();
         },
 
         /**
@@ -542,6 +539,7 @@ const HomeDash = {
 
             // Update map and data
             await this.update();
+            await this.updateMapFitBounds();
         },
 
         /**
@@ -552,6 +550,7 @@ const HomeDash = {
          */
         handleRegionSelected: async function () {
             await this.update();
+            await this.updateMapFitBounds();
         },
 
         /**

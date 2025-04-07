@@ -102,13 +102,13 @@ const InfrastructureDash = {
         },
 
         updateData: async function () {
-            if (this.lookup.country) {
-                this.selectedCountry = _.find(this.countries.features, ['properties.country', this.lookup.country]);
+            this.selectedRegion = _.find(this.regions.features, { id: this.lookup.administrative_area });
+            if (this.lookup.administrative_area && !this.lookup.country) {
+                this.lookup.country = this.selectedRegion.properties.country;
+                this.updateRegionOptions();
             }
 
-            if (this.lookup.administrative_area) {
-                this.selectedRegion = _.find(this.regions.features, { id: this.lookup.administrative_area });
-            }
+            this.selectedCountry = _.find(this.countries.features, ['properties.country', this.lookup.country]);
 
             // coverage per region
             try {
@@ -276,13 +276,6 @@ const InfrastructureDash = {
             } else {
                 this._map.setFilter('countries', null);
             }
-
-            // pan to bounds
-            if (this.lookup.administrative_area) {
-                this.fitMapBounds(this.selectedRegion.properties.bbox);
-            } else if (this.lookup.country) {
-                this.fitMapBounds(this.selectedCountry.properties.bbox);
-            }
         },
 
         updateCharts() {
@@ -369,19 +362,34 @@ const InfrastructureDash = {
             window.dispatchEvent(event);
         },
 
+        updateRegionOptions() {
+            this.regionOptions.features = _.filter(this.regions.features, ['properties.country', this.lookup.country]);
+        },
+
         updateCountry() {
             this.lookup.administrative_area = null;
 
+            this.update();
+
             if (this.lookup.country) {
-                this.regionOptions.features = _.filter(this.regions.features, [
-                    'properties.country',
-                    this.lookup.country,
-                ]);
+                this.updateRegionOptions();
+                this.fitMapBounds(this.selectedCountry.properties.bbox);
             } else {
                 this.regionOptions.features = _.cloneDeep(this.regions.features);
+                this.resetMapBounds();
             }
+        },
 
+        updateRegion() {
             this.update();
+
+            if (this.lookup.administrative_area) {
+                this.fitMapBounds(this.selectedRegion.properties.bbox);
+            } else if (this.lookup.country) {
+                this.fitMapBounds(this.selectedCountry.properties.bbox);
+            } else {
+                this.resetMapBounds();
+            }
         },
 
         toggleSummaryLayer() {
@@ -470,6 +478,10 @@ const InfrastructureDash = {
                 ],
                 options,
             );
+        },
+
+        resetMapBounds() {
+            this._map.flyTo({ center: settings.MAP_DEFAULT_CENTER, zoom: settings.MAP_DEFAULT_ZOOM });
         },
 
         showSummaryMapPopup(e) {
