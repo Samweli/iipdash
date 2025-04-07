@@ -52,16 +52,25 @@
                                 {% if user.get_full_name %}
                                     <span class="lead font-weight-bold">{{ user.get_full_name }}</span><br>
                                 {% endif %}
-                                <small class="text-primary">{{ user.email|default:user.username }}</small>
+                                <small class="text-white-50">{{ user.email|default:user.username }}</small>
                             </div>
 
                             <a class="dropdown-item" href="{% url 'account_logout' %}">
                                 <i class="fas fa-sign-out-alt text-muted me-2"></i> {% trans 'Sign Out' %}
                             </a>
                             <div class="dropdown-divider"></div>
+
                             <a class="dropdown-item" href="{% url 'account_change_password' %}">
                                 <i class="fas fa-user-pen text-muted me-2"></i> {% trans 'Change password' %}
                             </a>
+
+                            {% if user.is_staff %}
+                                <div class="dropdown-divider"></div>
+
+                                <a class="dropdown-item" href="{% url 'admin:index' %}" target="_blank">
+                                    <i class="fas fa-sliders text-muted me-2"></i> {% trans 'Administration' %}
+                                </a>
+                            {% endif %}
                         </div>
                     </li>
                 {% else %}
