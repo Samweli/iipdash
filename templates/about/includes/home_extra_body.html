@@ -22,6 +22,7 @@
             <div class="card-body">
                 <p class="mb-1 text-uppercase"><strong>{% trans "Description" %}</strong></p>
                 <p>{{ catalog_layer.description|default:"N/A" }}</p>
+
                 <p class="mb-1 text-uppercase"><strong>{% trans "Source" %}</strong></p>
                 <p>
                     {{ catalog_layer.source|default:"N/A" }}
@@ -29,6 +30,12 @@
                         <a href="{{catalog_layer.source_url}}" target="_blank"><i class="fa-solid fa-link ms-1"></i></a>
                     {% endif %}
                 </p>
+
+                {% if catalog_layer.notes %}
+                    <p class="mb-1 text-uppercase"><strong>{% trans "Note" %}</strong></p>
+                    <p>{{ catalog_layer.notes }}</p>
+                {% endif %}
+
                 <p class="mb-1 text-uppercase"><strong>{% trans "Date" %}</strong></p>
                 <p>{{catalog_layer.source_year|default:"N/A"}}</p>
             </div>
