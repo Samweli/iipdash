@@ -270,9 +270,10 @@ const EducationDash = {
 
             // Fiber nodes popups
             this._map.on('click', 'fiber-nodes', async (e) => {
-                const center = e.lngLat.toArray().join(',');
+                const center = e.features[0].geometry.coordinates.join(',');
+                const lookup = _.pick(this.lookup, ['administrative_area', 'country']);
                 const institutionsAggregates = await axios.get(`${API_ROOT}education/institutions/aggregates`, {
-                    params: { point: center, radius: 10000 },
+                    params: { ...lookup, point: center, radius: 10000 },
                 });
                 const schools10kmCount = institutionsAggregates.data.fon_distance_10km_count;
 
