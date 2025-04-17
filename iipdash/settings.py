@@ -451,6 +451,12 @@ MAP_DEFAULT_CENTER = env.list("MAP_DEFAULT_CENTER", cast=float, default=[24.5, -
 
 MAP_DEFAULT_ZOOM = env.int("MAP_DEFAULT_ZOOM", default=5)
 
+MAP_DEFAULT_BBOX = env.list(
+    "MAP_DEFAULT_BBOX",
+    cast=float,
+    default=[12.20152855, -18.079176286999903, 35.9150466920001, 5.386097909000106],
+)
+
 BASEMAP_URL = env(
     "BASEMAP_URL",
     default=f"https://api.mapbox.com/styles/v1/{MAPBOX_STYLE_ID}/tiles/256/{{z}}/{{x}}/{{y}}?access_token={MAPBOX_ACCESS_TOKEN}",  # noqa

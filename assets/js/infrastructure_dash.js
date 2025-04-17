@@ -481,7 +481,7 @@ const InfrastructureDash = {
         },
 
         resetMapBounds() {
-            this._map.flyTo({ center: settings.MAP_DEFAULT_CENTER, zoom: settings.MAP_DEFAULT_ZOOM });
+            this.fitMapBounds(settings.MAP_DEFAULT_BBOX);
         },
 
         showSummaryMapPopup(e) {

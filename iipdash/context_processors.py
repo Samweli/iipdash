@@ -15,4 +15,5 @@ def site(request):
         "BASEMAP_ATTRIBUTION": settings.BASEMAP_ATTRIBUTION,
         "MAP_DEFAULT_CENTER": settings.MAP_DEFAULT_CENTER,
         "MAP_DEFAULT_ZOOM": settings.MAP_DEFAULT_ZOOM,
+        "MAP_DEFAULT_BBOX": settings.MAP_DEFAULT_BBOX,
     }

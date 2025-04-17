@@ -476,10 +476,7 @@ const HomeDash = {
 
             // Restore exact map zoom and center
             else {
-                this._map.flyTo({
-                    center: settings.MAP_DEFAULT_CENTER,
-                    zoom: settings.MAP_DEFAULT_ZOOM,
-                });
+                this.resetMapBounds(settings.MAP_DEFAULT_BBOX);
             }
         },
 
@@ -628,6 +625,20 @@ const HomeDash = {
         },
 
         // End: Boostrap UI
+
+        fitMapBounds(bbox, options = {}) {
+            this._map.fitBounds(
+                [
+                    [bbox[0], bbox[1]],
+                    [bbox[2], bbox[3]],
+                ],
+                options,
+            );
+        },
+
+        resetMapBounds() {
+            this.fitMapBounds(settings.MAP_DEFAULT_BBOX);
+        },
     },
 
     /**

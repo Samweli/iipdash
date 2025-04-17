@@ -3,6 +3,7 @@ export const STATIC_URL = window.settings.STATIC_URL;
 
 export const MAP_DEFAULT_CENTER = window.settings.MAP_DEFAULT_CENTER;
 export const MAP_DEFAULT_ZOOM = window.settings.MAP_DEFAULT_ZOOM;
+export const MAP_DEFAULT_BBOX = window.settings.MAP_DEFAULT_BBOX;
 
 export const BASEMAP_URL = window.settings.BASEMAP_URL;
 export const BASEMAP_ATTRIBUTION = window.settings.BASEMAP_ATTRIBUTION;

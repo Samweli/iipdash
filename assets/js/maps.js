@@ -8,6 +8,11 @@ export const defaultMaxZoom = 19;
 const colorPrimary = settings.COLOR_PRIMARY;
 const API_ROOT = settings.API_ROOT;
 
+export const defaultBounds = [
+    [settings.MAP_DEFAULT_BBOX[0], settings.MAP_DEFAULT_BBOX[1]],
+    [settings.MAP_DEFAULT_BBOX[2], settings.MAP_DEFAULT_BBOX[3]],
+];
+
 // The default basemap style
 export const basemap = {
     style: {
@@ -32,6 +37,7 @@ export const basemap = {
     },
     center: settings.MAP_DEFAULT_CENTER,
     zoom: settings.MAP_DEFAULT_ZOOM,
+    bounds: defaultBounds,
 };
 
 export const countriesTilesURL = API_ROOT + 'administrative/areas/tiles/{z}/{x}/{y}.mvt/?level=2';
