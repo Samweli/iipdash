@@ -180,6 +180,16 @@ const EducationDash = {
             this._map.addSource('education-institutions', mapSources['education-institutions']);
             this._map.addLayer(institutionsLayer);
 
+            // fiber nodes
+            const fiberNodesLayer = _.merge({}, maps.layers['fiber-nodes'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('fiber-nodes', mapSources['fiber-nodes']);
+            this._map.addLayer(fiberNodesLayer);
+
+            // Summary stats popups
             this._map.on('click', 'areas-education', (e) => {
                 const countryName = this.countriesLookup[e.features[0].properties.country];
                 const name = `${e.features[0].properties.name}, ${countryName}`;
@@ -227,14 +237,36 @@ const EducationDash = {
                     .addTo(this._map);
             });
 
-            // fiber nodes
-            const fiberNodesLayer = _.merge({}, maps.layers['fiber-nodes'], {
-                layout: {
-                    visibility: 'none',
-                },
+            // Schools popups
+            this._map.on('click', 'education-institutions', (e) => {
+                const name = e.features[0].properties.name;
+
+                let fonDistance = utils.meters2km(e.features[0].properties.fon_distance);
+                if (isNaN(fonDistance)) {
+                    fonDistance = '-';
+                }
+
+                new maplibregl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(
+                        `<div class="card border-0">
+                            <div class="card-header text-bg-primary">
+                              <h5 class="text-white pe-3">${name}</h5>
+                            </div>
+
+                            <div class="card-body">
+                                <p class="text-uppercase fs-6 fw-light text-muted">
+                                    Distance to nearest fiber node
+                                </p>
+                                <div class="d-flex flex-row align-items-center">
+                                    <p class="p-txt-stats-value-primary">${fonDistance}</p>
+                                    <p class="p-txt-stats-label-primary ms-1">KM</p>
+                                </div>
+                            </div>
+                        </div>`,
+                    )
+                    .addTo(this._map);
             });
-            this._map.addSource('fiber-nodes', mapSources['fiber-nodes']);
-            this._map.addLayer(fiberNodesLayer);
         },
 
         updateMap: async function () {
