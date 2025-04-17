@@ -267,6 +267,35 @@ const EducationDash = {
                     )
                     .addTo(this._map);
             });
+
+            // Fiber nodes popups
+            this._map.on('click', 'fiber-nodes', async (e) => {
+                const center = e.lngLat.toArray().join(',');
+                const institutionsAggregates = await axios.get(`${API_ROOT}education/institutions/aggregates`, {
+                    params: { point: center, radius: 10000 },
+                });
+                const schools10kmCount = institutionsAggregates.data.fon_distance_10km_count;
+
+                new maplibregl.Popup()
+                    .setLngLat(e.lngLat)
+                    .setHTML(
+                        `<div class="card border-0">
+                            <div class="card-header text-bg-primary">
+                              <h5 class="text-white pe-3">Fiber optic node</h5>
+                            </div>
+
+                            <div class="card-body">
+                                <p class="text-uppercase fs-6 fw-light text-muted">
+                                    Schools within 10km
+                                </p>
+                                <div class="d-flex flex-row align-items-center">
+                                    <p class="p-txt-stats-value-primary">${schools10kmCount}</p>
+                                </div>
+                            </div>
+                        </div>`,
+                    )
+                    .addTo(this._map);
+            });
         },
 
         updateMap: async function () {

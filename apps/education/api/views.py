@@ -192,7 +192,7 @@ class InstitutionViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelVi
     bbox_filter_field = "geometry"
     bbox_filter_include_overlapping = False
     distance_filter_field = "geometry"
-    distance_filter_convert_meters = True
+    distance_filter_convert_meters = False
 
     csv_serializer_class = InstitutionCSVSerializer
 
