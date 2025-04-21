@@ -3,6 +3,7 @@ import axios from 'axios';
 import Chart from 'chart.js/auto';
 import maplibregl from 'maplibre-gl';
 import _ from 'lodash';
+import Slider from '@vueform/slider';
 
 import * as settings from './conf';
 import * as maps from './maps';
@@ -11,8 +12,12 @@ import * as chartsConfig from './charts_config.js';
 
 const API_ROOT = settings.API_ROOT;
 
+const displayedMaxPopulationDensity = 50;
+
 const InfrastructureDash = {
-    components: {},
+    components: {
+        Slider,
+    },
 
     data() {
         return {
@@ -22,6 +27,9 @@ const InfrastructureDash = {
                 administrative_area: '',
                 country: '',
             },
+            coverageRange: [0, 100],
+            populationDensityRange: [0, displayedMaxPopulationDensity],
+            displayedMaxPopulationDensity,
             countries: { features: [] },
             countriesLookup: {},
             regions: { features: [] },
@@ -231,31 +239,60 @@ const InfrastructureDash = {
                 return;
             }
 
+            const summaryLayerID = `areas-mobile-coverage-${this.selectedNetworkGeneration}`;
+
+            const layersFilters = {
+                'population-density-hd': [],
+                [summaryLayerID]: [],
+            };
+
             if (this.lookup.country) {
                 this._map.setFilter('countries', ['==', ['get', 'country'], this.lookup.country]);
-                this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, [
-                    '==',
-                    ['get', 'country'],
-                    this.lookup.country,
-                ]);
-                this._map.setFilter('population-density-hd', ['==', ['get', 'country'], this.lookup.country]);
+                layersFilters[summaryLayerID].push(['==', ['get', 'country'], this.lookup.country]);
+                layersFilters['population-density-hd'].push(['==', ['get', 'country'], this.lookup.country]);
             } else {
                 this._map.setFilter('countries', null);
-                this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, null);
-                this._map.setFilter('population-density-hd', null);
             }
 
             if (this.lookup.administrative_area) {
-                this._map.setFilter(`areas-mobile-coverage-${this.selectedNetworkGeneration}`, [
-                    '==',
-                    ['get', 'uuid'],
-                    this.lookup.administrative_area,
-                ]);
-                this._map.setFilter('population-density-hd', [
+                layersFilters[summaryLayerID].push(['==', ['get', 'uuid'], this.lookup.administrative_area]);
+                layersFilters['population-density-hd'].push([
                     '==',
                     ['get', 'administrative_area_uuid'],
                     this.lookup.administrative_area,
                 ]);
+            }
+
+            // filter area summary by mobile coverage percentage & population density
+            layersFilters[summaryLayerID].push(
+                ...[
+                    ['>=', ['get', `coverage_${this.selectedNetworkGeneration}`], this.coverageRange[0]],
+                    ['<=', ['get', `coverage_${this.selectedNetworkGeneration}`], this.coverageRange[1]],
+                    ['>=', ['get', 'population_density_hd_avg'], this.populationDensityRange[0]],
+                    ['<=', ['get', 'population_density_hd_avg'], this.populationDensityRange[1]],
+                ],
+            );
+
+            // filter population density layer
+            layersFilters['population-density-hd'].push([
+                '>=',
+                ['get', 'population_density'],
+                this.populationDensityRange[0],
+            ]);
+
+            // Try to avoid filtering out exceptionally high population density values.
+            // as they are not displayed/included in filtering slider due to UI/UX practicality.
+            if (this.populationDensityRange[1] < displayedMaxPopulationDensity) {
+                layersFilters['population-density-hd'].push([
+                    '<=',
+                    ['get', 'population_density'],
+                    this.populationDensityRange[1],
+                ]);
+            }
+
+            // apply filters
+            for (const [layerID, layerFilters] of Object.entries(layersFilters)) {
+                this._map.setFilter(layerID, ['all', ...layerFilters]);
             }
 
             this.updateMobileCoverageLayer();

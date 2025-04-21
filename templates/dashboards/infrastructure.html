@@ -165,8 +165,77 @@
                 <div class="ms-1">30+</div>
             </div>
         </div>
-        {# TODO: including other legend items #}
     </div>
+
+    <div class="map-pane map-filters-pane">
+        <div class="accordion accordion-flush" id="map-filters-accordion">
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <button class="accordion-button"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#map-filters-body"
+                            aria-expanded="true"
+                            aria-controls="map-filters-body">
+                        {% trans 'Filters' %}
+                    </button>
+                </div>
+
+                <div id="map-filters-body" class="accordion-collapse collapse" data-bs-parent="#map-filters-accordion">
+                    <div class="accordion-body">
+
+                        <div class="pb-2 border-bottom"
+                             v-if="summaryLayerActive">
+
+                            <div class="fw-bold mb-3">{% trans 'Coverage' %}</div>
+                            <div class="px-3 mb-2">
+                                <Slider v-model="coverageRange"
+                                        :min="0"
+                                        :max="100"
+                                        show-tooltip="focus"
+                                        tooltip-position="bottom"
+                                        @change="update()"/>
+                            </div>
+                            <div class="d-flex justify-content-between text-uppercase">
+                                <div>
+                                    <div class="small fw-light text-body-tertiary">{% trans "Min" %}</div>
+                                    <div>0%</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="small fw-light text-body-tertiary">{% trans "Max" %}</div>
+                                    <div>100%</div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="py-2">
+                            <div class="fw-bold mb-3">{% trans 'Population density' %}</div>
+                            <div class="px-3 mb-2">
+                                <Slider v-model="populationDensityRange"
+                                        :min="0"
+                                        :max="displayedMaxPopulationDensity"
+                                        show-tooltip="focus"
+                                        tooltip-position="bottom"
+                                        @change="update()"/>
+                            </div>
+                            <div class="d-flex justify-content-between text-uppercase">
+                                <div>
+                                    <div class="small fw-light text-body-tertiary">{% trans "Min" %}</div>
+                                    <div>0</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="small fw-light text-body-tertiary">{% trans "Max" %}</div>
+                                    <div>50</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
 {% endblock map_extras %}
 
 

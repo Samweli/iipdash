@@ -59,6 +59,7 @@ class AreaMobileCoverageViewSet(AreaViewSet):
         "description",
         "population",
         "population_year",
+        "population_density_hd_avg",
         "population_covered_2g",
         "population_covered_3g",
         "population_covered_4g",

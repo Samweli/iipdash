@@ -1,2 +1,4 @@
 @import '~maplibre-gl/dist/maplibre-gl.css';
 @import 'maplibre-gl.css';
+@import '~@vueform/slider/themes/default.css';
+@import 'vueform-slider.scss';
