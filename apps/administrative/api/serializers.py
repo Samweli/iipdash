@@ -120,6 +120,9 @@ class BaseAreaEducationSerializer(serializers.ModelSerializer):
     #: Number of education institutions with nearest fiber optic within 20km.
     institutions_fiber_20km = serializers.IntegerField(read_only=True)
 
+    #: Number of education institutions with nearest fiber optic within 30km.
+    institutions_fiber_30km = serializers.IntegerField(read_only=True)
+
     #: Average distance between education institutions and fiber optic nodes.
     institutions_fiber_distance_avg = serializers.IntegerField(read_only=True)
 
@@ -169,6 +172,7 @@ class AreaEducationCSVSerializer(BaseAreaEducationSerializer):
             "institutions_fiber_10km",
             "institutions_fiber_15km",
             "institutions_fiber_20km",
+            "institutions_fiber_30km",
             "institutions_fiber_distance_avg",
             "institutions_fiber_distance_median",
         ]

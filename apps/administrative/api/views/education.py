@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db.models import Avg, Count, Q
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import cache_page
 
@@ -98,11 +99,19 @@ class AreaEducationViewSet(AreaViewSet):
                 "related_education_institution",
                 filter=Q(related_education_institution__fon_distance__lte=20000),
             ),
+            institutions_fiber_30km=Count(
+                "related_education_institution",
+                filter=Q(related_education_institution__fon_distance__lte=30000),
+            ),
             institutions_fiber_distance_avg=Avg("related_education_institution__fon_distance"),
             institutions_fiber_distance_median=Median("related_education_institution__fon_distance"),
         )
 
         return qs
+
+    def get_csv_file_name(self):
+        """Return name of the CSV file produced."""
+        return f"areas-education-institutions-fiber-connection-summary-{now().date()}.csv"
 
     @action(
         detail=False,
@@ -225,6 +234,11 @@ class AreaEducationIFONDViewSet(AreaViewSet):
         )
 
         return qs
+
+    def get_csv_file_name(self):
+        """Return name of the CSV file produced."""
+        distance = self.clean_distance()
+        return f"areas-education-institutions-fiber-connectivity-{distance}m-summary-{now().date()}.csv"
 
     @action(
         detail=False,

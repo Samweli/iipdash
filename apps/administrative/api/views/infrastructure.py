@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.db.models import Avg, Q, Sum
 from django.utils.decorators import method_decorator
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import cache_page
 
@@ -146,6 +147,10 @@ class AreaMobileCoverageViewSet(AreaViewSet):
         )
 
         return qs
+
+    def get_csv_file_name(self):
+        """Return name of the CSV file produced."""
+        return f"areas-mobile-coverage-summary-{now().date()}.csv"
 
     @action(
         detail=False,
