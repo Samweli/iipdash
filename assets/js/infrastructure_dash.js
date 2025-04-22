@@ -517,6 +517,12 @@ const InfrastructureDash = {
             );
         },
 
+        clearSecondaryFilters() {
+            this.coverageRange = [0, 100];
+            this.populationDensityRange = [0, displayedMaxPopulationDensity];
+            this.update();
+        },
+
         resetMapBounds() {
             this.fitMapBounds(settings.MAP_DEFAULT_BBOX);
         },
