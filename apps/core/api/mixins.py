@@ -1,6 +1,6 @@
 import csv
 
-from django.http import StreamingHttpResponse
+from django.http import Http404, StreamingHttpResponse
 from django.utils.timezone import now
 
 from ..utils import PseudoBuffer
@@ -55,12 +55,15 @@ class CSVDownloadMixin:
         model_name = self.get_queryset().model._meta.object_name.lower()
         return f"{model_name}-{now().date()}.csv"
 
-    def export_csv(self, request=None, *args, **kwargs):
-        """Export data as CSV file.
+    def export_csv(self, request, *args, **kwargs):
+        """Export data as CSV file for authenticated users.
 
         Returns:
             django.http.StreamingHttpResponse
         """
+
+        if request.user.is_authenticated:
+            raise Http404
 
         file_name = self.get_csv_file_name()
 

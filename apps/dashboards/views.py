@@ -14,7 +14,7 @@ class InfrastructureView(LoginRequiredMixin, TemplateView):
     template_name = "dashboards/infrastructure.html"
 
 
-class HomeView(LoginRequiredMixin, TemplateView):
+class HomeView(TemplateView):
     """View for rendering the home page."""
 
     template_name = "about/home.html"

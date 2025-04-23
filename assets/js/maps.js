@@ -139,6 +139,10 @@ const predefinedSources = {
 };
 
 export const getMobileCoverageTMSURLs = async (lookup) => {
+    if (!window.userIsAuthenticated) {
+        return [];
+    }
+
     try {
         const mobileCoverages = await axios.get(`${API_ROOT}infrastructure/mobile-coverage/`, {
             params: { ...lookup, tiff_empty: false },

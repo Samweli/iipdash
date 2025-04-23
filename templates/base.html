@@ -59,6 +59,10 @@
                     MAPBOX_ACCESS_TOKEN: "{{ MAPBOX_ACCESS_TOKEN }}",
                     MAPBOX_STYLE_ID: "{{ MAPBOX_STYLE_ID }}"
                 };
+
+                {% if user.is_authenticated %}
+                    window.userIsAuthenticated = true;
+                {% endif %}
             </script>
 
             {% block main_js %}

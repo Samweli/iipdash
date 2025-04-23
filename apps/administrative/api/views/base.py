@@ -8,6 +8,7 @@ from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.decorators import action
 from rest_framework.fields import BooleanField
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.renderers import JSONRenderer
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
@@ -46,6 +47,8 @@ class AreaViewSet(CSVDownloadMixin, VectorLayer, ReadOnlyModelViewSet):
     serializer_class = AreaSerializer
     lookup_field = "uuid"
     required_scopes = ["default"]
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     pagination_class = GeoJsonPagination
     renderer_classes = [JSONRenderer]
 

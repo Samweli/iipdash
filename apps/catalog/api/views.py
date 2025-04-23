@@ -3,6 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.filters import OrderingFilter, SearchFilter
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.viewsets import ReadOnlyModelViewSet
 
 from ..models import Category, Layer
@@ -28,6 +29,8 @@ class CategoryViewSet(ReadOnlyModelViewSet):
 
     #: A list of required OAuth2 scopes for accessing the `Category` API endpoints.
     required_scopes = ["default"]
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     filter_backends = [
         DjangoFilterBackend,
@@ -63,6 +66,8 @@ class LayerViewSet(ReadOnlyModelViewSet):
 
     #: A list of required OAuth2 scopes for accessing the `Category` API endpoints.
     required_scopes = ["default"]
+
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     filter_backends = [
         DjangoFilterBackend,
