@@ -12,6 +12,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.decorators import action
 from rest_framework.filters import BaseFilterBackend, OrderingFilter, SearchFilter
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework_gis.pagination import GeoJsonPagination
@@ -47,6 +48,7 @@ class HealthFacilityViewSet(CSVDownloadMixin, VectorLayer, ReadOnlyModelViewSet)
     pagination_class = GeoJsonPagination
     lookup_field = "uuid"
     required_scopes = ["default"]
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     #: A list of filter backends for applying search and order filters
     #: to the queryset of `HealthFacility` objects.
