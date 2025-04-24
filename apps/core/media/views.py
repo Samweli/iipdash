@@ -36,7 +36,7 @@ class LayerTileXAccelRedirectView(View):
         """Returns response including X-Accel-Redirect header for serving tiles using another server
         typically Nginx."""
         layer_uuid = self.kwargs["uuid"]
-        path = Path(f"layers/{layer_uuid}") / path
+        path = Path(f"tiles/layers/{layer_uuid}") / path
 
         response = HttpResponse()
         response["X-Accel-Redirect"] = protected_filesystem_storage.internal_url(path)
