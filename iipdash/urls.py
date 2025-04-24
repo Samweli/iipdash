@@ -79,7 +79,7 @@ if settings.DEBUG:
     urlpatterns = urlpatterns + debug_toolbar_urls() + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.STORAGES["default"]["BACKEND"] == "core.files.ProtectedFileSystemStorage":
-    urlpatterns += [path(settings.TILES_URL.lstrip("/"), include("core.media.urls"))]
+    urlpatterns += [path(settings.MEDIA_PROTECTED_URL.lstrip("/"), include("core.media.urls"))]
 
 admin.site.site_header = getattr(settings, "ADMIN_SITE_HEADER", "")
 admin.site.index_title = getattr(settings, "ADMIN_INDEX_TITLE", "")
