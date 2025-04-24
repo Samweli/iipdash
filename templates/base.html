@@ -21,6 +21,25 @@
             <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
             <link rel="manifest" href="{% static 'site.webmanifest' %}">
 
+            {# SEO Meta Tags #}
+            <meta name="description" content="Inform your planning efforts to expand and enhance infrastructure with data about digital infrastructure, climate and energy, and demographics.">
+            <meta name="keywords" content="GIS, infrastructure planning, digital infrastructure, climate data, energy data, demographics, mapping platform">
+            <meta name="robots" content="index, follow">
+            <meta name="viewport" content="width=device-width, initial-scale=1">
+
+            {# open graph meta tags #}
+            <meta property="og:title" content="Infrastructure Mapping Platform">
+            <meta property="og:description" content="Inform your planning efforts with data on digital infrastructure, climate, energy, and demographics.">
+            <meta property="og:image" content="{% static 'images/icon-lg.png' %}">
+            <meta property="og:url" content="{{ SITE_URL }}">
+            <meta property="og:type" content="website">
+
+            {# twitter meta tags #}
+            <meta name="twitter:card" content="summary_large_image">
+            <meta name="twitter:title" content="Infrastructure Mapping Platform">
+            <meta name="twitter:description" content="Inform your planning efforts with data on digital infrastructure, climate, energy, and demographics.">
+            <meta name="twitter:image" content="{% static 'images/icon-lg.png' %}">
+
             {% block meta_cards %}{% endblock %}
         {% endblock meta %}
 

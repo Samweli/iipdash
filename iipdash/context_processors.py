@@ -6,6 +6,7 @@ def site(request):
     return {
         "API_ROOT": request.build_absolute_uri(reverse("api:api-root")),
         "SITE_NAME": settings.SITE_NAME,
+        "SITE_URL": settings.SITE_URL,
         "SITE_TAGLINE": settings.SITE_TAGLINE,
         "SITE_API_NAME": settings.SITE_API_NAME,
         "SITE_API_URL": settings.SITE_API_URL,
