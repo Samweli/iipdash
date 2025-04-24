@@ -4,6 +4,7 @@ import Chart from 'chart.js/auto';
 import maplibregl from 'maplibre-gl';
 import { MaplibreLegendControl } from '@watergis/maplibre-gl-legend';
 import _ from 'lodash';
+import Slider from '@vueform/slider';
 
 import '@watergis/maplibre-gl-legend/dist/maplibre-gl-legend.css'; // direct import in CSS doesn't work
 
@@ -14,8 +15,12 @@ import * as chartsConfig from './charts_config.js';
 
 const API_ROOT = settings.API_ROOT;
 
+const displayedMaxFonDistance = 100;
+
 const EducationDash = {
-    components: {},
+    components: {
+        Slider,
+    },
 
     data() {
         return {
@@ -35,6 +40,8 @@ const EducationDash = {
             legendControl: null,
             selectedCountry: null,
             selectedRegion: null,
+            displayedMaxFonDistance,
+            fonDistanceRange: [0, displayedMaxFonDistance],
             charts: {
                 schoolsFONDistanceSummary: {
                     id: 'school-fiber-node-stats-bar-chart',
@@ -304,30 +311,67 @@ const EducationDash = {
                 return;
             }
 
+            const layersFilters = {
+                'areas-education': [],
+                'education-institutions': [],
+                'fiber-nodes': [],
+            };
+
             if (this.lookup.country) {
                 this._map.setFilter('countries', ['==', ['get', 'country'], this.lookup.country]);
-                this._map.setFilter('areas-education', ['==', ['get', 'country'], this.lookup.country]);
-                this._map.setFilter('education-institutions', ['==', ['get', 'country'], this.lookup.country]);
-                this._map.setFilter('fiber-nodes', ['==', ['get', 'country'], this.lookup.country]);
+
+                layersFilters['areas-education'].push(['==', ['get', 'country'], this.lookup.country]);
+                layersFilters['education-institutions'].push(['==', ['get', 'country'], this.lookup.country]);
+                layersFilters['fiber-nodes'].push(['==', ['get', 'country'], this.lookup.country]);
             } else {
                 this._map.setFilter('countries', null);
-                this._map.setFilter('areas-education', null);
-                this._map.setFilter('education-institutions', null);
-                this._map.setFilter('fiber-nodes', null);
             }
 
             if (this.lookup.administrative_area) {
-                this._map.setFilter('areas-education', ['==', ['get', 'uuid'], this.lookup.administrative_area]);
-                this._map.setFilter('education-institutions', [
+                layersFilters['areas-education'].push(['==', ['get', 'uuid'], this.lookup.administrative_area]);
+                layersFilters['education-institutions'].push([
                     '==',
                     ['get', 'administrative_area_uuid'],
                     this.lookup.administrative_area,
                 ]);
-                this._map.setFilter('fiber-nodes', [
+                layersFilters['fiber-nodes'].push([
                     '==',
                     ['get', 'administrative_area_uuid'],
                     this.lookup.administrative_area,
                 ]);
+            }
+
+            // filter fiber optic node distance
+            layersFilters['areas-education'].push([
+                '>=',
+                ['get', 'institutions_fiber_distance_median'],
+                this.fonDistanceRange[0] * 1000,
+            ]);
+            layersFilters['education-institutions'].push([
+                '>=',
+                ['get', 'fon_distance'],
+                this.fonDistanceRange[0] * 1000,
+            ]);
+
+            // Try to avoid filtering out exceptionally distance values.
+            // as they are not displayed/included in filtering slider due to UI/UX practicality.
+            if (this.fonDistanceRange[1] < displayedMaxFonDistance) {
+                layersFilters['areas-education'].push([
+                    '<=',
+                    ['get', 'institutions_fiber_distance_median'],
+                    this.fonDistanceRange[1] * 1000,
+                ]);
+
+                layersFilters['education-institutions'].push([
+                    '<=',
+                    ['get', 'fon_distance'],
+                    this.fonDistanceRange[1] * 1000,
+                ]);
+            }
+
+            // apply filters
+            for (const [layerID, layerFilters] of Object.entries(layersFilters)) {
+                this._map.setFilter(layerID, ['all', ...layerFilters]);
             }
 
             // highlight selected region
@@ -514,6 +558,11 @@ const EducationDash = {
 
         resetMapBounds() {
             this.fitMapBounds(settings.MAP_DEFAULT_BBOX);
+        },
+
+        clearSecondaryFilters() {
+            this.fonDistanceRange = [0, displayedMaxFonDistance];
+            this.update();
         },
 
         meters2km: utils.meters2km,

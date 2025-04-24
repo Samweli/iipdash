@@ -128,6 +128,63 @@
 
         {# TODO: including other legend items #}
     </div>
+
+    {# map filters pane #}
+    <div class="map-pane map-filters-pane">
+        <div class="accordion accordion-flush" id="map-filters-accordion">
+            <div class="accordion-item">
+                <div class="accordion-header">
+                    <button class="accordion-button"
+                            type="button"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#map-filters-body"
+                            aria-expanded="true"
+                            aria-controls="map-filters-body">
+                        {% trans 'Filters' %}
+                    </button>
+                </div>
+
+                <div id="map-filters-body" class="accordion-collapse collapse" data-bs-parent="#map-filters-accordion">
+                    <div class="accordion-body">
+
+                        <div class="pb-2 border-bottom">
+
+                            <div class="fw-bold mb-3">{% trans 'Distance to fiber node (km)' %}</div>
+                            <div class="px-3 mb-2">
+                                <Slider v-model="fonDistanceRange"
+                                        :min="0"
+                                        :max="displayedMaxFonDistance"
+                                        show-tooltip="focus"
+                                        tooltip-position="bottom"
+                                        @change="update()"/>
+                            </div>
+                            <div class="d-flex justify-content-between text-uppercase">
+                                <div>
+                                    <div class="small fw-light text-body-tertiary">{% trans "Min" %}</div>
+                                    <div>0</div>
+                                </div>
+                                <div class="text-end">
+                                    <div class="small fw-light text-body-tertiary">{% trans "Max" %}</div>
+                                    <div>100</div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="py-2 d-flex justify-content-end">
+                            <button class="btn btn-sm btn-light"
+                                    @click="clearSecondaryFilters()">
+                                {% trans 'Clear filters' %}
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+    {# end map filters pane #}
+
 {% endblock map_extras %}
 
 
