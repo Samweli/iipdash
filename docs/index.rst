@@ -13,6 +13,7 @@ Welcome to IIP Dashboard documentation!
    readme
    ref/modules
    contributing
+   admin_interface
 
 
 Indices and tables
