@@ -16,6 +16,9 @@ The interface can be used for various operations including
 Accessing the Interface
 -----------------------
 
+.. image:: _static/images/main-menu-account.png
+   :width: 600
+
 To access the admin portal
 1. Login to the platform using your account credentials.
 2. Click the  "Administration" sub-menu located within the "Account" menu item of the main top menu.
@@ -24,6 +27,8 @@ When you are in the home page of the admin portal you will see various sections 
 you can manage, such as Users, Demographics, Administrative areas, e.t.c.
 Clicking on a module/section will take you to a list of records in that module.
 
+.. image:: _static/images/admin-home.png
+   :width: 600
 
 Managing Users
 --------------
