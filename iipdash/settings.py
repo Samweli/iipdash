@@ -211,6 +211,8 @@ LOGIN_REDIRECT_URL = "/"
 
 ACCOUNT_LOGIN_METHODS = {"username", "email"}
 
+ACCOUNT_ADAPTER = "users.adapters.DefaultAccountAdapter"
+
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
