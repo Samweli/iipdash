@@ -17,7 +17,7 @@ Core technologies used in the platform includes
 - PostgreSQL_
 
 
-.. contents:: Contents
+.. contents:: **Contents**
     :local:
 
 
