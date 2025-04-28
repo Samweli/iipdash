@@ -91,6 +91,11 @@
     @extend .h-txt, .text-primary;
 }
 
+.h-txt-32 {
+    @extend .h-txt, .fs-32;
+    line-height: 1.375; // ~ (44px / 32px )
+}
+
 .h-txt-20 {
     @extend .h-txt, .fs-20;
     line-height: 1.35; // ~ (27px / 20px )

@@ -3,8 +3,145 @@
 {% load static %}
 {% load i18n %}
 
+{% block body_id %}about{% endblock %}
+{% block body_class %}{{ block.super }}about{% endblock %}
+{% block main_content_class %}{{ block.super }} g-0{% endblock %}
+
 {% block head_title %}{% trans "About" %}{% endblock %}
 
 {% block content %}
-    <h1>{% trans "About" %}</h1>
+
+    {# start: full-width image banner section #}
+    <section class="container-fluid p-0">
+        <img src="{% static 'images/about-iip-banner-img.png' %}" alt="Infrastructure Mapping Platform" class="img-fluid w-100 about-banner">
+    </section>
+    {# end: full-width image banner banner section #}
+
+    {# start: descriptive content + read more section #}
+    <section class="container-fluid py-5 about-description">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <div class="row align-items-center">
+                        <div class="col-md-9 text-start">
+                            <p class="mb-0 about-description-tagline">
+                                Visualize data about climate and energy, digital infrastructure, and demographics across Zambia, Malawi, and the DRC.
+                            </p>
+                        </div>
+                        <div class="col-md-3 align-self-end text-end">
+                            <a href="#about-faq-section" class="about-read-more">
+                                <span>Continue</span>
+                                <i class="fa-solid fa-arrow-down"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {# start: descriptive content + read more section #}
+
+    {# start: faq section #}
+    <section id="about-faq-section" class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="row align-items-center">
+                        <div class="col-md-9 text-start">
+
+                            <div class="about-faq">
+                                <h5 class="about-faq-question">What is the Infrastructure Mapping Platform?</h5>
+                                <p class="about-faq-answer">
+                                    This platform helps you explore the potential of an integrated infrastructure planning (IIP) approach to inform investments in digital infrastructure in low- and middle-income countries.</p>
+                                <p class="about-faq-answer">
+                                    Its goal is to demonstrate the value of IIPs in informing decisions that serve regional and country development objectives.
+                                </p>
+                                <p class="about-faq-answer">
+                                    As a prototype covering three countries, it is limited by the quality of the data available and their recency. While all efforts have been made to ensure that recent and accurate data is captured as of the publication of this prototype , some features and data may be incomplete or missing.
+                                </p>
+                                <img src="{% static 'images/about-faq-sample-img.png' %}" alt="What is the Infrastructure Mapping Platform"
+                                     class="about-faq-img">
+                            </div>
+
+                            <div class="about-faq">
+                                <h5 class="about-faq-question">Where do the data layers on this platform come from?</h5>
+                                <p class="about-faq-answer">
+                                    Most of the data layers on this platform are publicly available, while some are made available under a license.
+                                </p>
+                                <p class="about-faq-answer">
+                                    When choosing layers in the Home view, you can see specific details about each dataset, such as how recent it is and where it comes from, in case you have questions about its content or accuracy.
+                                </p>
+                                <p class="about-faq-answer">
+                                    In most cases, the raw source data has been modified for use in this platform, usually through basic data cleaning or restructuring.
+                                </p>
+                            </div>
+
+                            <div class="about-faq">
+                                <h5 class="about-faq-question">Where do the summary statistics on this platform come from?</h5>
+                                <p class="about-faq-answer">
+                                    The summary statistics, which you can view by selecting a Preset, have been calculated by the World Bank based on data layers available on this platform.
+                                </p>
+                                <p class="about-faq-answer">
+                                    As a prototype, the platform’s summary statistics have been pre-calculated by the World Bank, using the data layers available on this platform. Any future, full-scale deployments could perform similar calculations in real time.
+                                </p>
+                                <p class="about-faq-answer">
+                                    When viewing a Preset, visit its Details section to learn more about important details and caveats regarding the production of these summary statistics.
+                                </p>
+                            </div>
+
+                            <div class="about-faq">
+                                <h5 class="about-faq-question">Do I need to sign in to use this platform?</h5>
+                                <p class="about-faq-answer">
+                                    No, but some data layers are only available and visible to users who have signed in. Some functionality may be limited for users who have not signed in.
+                                </p>
+                            </div>
+
+                            <div class="about-faq">
+                                <h5 class="about-faq-question">How do I get access to sign in?</h5>
+                                <p class="about-faq-answer">
+                                    If you are eligible for access, you will receive login credentials from the appropriate World Bank team.
+                                </p>
+                            </div>
+
+                            <div class="about-faq">
+                                <h5 class="about-faq-question">Can I build a different tool based on this platform?</h5>
+                                <p class="about-faq-answer">
+                                    Yes, and that is encouraged. The source code for this platform is licensed under a MIT GPL open-source license and can be accessed <a href="https://github.com/tehamalab/iipdash" target="blank">here</a>.
+                                </p>
+                            </div>
+
+                            <div class="about-faq">
+                                <h5 class="about-faq-question">Who funded this platform?</h5>
+                                <p class="about-faq-answer">
+                                    This platform was funded by the World Bank under the Accelerating Inclusive Digitalization in Eastern and Southern Africa analytical program.
+                                </p>
+                            </div>
+
+                            <div class="about-faq">
+                                <h5 class="about-faq-question">When was this platform last updated?</h5>
+                                <p class="about-faq-answer">
+                                    This platform was last updated April 2025.
+                                </p>
+                            </div>
+
+                            <div class="about-faq">
+                                <h5 class="about-faq-question">Whom can I contact with questions?</h5>
+                                <p class="about-faq-answer">
+                                    Please use this <a href="https://forms.gle/B7zWAnrhS8T5aRUW8" target="blank">form</a> to share your feedback.
+                                </p>
+                            </div>
+                        </div>
+
+                        {% comment %} start: faq right placeholder side no content {% endcomment %}
+                        <div class="col-md-3">
+                            &nbsp;
+                        </div>
+                        {% comment %} end: faq right placeholder side no content {% endcomment %}
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    {# end: faq section #}
 {% endblock content %}

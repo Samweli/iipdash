@@ -1,0 +1,42 @@
+// About page styles.
+//
+.about {
+    .about-banner {
+        max-height: 500px;
+        object-fit: cover;
+    }
+
+    .about-description-tagline {
+        @extend .h-txt-32;
+    }
+
+    .about-description {
+        @extend .text-white;
+        background-color: $main-blue;
+
+        .about-read-more {
+            @extend .text-white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            white-space: nowrap;
+        }
+    }
+
+    .about-faq {
+        @extend .mb-5;
+
+        .about-faq-question {
+            @extend .h-txt-20;
+        }
+
+        .about-faq-answer {
+            @extend .p-txt;
+        }
+
+        .about-faq-img {
+            @extend .img-fluid, .rounded, .mt-3, .border, .border-1, .border-dark;
+        }
+    }
+}
