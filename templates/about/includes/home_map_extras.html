@@ -47,7 +47,7 @@
         <div class="d-flex align-items-center">
             <div class="me-1 p-txt-12-black fw-medium">0</div>
             <div>
-                <img src="{% static '/images/legend-population-density-hd.png' %}"
+                <img src="{% static '/images/legend-population-density-hd.svg' %}"
                      class="img-fluid choropleth-img">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">30+</div>
@@ -63,13 +63,45 @@
         <div class="d-flex align-items-center">
             <div class="me-1 p-txt-12-black fw-medium">Min</div>
             <div>
-                <img src="{% static '/images/legend-relative-wealth-index.png' %}"
+                <img src="{% static '/images/legend-relative-wealth-index.svg' %}"
                      class="img-fluid choropleth-img">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">Max</div>
         </div>
     </div>
     {# End: relative-wealth-index legend #}
+
+    {# Start: cyclone-risk legend #}
+    <div class="mt-3" v-if="catalogSelectedLayers.includes('cyclone-risk')">
+        <div class="p-txt-14-black fw-semibold">{% trans 'Cyclone risk' %}</div>
+        <div class="small text-muted">{% trans 'Probability' %}</div>
+
+        <div class="d-flex align-items-center">
+            <div class="me-1 p-txt-12-black fw-medium">Min</div>
+            <div>
+                <img src="{% static '/images/legend-cyclone-risk.svg' %}"
+                     class="img-fluid choropleth-img">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">Max</div>
+        </div>
+    </div>
+    {# End: cyclone-risk legend #}
+
+    {# Start: seismic-hazards legend #}
+    <div class="mt-3" v-if="catalogSelectedLayers.includes('seismic-hazards')">
+        <div class="p-txt-14-black fw-semibold">{% trans 'Seismic hazards' %}</div>
+        <div class="small text-muted">{% trans 'Probability' %}</div>
+
+        <div class="d-flex align-items-center">
+            <div class="me-1 p-txt-12-black fw-medium">Min</div>
+            <div>
+                <img src="{% static '/images/legend-seismic-hazards.svg' %}"
+                     class="img-fluid choropleth-img">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">Max</div>
+        </div>
+    </div>
+    {# End: seismic-hazards legend #}
 
     {# Start: cell-towers legend #}
     <div class="mt-3" v-if="catalogSelectedLayers.includes('cell-towers')">
@@ -86,18 +118,6 @@
         </div>
     </div>
     {# End: cell-towers legend #}
-
-    {# Start: mobile-coverage-3g legend #}
-    <div class="mt-3" v-if="catalogSelectedLayers.includes('mobile-coverage-3g')">
-        <div class="d-flex align-items-center">
-            <div class="align-self-center me-2">
-                <img src="{% static '/images/legend-mobile-coverage-3g.svg' %}"
-                     class="img-fluid choropleth-img">
-            </div>
-            <div class="p-txt-14-black fw-semibold">{% trans 'Mobile coverage (3G)' %}</div>
-        </div>
-    </div>
-    {# End: mobile-coverage-3g legend #}
 
     {# Start: fiber-optics legend #}
     <div class="mt-3" v-if="catalogSelectedLayers.includes('fiber-optics')">
@@ -134,6 +154,18 @@
         </div>
     </div>
     {# End: health-facilities legend #}
+
+    {# Start: mobile-coverage-3g legend #}
+    <div class="mt-3" v-if="catalogSelectedLayers.includes('mobile-coverage-3g')">
+        <div class="d-flex align-items-center">
+            <div class="align-self-center me-2">
+                <img src="{% static '/images/legend-mobile-coverage-3g.svg' %}"
+                     class="img-fluid choropleth-img">
+            </div>
+            <div class="p-txt-14-black fw-semibold">{% trans 'Mobile coverage (3G)' %}</div>
+        </div>
+    </div>
+    {# End: mobile-coverage-3g legend #}
 
     {# Start: flooding-fluvial legend #}
     <div class="mt-3" v-if="catalogSelectedLayers.includes('flooding-fluvial')">
