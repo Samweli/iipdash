@@ -33,7 +33,8 @@
                     class="btn btn-light border"
                     type="button"
                     data-bs-toggle="dropdown"
-                    data-bs-auto-close="false">
+                    data-bs-auto-close="false"
+                    :class="{ 'layers-category-filter-dropdown-active': catalogSelectedCategories && catalogSelectedCategories.length > 0 }">
                     <i class="fa-solid fa-filter"></i>
                 </button>
 
