@@ -71,6 +71,22 @@
     </div>
     {# End: relative-wealth-index legend #}
 
+    {# Start: cell-towers legend #}
+    <div class="mt-3" v-if="catalogSelectedLayers.includes('cell-towers')">
+        <div class="p-txt-14-black fw-semibold">{% trans 'Cell towers' %}</div>
+        <div class="small text-muted">{% trans 'Sized by range' %}</div>
+
+        <div class="d-flex align-items-center">
+            <div class="me-1 p-txt-12-black fw-medium">Min</div>
+            <div>
+                <img src="{% static '/images/legend-cell-towers.svg' %}"
+                     class="img-fluid choropleth-img">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">Max</div>
+        </div>
+    </div>
+    {# End: cell-towers legend #}
+
     {# Start: mobile-coverage-3g legend #}
     <div class="mt-3" v-if="catalogSelectedLayers.includes('mobile-coverage-3g')">
         <div class="d-flex align-items-center">
@@ -94,6 +110,18 @@
         </div>
     </div>
     {# End: fiber-optics legend #}
+
+    {# Start: electricity-networks legend #}
+    <div class="mt-3" v-if="catalogSelectedLayers.includes('electricity-networks')">
+        <div class="d-flex align-items-center">
+            <div class="align-self-center me-2">
+                <img src="{% static '/images/legend-electricity-networks.svg' %}"
+                     class="img-fluid choropleth-img">
+            </div>
+            <div class="p-txt-14-black fw-semibold">{% trans 'Transmission lines' %}</div>
+        </div>
+    </div>
+    {# End: electricity-networks legend #}
 
     {# Start: health-facilities legend #}
     <div class="mt-3" v-if="catalogSelectedLayers.includes('health-facilities')">
