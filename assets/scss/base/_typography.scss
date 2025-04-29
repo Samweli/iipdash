@@ -65,9 +65,13 @@
 // .text-primary
 // .text-secondary
 // .text-body
-// .tex-muted
+// .text-muted
 // .text-white
 // See: https://getbootstrap.com/docs/5.0/utilities/colors/
+.text-grey-69 {
+    color: $grey-69 !important;
+}
+
 .text-grey-57 {
     color: $grey-57 !important;
 }
@@ -183,6 +187,10 @@
 .p-txt-12-black {
     @extend .p-txt, .fs-12, .text-black;
     line-height: 1.33; // ~ (16px / 12px )
+}
+
+.p-txt-12-muted {
+    @extend .p-txt-12, .text-grey-69;
 }
 
 .p-txt-stats-value {
