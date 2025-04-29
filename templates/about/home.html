@@ -22,9 +22,10 @@
             {% endblocktrans %}
         </p>
         <p class="p-txt-14 mt-3">
-            {% blocktrans trimmed %}
+            {% url 'about' as about_url %}
+            {% blocktrans with about_url=about_url trimmed%}
                 This is a prototype. Some data may be missing or incomplete. Click
-                <a href="#">here</a> for details.
+                <a href="{{ about_url }}">here</a> for details.
             {% endblocktrans %}
         </p>
     </div>
