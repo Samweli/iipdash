@@ -180,6 +180,11 @@
     line-height: 1.33; // ~ (16px / 12px )
 }
 
+.p-txt-12-black {
+    @extend .p-txt, .fs-12, .text-black;
+    line-height: 1.33; // ~ (16px / 12px )
+}
+
 .p-txt-stats-value {
     @extend .p-txt, .fw-semibold, .fs-48;
     line-height: 1.2917; // ~ (62px / 48px )
