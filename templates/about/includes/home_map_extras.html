@@ -95,5 +95,30 @@
     </div>
     {# End: fiber-optics legend #}
 
+    {# Start: health-facilities legend #}
+    <div class="mt-3" v-if="catalogSelectedLayers.includes('health-facilities')">
+        <div class="d-flex align-items-center">
+            <div class="align-self-center me-2">
+                <img src="{% static '/images/legend-health-facilities.svg' %}"
+                     class="img-fluid choropleth-img">
+            </div>
+            <div class="p-txt-14-black fw-semibold">{% trans 'Healthcare facility' %}</div>
+        </div>
+    </div>
+    {# End: health-facilities legend #}
+
+    {# Start: flooding-fluvial legend #}
+    <div class="mt-3" v-if="catalogSelectedLayers.includes('flooding-fluvial')">
+        <div class="d-flex align-items-center">
+            <div class="align-self-center me-2">
+                <img src="{% static '/images/legend-flooding-fluvial.svg' %}"
+                     class="img-fluid choropleth-img">
+            </div>
+            <div class="p-txt-14-black fw-semibold">{% trans 'Flooding (fluvial)' %}</div>
+        </div>
+        <div class="small text-muted ms-3">{% trans '1 in 100 estimate' %}</div>
+    </div>
+    {# End: flooding-fluvial legend #}
+
 </div>
 {# End: bottom map legends #}
