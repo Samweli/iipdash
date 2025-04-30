@@ -17,4 +17,5 @@ def site(request):
         "MAP_DEFAULT_CENTER": settings.MAP_DEFAULT_CENTER,
         "MAP_DEFAULT_ZOOM": settings.MAP_DEFAULT_ZOOM,
         "MAP_DEFAULT_BBOX": settings.MAP_DEFAULT_BBOX,
+        "GOOGLE_ANALYTICS_TAG_ID": settings.GOOGLE_ANALYTICS_TAG_ID,
     }

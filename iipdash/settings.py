@@ -473,6 +473,11 @@ BASEMAP_ATTRIBUTION = env(
 )
 
 
+# Analytics
+
+GOOGLE_ANALYTICS_TAG_ID = env("GOOGLE_ANALYTICS_TAG_ID", default="")
+
+
 # Logging
 
 LOGGING = {
