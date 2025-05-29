@@ -62,7 +62,7 @@ class CSVDownloadMixin:
             django.http.StreamingHttpResponse
         """
 
-        if request.user.is_authenticated:
+        if not request.user.is_authenticated:
             raise Http404
 
         file_name = self.get_csv_file_name()
