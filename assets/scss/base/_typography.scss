@@ -109,6 +109,11 @@
     @extend .h-txt-20, .text-primary;
 }
 
+.h-txt-20-dm-sans {
+    @extend .h-txt-20, .fw-semibold;
+    font-family: $font-family-dm-sans !important;
+}
+
 // Paragraphs
 //
 // .p-txt: Default paragraph
