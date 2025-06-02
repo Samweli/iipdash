@@ -53,6 +53,9 @@ To create user via the admin portal
 2. Enter the username, password and password confirmation for the user to be created and then save.
 3. You will be redirected to the page for adding or editing more user details, including email, name
    and staff status. Optionally add some details like email, first name, last name then save.
+4. **ONLY** if you want the newly created user to create/edit other users, in the step above, scroll to "User permissions",
+   then scroll to the bottom of the User Permissions box, where you will find 4 options starting with "Users | user...".
+   Double click each of them to add them to the user permission box on the right.
 
 The platform stores the passwords in encrypted format, therefore the users passwords can't be
 accessed as plain text.
