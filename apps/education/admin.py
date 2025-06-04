@@ -13,8 +13,10 @@ References:
     - :class:`import_export.admin.ImportExportModelAdmin`
 """
 
+from django.contrib import messages
 from django.contrib.gis import admin
 from django.contrib.gis.admin import GISModelAdmin
+from django.utils.translation import ngettext
 
 from import_export.admin import ImportExportModelAdmin
 
@@ -117,3 +119,19 @@ class InstitutionAdmin(GISModelAdmin, ImportExportModelAdmin):
     ]
 
     raw_id_fields = ["administrative_area"]
+    actions = ["refresh_fon_distances"]
+
+    @admin.action(description="Refresh selected institutions distance to the nearest fiber optic nodes")
+    def refresh_fon_distances(self, request, queryset):
+        updated = queryset.refresh_fon_distances()
+
+        self.message_user(
+            request,
+            ngettext(
+                "%d education institution updated distance to the nearest fiber optic node.",
+                "%d education institutions updated distance to the nearest fiber optic node.",
+                updated,
+            )
+            % updated,
+            messages.SUCCESS,
+        )

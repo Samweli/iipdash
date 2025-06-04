@@ -25,6 +25,8 @@ from django.utils.translation import gettext_lazy as _
 
 from administrative.models import Area
 
+from .managers import InstitutionManager
+
 
 class Category(models.Model):
     """Category of an educational institution.
@@ -592,6 +594,8 @@ class Institution(models.Model):
         verbose_name=_("related administrative areas"),
         help_text=_("A set of administrative areas related to this institution."),
     )
+
+    objects = InstitutionManager()
 
     class Meta:
         """
