@@ -214,7 +214,11 @@ const EducationDash = {
                     percent10km = '-';
                 }
 
-                new maplibregl.Popup()
+                if (this.currentPopup){
+                    this.currentPopup.remove();
+                }
+
+                this.currentPopup = new maplibregl.Popup()
                     .setLngLat(e.lngLat)
                     .setHTML(
                         `<div class="card border-0">
@@ -253,7 +257,11 @@ const EducationDash = {
                     fonDistance = '-';
                 }
 
-                new maplibregl.Popup()
+                if (this.currentPopup){
+                    this.currentPopup.remove();
+                }
+
+                this.currentPopup = new maplibregl.Popup()
                     .setLngLat(e.lngLat)
                     .setHTML(
                         `<div class="card border-0">
@@ -284,7 +292,11 @@ const EducationDash = {
                 });
                 const schools10kmCount = institutionsAggregates.data.fon_distance_10km_count;
 
-                new maplibregl.Popup()
+                if (this.currentPopup){
+                    this.currentPopup.remove();
+                }
+
+                this.currentPopup = new maplibregl.Popup()
                     .setLngLat(e.lngLat)
                     .setHTML(
                         `<div class="card border-0">
