@@ -601,9 +601,9 @@ class CellTower(models.Model):
             "uuid": self.uuid,
         }
 
-    def set_administrative_area(self):
+    def set_administrative_area(self, overwrite=False):
         """Try to detect related administrative area based on the location if not yet provided."""
-        if self.administrative_area is not None or self.geometry is None:
+        if self.administrative_area is not None or self.geometry is None and overwrite is not True:
             return
 
         area = Area.objects.filter(geometry__covers=self.geometry).order_by("-depth").first()
