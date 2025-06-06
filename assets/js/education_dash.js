@@ -142,6 +142,7 @@ const EducationDash = {
             this._map.on('load', () => {
                 this.mapLoaded = true;
                 this.addMapLayers();
+                this.mouseEvents();
             });
 
             const navigationControl = new maplibregl.NavigationControl({
@@ -345,6 +346,21 @@ const EducationDash = {
                     </div>`,
                 )
                 .addTo(this._map);
+        },
+
+        mouseEvents: async function () {
+            const layers = ['areas-education', 'education-institutions', 'fiber-nodes']
+
+            layers.forEach((layerID) => {
+
+                this._map.on('mouseenter', layerID, () => {
+                    this._map.getCanvas().style.cursor = 'pointer';
+                });
+
+                 this._map.on('mouseleave', layerID, () => {
+                    this._map.getCanvas().style.cursor = '';
+                });
+            });
         },
 
         updateMap: async function () {
