@@ -195,6 +195,7 @@ class FiberOpticNodeCSVSerializer(serializers.ModelSerializer):
 
 
 class ElectricityNetworkSerializer(GeoFeatureModelSerializer):
+    administrative_area = RelatedAreaSerializer(read_only=True)
 
     class Meta:
         model = ElectricityNetwork

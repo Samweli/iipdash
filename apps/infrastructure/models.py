@@ -33,7 +33,6 @@ from django.utils.translation import gettext_lazy as _
 import gdal2tiles
 import numpy as np
 import rasterio
-from django_countries.fields import CountryField
 from rasterio.enums import ColorInterp
 
 from administrative.models import Area
@@ -952,8 +951,6 @@ class ElectricityNetwork(models.Model):
     from_nm = models.CharField(_("from nm"), max_length=255, blank=True)
     to_nm = models.CharField(_("to nm"), max_length=255, blank=True)
     network_type = models.CharField(_("network type"), max_length=255, blank=True)
-
-    country = CountryField(_("country"), blank=True)
 
     geometry = models.MultiLineStringField(
         _("geometry"),

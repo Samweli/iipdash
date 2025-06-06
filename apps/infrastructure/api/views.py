@@ -561,13 +561,20 @@ class ElectricityNetworkViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
         "to_nm",
         "network_type",
         "country",
+        "administrative_area_uuid",
+        "administrative_area_name",
     )
 
     queryset = ElectricityNetwork.objects.order_by("-created_at")
 
     def get_vector_tile_queryset(self, *args, **kwargs):
         """Returns a queryset used to generate vector tiles."""
-        queryset = self.get_queryset().annotate(geom=Cast("geometry", MultiLineStringField()))
+        queryset = self.get_queryset().annotate(
+            geom=Cast("geometry", MultiLineStringField()),
+            country=F("administrative_area__country"),
+            administrative_area_uuid=F("administrative_area__uuid"),
+            administrative_area_name=F("administrative_area__name"),
+        )
         queryset = self.filter_queryset(queryset)
         return queryset
 
