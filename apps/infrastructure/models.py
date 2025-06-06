@@ -936,6 +936,16 @@ class ElectricityNetwork(models.Model):
         help_text=_("A universally unique identifier (UUID)"),
     )
 
+    administrative_area = models.ForeignKey(
+        "administrative.Area",
+        blank=True,
+        null=True,
+        related_name="electricity_networks",
+        related_query_name="electricity_network",
+        on_delete=models.SET_NULL,
+        verbose_name=_("administrative area"),
+    )
+
     voltage_kv = models.PositiveIntegerField(_("voltage KV"), blank=True, null=True)
     status = models.CharField(_("status"), max_length=255, blank=True)
     source = models.CharField(_("source"), max_length=255, blank=True)
@@ -974,5 +984,9 @@ class ElectricityNetwork(models.Model):
         verbose_name = _("Electricity Network")
         verbose_name_plural = _("Electricity Networks")
 
+    @property
+    def display_name(self):
+        return f"{self.from_nm} - {self.to_nm}"
+
     def __str__(self):
-        return f"{self.country}: {self.from_nm} - {self.to_nm}"
+        return self.display_name

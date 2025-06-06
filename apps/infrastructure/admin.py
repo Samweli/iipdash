@@ -126,7 +126,12 @@ class MobileCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
 
 @admin.register(ElectricityNetwork)
 class ElectricityNetworkAdmin(GISModelAdmin, ImportExportModelAdmin):
-    pass
+    list_display = ["display_name", "administrative_area", "status", "network_type"]
+    list_display_links = ["display_name", "administrative_area"]
+    list_filter = ["administrative_area__country", "created_at", "updated_at"]
+    list_select_related = ["administrative_area"]
+    search_fields = ["id", "uuid", "administrative_area__name"]
+    raw_id_fields = ["administrative_area"]
 
 
 @admin.register(InternetSpeed)
