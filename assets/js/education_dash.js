@@ -32,6 +32,7 @@ const EducationDash = {
             },
             countries: { features: [] },
             countriesLookup: {},
+            currentPopup: null,
             regions: { features: [] },
             regionOptions: { features: [] },
             institutionsAggregates: { fon_distances: [] },
@@ -196,114 +197,154 @@ const EducationDash = {
             this._map.addSource('fiber-nodes', mapSources['fiber-nodes']);
             this._map.addLayer(fiberNodesLayer);
 
-            // Summary stats popups
-            this._map.on('click', 'areas-education', (e) => {
-                const countryName = this.countriesLookup[e.features[0].properties.country];
-                const name = `${e.features[0].properties.name}, ${countryName}`;
+            // Handle layers popup based on layers priority
 
-                let avgDistance = utils.meters2km(e.features[0].properties.institutions_fiber_distance_avg);
-                if (isNaN(avgDistance)) {
-                    avgDistance = '-';
-                }
+            this._map.on('click', (e) => {
 
-                let percent10km = utils.asPercent(
-                    e.features[0].properties.institutions_fiber_10km,
-                    e.features[0].properties.institutions_count,
+                const features = this._map.queryRenderedFeatures(
+                    e.point,
+                    { layers: ['areas-education', 'education-institutions', 'fiber-nodes'] }
                 );
-                if (isNaN(percent10km)) {
-                    percent10km = '-';
+
+                if (features.length == 0){
+                    return;
                 }
+                const layerID = features[0].layer.id;
 
-                new maplibregl.Popup()
-                    .setLngLat(e.lngLat)
-                    .setHTML(
-                        `<div class="card border-0">
-                            <div class="card-header text-bg-primary">
-                              <h5 class="text-white pe-3">${name}</h5>
-                            </div>
+                // Assign queried layer features to the event object
+                e.features = features
 
-                            <div class="card-body">
-                                <p class="p-txt-stats-description">
-                                    average distance to fiber node
-                                </p>
-                                <div class="d-flex flex-row align-items-center">
-                                    <p class="p-txt-stats-value-primary">${avgDistance}</p>
-                                    <p class="p-txt-stats-label-primary ms-1">KM</p>
-                                </div>
-
-                                <p class="p-txt-stats-description">
-                                    schools within 10 km of fiber node
-                                </p>
-                                <div class="d-flex flex-row align-items-center">
-                                    <p class="p-txt-stats-value-primary">${percent10km}</p>
-                                    <p class="p-txt-stats-label-primary ms-1">%</p>
-                                </div>
-                            </div>
-                        </div>`,
-                    )
-                    .addTo(this._map);
-            });
-
-            // Schools popups
-            this._map.on('click', 'education-institutions', (e) => {
-                const name = e.features[0].properties.name;
-
-                let fonDistance = utils.meters2km(e.features[0].properties.fon_distance);
-                if (isNaN(fonDistance)) {
-                    fonDistance = '-';
+                if (layerID === 'areas-education'){
+                    this.areasEducationPopup(e);
                 }
-
-                new maplibregl.Popup()
-                    .setLngLat(e.lngLat)
-                    .setHTML(
-                        `<div class="card border-0">
-                            <div class="card-header text-bg-primary">
-                              <h5 class="text-white pe-3">${name}</h5>
-                            </div>
-
-                            <div class="card-body">
-                                <p class="text-uppercase fs-6 fw-light text-muted">
-                                    Distance to nearest fiber node
-                                </p>
-                                <div class="d-flex flex-row align-items-center">
-                                    <p class="p-txt-stats-value-primary">${fonDistance}</p>
-                                    <p class="p-txt-stats-label-primary ms-1">KM</p>
-                                </div>
-                            </div>
-                        </div>`,
-                    )
-                    .addTo(this._map);
+                else if (layerID === 'education-institutions'){
+                    this.schoolsPopup(e);
+                }
+                else if (layerID === 'fiber-nodes'){
+                    this.fiberNodesPopup(e);
+                }
             });
+        },
 
-            // Fiber nodes popups
-            this._map.on('click', 'fiber-nodes', async (e) => {
-                const center = e.features[0].geometry.coordinates.join(',');
-                const lookup = _.pick(this.lookup, ['administrative_area', 'country']);
-                const institutionsAggregates = await axios.get(`${API_ROOT}education/institutions/aggregates`, {
-                    params: { ...lookup, point: center, radius: 10000 },
-                });
-                const schools10kmCount = institutionsAggregates.data.fon_distance_10km_count;
+      // Summary stats popups
+        areasEducationPopup: async function (e){
+            const countryName = this.countriesLookup[e.features[0].properties.country];
+            const name = `${e.features[0].properties.name}, ${countryName}`;
 
-                new maplibregl.Popup()
-                    .setLngLat(e.lngLat)
-                    .setHTML(
-                        `<div class="card border-0">
-                            <div class="card-header text-bg-primary">
-                              <h5 class="text-white pe-3">Fiber optic node</h5>
+            let avgDistance = utils.meters2km(e.features[0].properties.institutions_fiber_distance_avg);
+            if (isNaN(avgDistance)) {
+                avgDistance = '-';
+            }
+
+            let percent10km = utils.asPercent(
+                e.features[0].properties.institutions_fiber_10km,
+                e.features[0].properties.institutions_count,
+            );
+            if (isNaN(percent10km)) {
+                percent10km = '-';
+            }
+
+            if (this.currentPopup){
+                this.currentPopup.remove();
+            }
+
+            this.currentPopup = new maplibregl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(
+                    `<div class="card border-0">
+                        <div class="card-header text-bg-primary">
+                          <h5 class="text-white pe-3">${name}</h5>
+                        </div>
+
+                        <div class="card-body">
+                            <p class="p-txt-stats-description">
+                                average distance to fiber node
+                            </p>
+                            <div class="d-flex flex-row align-items-center">
+                                <p class="p-txt-stats-value-primary">${avgDistance}</p>
+                                <p class="p-txt-stats-label-primary ms-1">KM</p>
                             </div>
 
-                            <div class="card-body">
-                                <p class="text-uppercase fs-6 fw-light text-muted">
-                                    Schools within 10km
-                                </p>
-                                <div class="d-flex flex-row align-items-center">
-                                    <p class="p-txt-stats-value-primary">${schools10kmCount}</p>
-                                </div>
+                            <p class="p-txt-stats-description">
+                                schools within 10 km of fiber node
+                            </p>
+                            <div class="d-flex flex-row align-items-center">
+                                <p class="p-txt-stats-value-primary">${percent10km}</p>
+                                <p class="p-txt-stats-label-primary ms-1">%</p>
                             </div>
-                        </div>`,
-                    )
-                    .addTo(this._map);
+                        </div>
+                    </div>`,
+                )
+                .addTo(this._map);
+        },
+
+        // Schools popups
+        schoolsPopup: async function (e) {
+            const name = e.features[0].properties.name;
+
+            let fonDistance = utils.meters2km(e.features[0].properties.fon_distance);
+            if (isNaN(fonDistance)) {
+                fonDistance = '-';
+            }
+
+            if (this.currentPopup){
+                this.currentPopup.remove();
+            }
+
+            this.currentPopup = new maplibregl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(
+                    `<div class="card border-0">
+                        <div class="card-header text-bg-primary">
+                          <h5 class="text-white pe-3">${name}</h5>
+                        </div>
+
+                        <div class="card-body">
+                            <p class="text-uppercase fs-6 fw-light text-muted">
+                                Distance to nearest fiber node
+                            </p>
+                            <div class="d-flex flex-row align-items-center">
+                                <p class="p-txt-stats-value-primary">${fonDistance}</p>
+                                <p class="p-txt-stats-label-primary ms-1">KM</p>
+                            </div>
+                        </div>
+                    </div>`,
+                )
+                .addTo(this._map);
+        },
+
+        // Fiber nodes popups
+        fiberNodesPopup: async function (e) {
+            const center = e.features[0].geometry.coordinates.join(',');
+            const lookup = _.pick(this.lookup, ['administrative_area', 'country']);
+            const institutionsAggregates = await axios.get(`${API_ROOT}education/institutions/aggregates`, {
+                params: { ...lookup, point: center, radius: 10000 },
             });
+            const schools10kmCount = institutionsAggregates.data.fon_distance_10km_count;
+
+            if (this.currentPopup){
+                this.currentPopup.remove();
+            }
+
+            this.currentPopup = new maplibregl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(
+                    `<div class="card border-0">
+                        <div class="card-header text-bg-primary">
+                          <h5 class="text-white pe-3">Fiber optic node</h5>
+                        </div>
+
+                        <div class="card-body">
+                            <p class="text-uppercase fs-6 fw-light text-muted">
+                                Schools within 10km
+                            </p>
+                            <div class="d-flex flex-row align-items-center">
+                                <p class="p-txt-stats-value-primary">${schools10kmCount}</p>
+                            </div>
+                        </div>
+                    </div>`,
+                )
+                .addTo(this._map);
         },
 
         updateMap: async function () {
