@@ -584,7 +584,7 @@ class CellTower(models.Model):
         return self.display_name
 
     def save(self, *args, **kwargs):
-        self.set_administrative_area()
+        self.set_administrative_area(overwrite=False)
         super().save(*args, **kwargs)
 
     @property
@@ -601,7 +601,7 @@ class CellTower(models.Model):
             "uuid": self.uuid,
         }
 
-    def set_administrative_area(self, overwrite=False):
+    def set_administrative_area(self, overwrite=True):
         """Try to detect related administrative area based on the location if not yet provided."""
         if self.administrative_area is not None or self.geometry is None and overwrite is not True:
             return

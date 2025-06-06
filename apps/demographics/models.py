@@ -5,6 +5,8 @@ from django.contrib.gis.geos import Point
 from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
 
+from administrative.models import Area
+
 
 class PopulationDensityHD(models.Model):
     """High resolution population density."""
@@ -104,6 +106,17 @@ class RelativeWealthIndex(models.Model):
         help_text=_("A universally unique identifier (UUID)."),
     )
 
+    administrative_area = models.ForeignKey(
+        "administrative.Area",
+        blank=True,
+        null=True,
+        related_name="relative_wealth_indexes",
+        related_query_name="relative_wealth_index",
+        on_delete=models.SET_NULL,
+        verbose_name=_("administrative area"),
+        help_text=_("The administrative area to which the relative wealth index belongs."),
+    )
+
     geometry = models.PointField(
         _("location"),
         geography=True,
@@ -137,3 +150,16 @@ class RelativeWealthIndex(models.Model):
 
     def __str__(self):
         return f"{str(self.geometry)}: {self.rwi}"
+
+    def save(self, *args, **kwargs):
+        self.set_administrative_area(overwrite=False)
+        super().save(*args, **kwargs)
+
+    def set_administrative_area(self, overwrite=True):
+        """Try to detect related administrative area based on the location if not yet provided."""
+        if self.administrative_area is not None or self.geometry is None and overwrite is not True:
+            return
+
+        area = Area.objects.filter(geometry__covers=self.geometry).order_by("-depth").first()
+        if area:
+            self.administrative_area = area
