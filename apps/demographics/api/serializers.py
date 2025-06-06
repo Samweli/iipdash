@@ -18,6 +18,7 @@ class PopulationDensityHDSerializer(GeoFeatureModelSerializer):
 
 
 class RelativeWealthIndexSerializer(GeoFeatureModelSerializer):
+    administrative_area = RelatedAreaSerializer(read_only=True)
 
     class Meta:
         model = RelativeWealthIndex

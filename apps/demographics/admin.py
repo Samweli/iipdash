@@ -11,10 +11,16 @@ class PopulationDensityHDAdmin(GISModelAdmin, ImportExportModelAdmin):
     list_display = ["administrative_area", "population_density", "id", "uuid"]
     list_display_links = ["administrative_area", "id", "uuid"]
     list_select_related = ["administrative_area"]
+    list_filter = ["administrative_area__country", "created_at", "updated_at"]
+    search_fields = ["id", "uuid", "administrative_area__name"]
     raw_id_fields = ["administrative_area"]
-    list_filter = ["administrative_area__country", "administrative_area", "created_at", "updated_at"]
 
 
 @admin.register(RelativeWealthIndex)
 class RelativeWealthIndexAdmin(GISModelAdmin, ImportExportModelAdmin):
-    pass
+    list_display = ["administrative_area", "rwi", "id", "uuid"]
+    list_display_links = ["administrative_area", "id", "uuid"]
+    list_select_related = ["administrative_area"]
+    list_filter = ["administrative_area__country", "created_at", "updated_at"]
+    search_fields = ["id", "uuid", "administrative_area__name"]
+    raw_id_fields = ["administrative_area"]
