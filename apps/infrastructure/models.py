@@ -322,7 +322,7 @@ class FiberOpticNode(models.Model):
         return self.display_name
 
     def save(self, *args, **kwargs):
-        self.set_administrative_area()
+        self.set_administrative_area(overwrite=False)
         super().save(*args, **kwargs)
 
     @property
@@ -334,9 +334,9 @@ class FiberOpticNode(models.Model):
                 "administrative_area": str(self.administrative_area)
             }
 
-    def set_administrative_area(self):
+    def set_administrative_area(self, overwrite=True):
         """Try to detect related administrative area based on the location if not yet provided."""
-        if self.administrative_area is not None or self.geometry is None:
+        if self.administrative_area is not None or self.geometry is None and overwrite is not True:
             return
 
         area = Area.objects.filter(geometry__covers=self.geometry).order_by("-depth").first()
