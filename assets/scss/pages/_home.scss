@@ -29,7 +29,7 @@
     .layers-list-group-container {
         // min-height: 300px !important;  // FIXME: needed to avoid ui flickering when searching
         // max-height: 300px !important;  // FIXME: needed to ensure enough space to show some few layer and scrolling
-        max-height: calc(100vh - 650px);
+        max-height: 60vh;
 
         // Layers list group
         .layers-list-group {
