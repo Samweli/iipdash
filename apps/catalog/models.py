@@ -1,16 +1,15 @@
+import shutil
 import uuid
 from pathlib import Path
 from urllib.parse import urljoin
 
 from django.conf import settings
 from django.contrib.postgres.fields import ArrayField
-from django.db import models, transaction
+from django.db import models
 from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
 
 from gdal2tiles import gdal2tiles
-
-from .tasks import generate_layer_tiff_tiles
 
 
 def layer_tiff_path(instance, filename):
@@ -139,15 +138,10 @@ class Layer(models.Model):
 
     def save(self, *args, **kwargs):
 
-        is_new = not bool(self.id)
-
         if not self.code:
             self.code = str(self.uuid)
 
         super().save(*args, **kwargs)
-
-        if self.tiff and is_new:
-            transaction.on_commit(lambda: generate_layer_tiff_tiles.delay(pk=self.pk))
 
     @property
     def tiles_dir(self):
@@ -170,6 +164,12 @@ class Layer(models.Model):
 
         return urljoin(settings.TILES_URL, f"{self.tiles_dir}/{{z}}/{{x}}/{{y}}.png")
 
+    def clear_tiles(self):
+        try:
+            shutil.rmtree(self.tiles_root)
+        except FileNotFoundError:
+            pass
+
     def generate_tiles(self, **kwargs):
         """Generate tiles for using web maps from TIFF file."""
 
@@ -185,4 +185,6 @@ class Layer(models.Model):
             "zoom": (1, 15),
             **kwargs,
         }
+
+        self.clear_tiles()
         gdal2tiles.generate_tiles(self.tiff.path, str(self.tiles_root), **kwargs)
