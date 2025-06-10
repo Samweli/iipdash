@@ -34,6 +34,8 @@ const HomeDash = {
             catalogSelectedLayers: [],
             catalogLayerSearchTerm: '',
             countries: { features: [] },
+            countriesLookup: {},
+            currentPopup: null,
             regions: { features: [] },
             regionOptions: { features: [] },
             selectedCountry: null,
@@ -95,6 +97,10 @@ const HomeDash = {
             this.countries = countries;
             this.regions = _.cloneDeep(regions);
             this.regionOptions = _.cloneDeep(regions);
+
+            this.countries.features.forEach((feature) => {
+                    this.countriesLookup[feature.properties.country] = feature.properties.name;
+                });
         },
 
         /**
@@ -111,6 +117,7 @@ const HomeDash = {
             this._map.on('load', async () => {
                 this.mapLoaded = true;
                 await this.addMapLayers();
+                await this.mouseEvents();
             });
 
             const navigationControl = new maplibregl.NavigationControl({
@@ -120,6 +127,7 @@ const HomeDash = {
                 showCompass: true,
             });
             map.addControl(navigationControl);
+
         },
 
         /**
@@ -264,7 +272,94 @@ const HomeDash = {
             });
             this._map.addSource('regions', mapSources.regions);
             this._map.addLayer(regionsLayer);
+
+            // Handle layers popup
+
+            this._map.on('click', (e) => {
+
+                const features = this._map.queryRenderedFeatures(
+                    e.point,
+                    { layers: ['education-institutions'] }
+                );
+
+                if (features.length == 0){
+                    return;
+                }
+                const layerID = features[0].layer.id;
+
+                // Assign queried layer features to the event object
+                e.features = features
+
+                if (layerID === 'education-institutions'){
+                    this.educationInstitutionPopup(e);
+                }
+            });
         },
+
+         /**
+         * Create a popup for the education institutions layer features.
+         *
+         *
+         * This:
+         *
+         * - Fetch `country` name based on clicked education institution
+         * - Fetch `region` name based on clicked education institution
+         * - Display a popup with education institution properties
+         */
+        educationInstitutionPopup: async function (e){
+            const countryName = this.countriesLookup[e.features[0].properties.country];
+            const name = `${e.features[0].properties.name}`;
+            const selectedRegion = e.features[0].properties.administrative_area_name;
+
+            if (this.currentPopup){
+                this.currentPopup.remove();
+            }
+
+            this.currentPopup = new maplibregl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(
+                    `<div class="card border-0">
+                        <div class="card-header text-bg-primary">
+                          <h5 class="text-white pe-3">${name}</h5>
+                        </div>
+
+                        <div class="card-body">
+                            <p class="text-uppercase fs-6 fw-light text-muted">
+                                Country : ${countryName}
+                            </p>
+                            <p class="text-uppercase fs-6 fw-light text-muted">
+                                Region : ${selectedRegion}
+                            </p>
+
+                        </div>
+                    </div>`,
+                )
+                .addTo(this._map);
+        },
+
+         /**
+         * Handles cursor style for different mouse events on the map layers.
+         *
+         *
+         * This:
+         *
+         * - Change cursor style for `mouseenter` and `mouseleave` events on map layers.
+         */
+         mouseEvents: async function () {
+            const layers = ['education-institutions']
+
+            layers.forEach((layerID) => {
+
+                this._map.on('mouseenter', layerID, () => {
+                    this._map.getCanvas().style.cursor = 'pointer';
+                });
+
+                 this._map.on('mouseleave', layerID, () => {
+                    this._map.getCanvas().style.cursor = '';
+                });
+            });
+        },
+
 
         /**
          * Add map layers legend.
