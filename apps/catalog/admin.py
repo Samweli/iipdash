@@ -28,6 +28,13 @@ class LayerAdmin(ImportExportModelAdmin):
     readonly_fields = ["id", "uuid", "created_at", "updated_at"]
     actions = ["refresh_tiles"]
 
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if not request.user.is_superuser:
+            if "refresh_tiles" in actions:
+                del actions["refresh_tiles"]
+        return actions
+
     @admin.action(description="Regenerate TMS tiles for selected GeoTIFF layers")
     def refresh_tiles(self, request, queryset):
 
