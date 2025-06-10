@@ -16,6 +16,7 @@ See Also:
     - `Django GIS Documentation <https://docs.djangoproject.com/en/stable/ref/contrib/gis/>`_
 """
 
+import shutil
 import uuid
 from pathlib import Path
 from typing import Any, Dict, Tuple
@@ -26,7 +27,6 @@ from django.contrib.gis import geos
 from django.contrib.gis.db import models
 from django.contrib.gis.gdal import GDALRaster
 from django.core.validators import MinValueValidator
-from django.db import transaction
 from django.db.models.functions import Now
 from django.utils.translation import gettext_lazy as _
 
@@ -38,7 +38,6 @@ from rasterio.enums import ColorInterp
 from administrative.models import Area
 
 from .files import mobile_coverage_tiff_path
-from .tasks import generate_mobile_coverage_tiles, update_mobile_coverage_raster
 
 
 class FiberOptic(models.Model):
@@ -698,14 +697,6 @@ class MobileCoverage(models.Model):
     def __str__(self):
         return self.display_name
 
-    def save(self, *args, **kwargs):
-        is_new = not bool(self.id)
-
-        super().save(*args, **kwargs)
-
-        if is_new:
-            transaction.on_commit(self.auto_process_tiff)
-
     @property
     def display_name(self):
         return _("%(network_gen)s Mobile Coverage %(area)s") % {
@@ -728,22 +719,6 @@ class MobileCoverage(models.Model):
 
         return urljoin(settings.TILES_URL, f"{self.tiles_dir}/{{z}}/{{x}}/{{y}}.png")
 
-    def auto_process_tiff(self):
-        """Process the TIFF in the background.
-
-        This involves
-         - Ingesting the raster data into the database (if the tiff file is less than ~10MB).
-         - Generation of raster tiles for utilization in various applications (if the tiff file is less than ~20MB)
-        """
-        if not self.tiff:
-            return
-
-        if self.tiff.size <= 10000000:
-            update_mobile_coverage_raster.delay(pk=self.pk)
-
-        if self.tiff.size <= 20000000:
-            generate_mobile_coverage_tiles.delay(pk=self.pk)
-
     def set_raster(self):
         """Set raster attribute data based on assigned GeoTIFF file."""
         if not self.tiff:
@@ -756,6 +731,12 @@ class MobileCoverage(models.Model):
             raster = raster.transform(raster_srid)
 
         self.raster = raster
+
+    def clear_tiles(self):
+        try:
+            shutil.rmtree(self.tiles_root)
+        except FileNotFoundError:
+            pass
 
     def generate_tiles(self, **kwargs):
         """Generate tiles for using web maps from TIFF file."""
@@ -774,6 +755,8 @@ class MobileCoverage(models.Model):
             "zoom": (1, 15),
             **kwargs,
         }
+
+        self.clear_tiles()
         gdal2tiles.generate_tiles(str(rgb_tiff), str(self.tiles_root), **kwargs)
 
     def band2rgba(self):

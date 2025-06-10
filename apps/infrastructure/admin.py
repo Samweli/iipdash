@@ -12,8 +12,9 @@ References:
     - :class:`import_export.admin.ImportExportModelAdmin`
 """
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.gis.admin import GISModelAdmin
+from django.utils.translation import ngettext
 
 from import_export.admin import ImportExportModelAdmin
 
@@ -26,6 +27,7 @@ from .models import (
     MobileCoverage,
     NetworkGeneration,
 )
+from .tasks import generate_mobile_coverage_tiles, update_mobile_coverage_raster
 
 
 @admin.register(FiberOptic)
@@ -122,6 +124,41 @@ class MobileCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
     raw_id_fields = ["administrative_area"]
     search_fields = ["id", "uuid", "administrative_area__name"]
     readonly_fields = ["id", "uuid", "tms_url", "created_at", "updated_at"]
+    actions = ["refresh_raster", "refresh_tiles"]
+
+    @admin.action(description="Refresh selected raster data in the database")
+    def refresh_raster(self, request, queryset):
+        for mobile_coverage in queryset:
+            update_mobile_coverage_raster.delay(pk=mobile_coverage.pk)
+
+        count = len(queryset)
+        self.message_user(
+            request,
+            ngettext(
+                "%d mobile coverage raster will be updated in the database.",
+                "%d mobile coverage rasters will be updated in the database.",
+                count,
+            )
+            % count,
+            messages.SUCCESS,
+        )
+
+    @admin.action(description="Regenerate selected mobile coverage TMS tiles")
+    def refresh_tiles(self, request, queryset):
+        for mobile_coverage in queryset:
+            generate_mobile_coverage_tiles.delay(pk=mobile_coverage.pk)
+
+        count = len(queryset)
+        self.message_user(
+            request,
+            ngettext(
+                "%d mobile coverage tile set is going to be updated.",
+                "%d mobile coverage tiles sets are going to be updated.",
+                count,
+            )
+            % count,
+            messages.SUCCESS,
+        )
 
 
 @admin.register(ElectricityNetwork)
