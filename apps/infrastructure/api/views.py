@@ -23,7 +23,7 @@ from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
 from core.api.mixins import CSVDownloadMixin
 
 from ..models import CellTower, ElectricityNetwork, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
-from .filters import CellTowerFilter, FiberOpticFilter, MobileCoverageFilter
+from .filters import CellTowerFilter, FiberOpticFilter, FiberOpticNodeFilter, MobileCoverageFilter
 from .openapi import examples
 from .serializers import (
     CellTowerCSVSerializer,
@@ -444,25 +444,41 @@ class FiberOpticViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelVie
 @extend_schema_view(
     list=extend_schema(
         summary=_("Fiber Optic Nodes"),
-        description=_("Retrieve a list of fiber optics nodes."),
+        description=_(
+            "Retrieve a list of fiber optics nodes, with optional searching, filtering, ordering and pagination."
+        ),
     ),
     retrieve=extend_schema(
         summary=_("Fiber Optic Node"),
         description=_("Retrieve details of a specific fiber optic network."),
     ),
-    tile=extend_schema(summary=_("Fiber Optic Node Vector Tiles")),
-    download=extend_schema(summary=_("Fiber Optic Node CSV")),
+    tile=extend_schema(summary=_("Fiber Optic Nodes Vector Tiles")),
+    download=extend_schema(summary=_("Fiber Optic Nodes CSV")),
 )
 class FiberOpticNodeViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelViewSet):
-    """Fiber Optic Node endpoint"""
+    """
+    A ViewSet for managing :class:`infrastructure.models.FiberOpticNode` objects.
 
-    serializer_class = FiberOpticNodeSerializer
-    pagination_class = GeoJsonPagination
-    lookup_field = "uuid"
-    required_scopes = ["default"]
+    This viewset provides endpoints for:
+
+    - Listing all fiber optics nodes (`list` endpoint).
+    - Retrieving a specific fiber optic node by UUID (`retrieve` endpoint).
+    """
+
+    #: A serializer class for converting `FiberOpticNode` objects to GeoJSON format.
+    serializer_class: Type[FiberOpticNodeSerializer] = FiberOpticNodeSerializer
+
+    #: A pagination class to handle GeoJSON format pagination for `FiberOpticNode` objects.
+    pagination_class: Type[GeoJsonPagination] = GeoJsonPagination
+
+    #: A lookup field used to retrieve a specific `FiberOpticNode` object.
+    lookup_field: str = "uuid"
+
+    #: A list of required OAuth2 scopes for accessing the `FiberOpticNode` API endpoints.
+    required_scopes: List[str] = ["default"]
 
     #: A list of filter backends for applying search and order filters
-    #: to the queryset of `FiberOptic` objects.
+    #: to the queryset of `FiberOpticNode` objects.
     filter_backends: List[Type[BaseFilterBackend]] = [
         DjangoFilterBackend,
         SearchFilter,
@@ -472,21 +488,42 @@ class FiberOpticNodeViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyMode
         DistanceToPointFilter,
     ]
 
-    filter_fields = ["node_type", "administrative_area"]
+    #: A custom filter for applying complex filters to the queryset of
+    #: `FiberOpticNode` objects.
+    filterset_class: Type[FiberOpticNodeFilter] = FiberOpticNodeFilter
 
-    #: A `FiberOptic` geometry field used in performing bounding box filtering
-    #: on the queryset of `FiberOptic` objects via query parameters
+    #: A list of fields that are used for to apply full-text search
+    #: via query parameters to the queryset of `FiberOpticNode` objects
+    #: (i.e., `?q=<term>`).
+    search_fields: List[str] = ["node_type"]
+
+    #: A list of fields that are used for ordering the queryset of
+    #: `FiberOpticNode` objects (e.g., `?ordering=<field>`).
+    ordering_fields: List[str] = ["node_type", "created_at", "updated_at"]
+
+    #: A `FiberOpticNode` geometry field used in performing bounding box filtering
+    #: on the queryset of `FiberOpticNode` objects via query parameters
     #: (i.e., `?in_bbox=<bbox>`).
     bbox_filter_field: str = "geometry"
+
+    #: Whether to include `FiberOpticNode` objects that overlap the bounding box
+    #: on the queryset.
     bbox_filter_include_overlapping: bool = False
 
-    #: A `FiberOptic` geometry field used in filtering queryset of `FiberOptic`
+    #: A `FiberOpticNode` geometry field used in filtering queryset of `FiberOpticNode`
     #: objects based on their distance from a specific point via query
     #: parameters (i.e., `?point=<x,y>&radius=<distance>`).
-    distance_filter_field = "geometry"
-    distance_filter_convert_meters = True
+    distance_filter_field: str = "geometry"
 
-    queryset = FiberOpticNode.objects.select_related("administrative_area").order_by("-created_at")
+    #: Whether to convert the distance value to meters before filtering
+    #: queryset of `FiberOpticNode` objects based on their distance from a
+    #: specific point
+    distance_filter_convert_meters: bool = True
+
+    #: A default queryset for retrieving `FiberOpticNode` objects.
+    queryset: QuerySet[FiberOpticNode] = FiberOpticNode.objects.select_related("administrative_area").order_by(
+        "-created_at"
+    )
 
     #: Vector tiles layer ID
     id = "fiber-nodes"
@@ -500,7 +537,8 @@ class FiberOpticNodeViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyMode
         "administrative_area_name",
     )
 
-    csv_serializer_class = FiberOpticNodeCSVSerializer
+    #: A serializer class for converting `FiberOpticNode` objects to CSV format.
+    csv_serializer_class: Type[FiberOpticNodeCSVSerializer] = FiberOpticNodeCSVSerializer
 
     def get_vector_tile_queryset(self, *args, **kwargs):
         """Returns a queryset used to generate vector tiles."""

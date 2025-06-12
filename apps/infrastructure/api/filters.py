@@ -6,9 +6,9 @@ from django_filters import rest_framework as filters
 
 from core.api.filters import EmptyValueFilter
 
-from ..models import CellTower, FiberOptic, MobileCoverage
+from ..models import CellTower, FiberOptic, FiberOpticNode, MobileCoverage
 
-__all__ = ["CellTowerFilter", "FiberOpticFilter", "MobileCoverageFilter"]
+__all__ = ["CellTowerFilter", "FiberOpticFilter", "MobileCoverageFilter", "FiberOpticNodeFilter"]
 
 
 class CellTowerFilter(filters.FilterSet):
@@ -314,4 +314,120 @@ class MobileCoverageFilter(filters.FilterSet):
             "population_covered_percent_lte",
             "population_uncovered_percent_gte",
             "population_uncovered_percent_lte",
+        ]
+
+
+class FiberOpticNodeFilter(filters.FilterSet):
+    """
+    FilterSet for the :class:`infrastructure.models.FiberOpticNode` model.
+
+    This filter allows filtering `FiberOpticNode` objects based on specific
+    fields.
+
+    Examples:
+        Filter by node type (exact match, case-insensitive):
+            `/api/infrastructure/fiber-nodes/?node_type=Fibre Operational Buried`
+
+        Filter by country code (exact match):
+            `/api/infrastructure/fiber-nodes/?country=MW`
+
+        Filter by multiple country codes (in comparison):
+            `/api/infrastructure/fiber-nodes/?country_in=MW,ZM`
+
+        Filter by administrative area UUID (exact match):
+            `/api/infrastructure/fiber-nodes/?administrative_area=04bcbe53-
+            98da-4ff5-96a8-d626c6da45cc`
+
+        Filter by multiple administrative area UUIDs (in comparison):
+            `/api/infrastructure/fiber-nodes/?administrative_area_in=04bcbe53-
+            98da-4ff5-96a8-d626c6da45cc,032ffe37-67d6-40d4-a65d-144f12bbd493`
+
+        Filtering by administrative area level (exact match):
+            `/api/infrastructure/fiber-nodes/?administrative_area_level=1`
+
+    Attributes:
+        node_type (:class:`django_filters.rest_framework.filters.CharFilter`):
+            A filter for matching the `node_type` field of the `FiberOpticNode`
+            model using `exact, case-insensitive` comparison.
+
+        country (:class:`django_filters.rest_framework.filters.CharFilter`):
+            A filter for matching the `administrative_area__country` field
+            of the `FiberOpticNode` model using `exact, case-insensitive` comparison.
+
+        country_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
+            A filter for matching multiple `administrative_area__country` field
+            of the `FiberOpticNode` model using `in` comparison.
+
+        administrative_area (:class:`django_filters.rest_framework.filters.UUIDFilter`):
+            A filter for matching the`administrative_area__uuid` field of
+            the `FiberOpticNode` model using `uuid equal` comparison.
+
+        administrative_area_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
+            A filter for matching multiple `administrative_area__uuid` field of
+            the `FiberOpticNode` model using `in` comparison.
+
+        administrative_area_level (:class:`django_filters.rest_framework.filters.NumberFilter`):
+            A filter for matching the `administrative_area__depth` field
+            of the `FiberOpticNode` model using `equal` comparison.
+    """
+
+    #: Filter by node type (exact match, case-insensitive)
+    node_type: filters.CharFilter = filters.CharFilter(
+        field_name="node_type",
+        lookup_expr="iexact",
+        help_text=_("Filter by node type."),
+    )
+
+    #: Filter by country code (exact match, case-insensitive)
+    country: filters.CharFilter = filters.CharFilter(
+        field_name="administrative_area__country",
+        lookup_expr="iexact",
+        help_text=_("Filter by country code."),
+    )
+
+    #: Filter by multiple country codes
+    country_in: filters.BaseInFilter = filters.BaseInFilter(
+        field_name="administrative_area__country",
+        help_text=_("Filter by multiple country codes."),
+    )
+
+    #: Filter by administrative area UUID (exact match)
+    administrative_area: filters.UUIDFilter = filters.UUIDFilter(
+        field_name="administrative_area__uuid",
+        help_text=_("Filter by administrative area UUID."),
+    )
+
+    #: Filter by multiple administrative area UUIDs
+    administrative_area_in: filters.BaseInFilter = filters.BaseInFilter(
+        field_name="administrative_area__uuid",
+        help_text=_("Filter by multiple administrative area UUIDs."),
+    )
+
+    #: Filter by administrative area level (exact match)
+    administrative_area_level: filters.NumberFilter = filters.NumberFilter(
+        field_name="administrative_area__depth",
+        help_text=_("Filter by administrative area level."),
+    )
+
+    class Meta:
+        """
+        Metadata for the :class:`FiberOpticNodeFilter`.
+
+        Attributes:
+            model (Type[FiberOpticNode]):
+                A Django model associated with this filter.
+                In this case, it's the :class:`FiberOpticNode` model.
+
+            fields (List[str]):
+                A list of field names (i.e query parameters) available for filtering.
+        """
+
+        model: Type[FiberOpticNode] = FiberOpticNode
+        fields: List[str] = [
+            "node_type",
+            "country",
+            "country_in",
+            "administrative_area",
+            "administrative_area_in",
+            "administrative_area_level",
         ]
