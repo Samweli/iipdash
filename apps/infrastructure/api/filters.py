@@ -6,9 +6,15 @@ from django_filters import rest_framework as filters
 
 from core.api.filters import EmptyValueFilter
 
-from ..models import CellTower, FiberOptic, FiberOpticNode, MobileCoverage
+from ..models import CellTower, ElectricityNetwork, FiberOptic, FiberOpticNode, MobileCoverage
 
-__all__ = ["CellTowerFilter", "FiberOpticFilter", "MobileCoverageFilter", "FiberOpticNodeFilter"]
+__all__ = [
+    "CellTowerFilter",
+    "FiberOpticFilter",
+    "MobileCoverageFilter",
+    "FiberOpticNodeFilter",
+    "ElectricityNetworkFilter",
+]
 
 
 class CellTowerFilter(filters.FilterSet):
@@ -425,6 +431,122 @@ class FiberOpticNodeFilter(filters.FilterSet):
         model: Type[FiberOpticNode] = FiberOpticNode
         fields: List[str] = [
             "node_type",
+            "country",
+            "country_in",
+            "administrative_area",
+            "administrative_area_in",
+            "administrative_area_level",
+        ]
+
+
+class ElectricityNetworkFilter(filters.FilterSet):
+    """
+    FilterSet for the :class:`infrastructure.models.ElectricityNetwork` model.
+
+    This filter allows filtering `ElectricityNetwork` objects based on specific
+    fields.
+
+    Examples:
+        Filter by network type (exact match, case-insensitive):
+            `/api/infrastructure/electricity-networks/?network_type=Transmission`
+
+        Filter by country code (exact match):
+            `/api/infrastructure/electricity-networks/?country=MW`
+
+        Filter by multiple country codes (in comparison):
+            `/api/infrastructure/electricity-networks/?country_in=MW,ZM`
+
+        Filter by administrative area UUID (exact match):
+            `/api/infrastructure/electricity-networks/?administrative_area=04bcbe53-
+            98da-4ff5-96a8-d626c6da45cc`
+
+        Filter by multiple administrative area UUIDs (in comparison):
+            `/api/infrastructure/electricity-networks/?administrative_area_in=04bcbe53-
+            98da-4ff5-96a8-d626c6da45cc,032ffe37-67d6-40d4-a65d-144f12bbd493`
+
+        Filtering by administrative area level (exact match):
+            `/api/infrastructure/electricity-networks/?administrative_area_level=1`
+
+    Attributes:
+        network_type (:class:`django_filters.rest_framework.filters.CharFilter`):
+            A filter for matching the `network_type` field of the `ElectricityNetwork`
+            model using `exact, case-insensitive` comparison.
+
+        country (:class:`django_filters.rest_framework.filters.CharFilter`):
+            A filter for matching the `administrative_area__country` field
+            of the `ElectricityNetwork` model using `exact, case-insensitive` comparison.
+
+        country_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
+            A filter for matching multiple `administrative_area__country` field
+            of the `ElectricityNetwork` model using `in` comparison.
+
+        administrative_area (:class:`django_filters.rest_framework.filters.UUIDFilter`):
+            A filter for matching the`administrative_area__uuid` field of
+            the `ElectricityNetwork` model using `uuid equal` comparison.
+
+        administrative_area_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
+            A filter for matching multiple `administrative_area__uuid` field of
+            the `ElectricityNetwork` model using `in` comparison.
+
+        administrative_area_level (:class:`django_filters.rest_framework.filters.NumberFilter`):
+            A filter for matching the `administrative_area__depth` field
+            of the `ElectricityNetwork` model using `equal` comparison.
+    """
+
+    #: Filter by network type (exact match, case-insensitive)
+    network_type: filters.CharFilter = filters.CharFilter(
+        field_name="network_type",
+        lookup_expr="iexact",
+        help_text=_("Filter by network type."),
+    )
+
+    #: Filter by country code (exact match, case-insensitive)
+    country: filters.CharFilter = filters.CharFilter(
+        field_name="administrative_area__country",
+        lookup_expr="iexact",
+        help_text=_("Filter by country code."),
+    )
+
+    #: Filter by multiple country codes
+    country_in: filters.BaseInFilter = filters.BaseInFilter(
+        field_name="administrative_area__country",
+        help_text=_("Filter by multiple country codes."),
+    )
+
+    #: Filter by administrative area UUID (exact match)
+    administrative_area: filters.UUIDFilter = filters.UUIDFilter(
+        field_name="administrative_area__uuid",
+        help_text=_("Filter by administrative area UUID."),
+    )
+
+    #: Filter by multiple administrative area UUIDs
+    administrative_area_in: filters.BaseInFilter = filters.BaseInFilter(
+        field_name="administrative_area__uuid",
+        help_text=_("Filter by multiple administrative area UUIDs."),
+    )
+
+    #: Filter by administrative area level (exact match)
+    administrative_area_level: filters.NumberFilter = filters.NumberFilter(
+        field_name="administrative_area__depth",
+        help_text=_("Filter by administrative area level."),
+    )
+
+    class Meta:
+        """
+        Metadata for the :class:`ElectricityNetworkFilter`.
+
+        Attributes:
+            model (Type[ElectricityNetwork]):
+                A Django model associated with this filter.
+                In this case, it's the :class:`ElectricityNetwork` model.
+
+            fields (List[str]):
+                A list of field names (i.e query parameters) available for filtering.
+        """
+
+        model: Type[ElectricityNetwork] = ElectricityNetwork
+        fields: List[str] = [
+            "network_type",
             "country",
             "country_in",
             "administrative_area",

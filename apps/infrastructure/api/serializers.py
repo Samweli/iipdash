@@ -18,6 +18,7 @@ __all__ = [
     "FiberOpticNodeSerializer",
     "FiberOpticNodeCSVSerializer",
     "ElectricityNetworkSerializer",
+    "ElectricityNetworkCSVSerializer",
 ]
 
 
@@ -202,3 +203,29 @@ class ElectricityNetworkSerializer(GeoFeatureModelSerializer):
         id_field = "uuid"
         geo_field = "geometry"
         exclude = ["id"]
+
+
+class ElectricityNetworkCSVSerializer(serializers.ModelSerializer):
+    """Electricity Network CSV serializer."""
+
+    country = serializers.CharField(source="administrative_area.country", read_only=True)
+    administrative_area_name = serializers.CharField(source="administrative_area.name", read_only=True)
+    geometry = serializers.CharField()
+
+    class Meta:
+        model = ElectricityNetwork
+        fields = [
+            "uuid",
+            "voltage_kv",
+            "status",
+            "source",
+            "from_nm",
+            "to_nm",
+            "network_type",
+            "country",
+            "administrative_area_name",
+            "created_at",
+            "updated_at",
+            "geometry",
+        ]
+        read_only_fields = fields

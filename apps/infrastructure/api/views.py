@@ -23,11 +23,18 @@ from core.api.filters import DistanceToPointFilter, InBBoxFilter, TMSTileFilter
 from core.api.mixins import CSVDownloadMixin
 
 from ..models import CellTower, ElectricityNetwork, FiberOptic, FiberOpticNode, MobileCoverage, NetworkGeneration
-from .filters import CellTowerFilter, FiberOpticFilter, FiberOpticNodeFilter, MobileCoverageFilter
+from .filters import (
+    CellTowerFilter,
+    ElectricityNetworkFilter,
+    FiberOpticFilter,
+    FiberOpticNodeFilter,
+    MobileCoverageFilter,
+)
 from .openapi import examples
 from .serializers import (
     CellTowerCSVSerializer,
     CellTowerSerializer,
+    ElectricityNetworkCSVSerializer,
     ElectricityNetworkSerializer,
     FiberOpticCSVSerializer,
     FiberOpticNodeCSVSerializer,
@@ -445,12 +452,12 @@ class FiberOpticViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelVie
     list=extend_schema(
         summary=_("Fiber Optic Nodes"),
         description=_(
-            "Retrieve a list of fiber optics nodes, with optional searching, filtering, ordering and pagination."
+            "Retrieve a list of fiber optic nodes, with optional searching, filtering, ordering and pagination."
         ),
     ),
     retrieve=extend_schema(
         summary=_("Fiber Optic Node"),
-        description=_("Retrieve details of a specific fiber optic network."),
+        description=_("Retrieve details of a specific fiber optic node."),
     ),
     tile=extend_schema(summary=_("Fiber Optic Nodes Vector Tiles")),
     download=extend_schema(summary=_("Fiber Optic Nodes CSV")),
@@ -461,8 +468,10 @@ class FiberOpticNodeViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyMode
 
     This viewset provides endpoints for:
 
-    - Listing all fiber optics nodes (`list` endpoint).
+    - Listing all fiber optic nodes (`list` endpoint).
     - Retrieving a specific fiber optic node by UUID (`retrieve` endpoint).
+    - Export fiber optic nodes to a `CSV` file (`download` endpoint).
+    - Provides Mapbox Vector Tiles (`mvt`) for fiber optic nodes (`tiles` endpoint).
     """
 
     #: A serializer class for converting `FiberOpticNode` objects to GeoJSON format.
@@ -557,12 +566,12 @@ class FiberOpticNodeViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyMode
     @action(
         detail=False,
         methods=["get"],
-        name="Download Fiber Optic nodes CSV",
+        name="Download Fiber Optic Nodes CSV",
         url_path="download",
         url_name="list-download",
     )
     def download(self, request, *args, **kwargs):
-        """Download Fiber Optic nodes as CSV file."""
+        """Download fiber optic nodes as CSV file."""
 
         return self.export_csv(request, *args, **kwargs)
 
@@ -579,13 +588,91 @@ class FiberOpticNodeViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyMode
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
 
 
-class ElectricityNetworkViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
-    """Electricity networks API endpoint."""
+@extend_schema_view(
+    list=extend_schema(
+        summary=_("Electric Networks"),
+        description=_(
+            "Retrieve a list of electric networks, with optional searching, filtering, ordering and pagination."
+        ),
+    ),
+    retrieve=extend_schema(
+        summary=_("Electric Network"),
+        description=_("Retrieve details of a specific electric network."),
+    ),
+    tile=extend_schema(summary=_("Electric Networks Vector Tiles")),
+    download=extend_schema(summary=_("Electric Networks CSV")),
+)
+class ElectricityNetworkViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelViewSet):
+    """
+    A ViewSet for managing :class:`infrastructure.models.ElectricityNetwork` objects.
 
-    serializer_class = ElectricityNetworkSerializer
-    lookup_field = "uuid"
-    required_scopes = ["default"]
-    pagination_class = GeoJsonPagination
+    This viewset provides endpoints for:
+
+    - Listing all electric networks (`list` endpoint).
+    - Retrieving a specific electric network by UUID (`retrieve` endpoint).
+    - Export electric networks to a `CSV` file (`download` endpoint).
+    - Provides Mapbox Vector Tiles (`mvt`) for electric networks (`tiles` endpoint).
+    """
+
+    #: A serializer class for converting `ElectricityNetwork` objects to GeoJSON format.
+    serializer_class: Type[ElectricityNetworkSerializer] = ElectricityNetworkSerializer
+
+    #: A pagination class to handle GeoJSON format pagination for `ElectricityNetwork` objects.
+    pagination_class: Type[GeoJsonPagination] = GeoJsonPagination
+
+    #: A lookup field used to retrieve a specific `ElectricityNetwork` object.
+    lookup_field: str = "uuid"
+
+    #: A list of required OAuth2 scopes for accessing the `ElectricityNetwork` API endpoints.
+    required_scopes: List[str] = ["default"]
+
+    #: A list of filter backends for applying search and order filters
+    #: to the queryset of `ElectricityNetwork` objects.
+    filter_backends: List[Type[BaseFilterBackend]] = [
+        DjangoFilterBackend,
+        SearchFilter,
+        OrderingFilter,
+        InBBoxFilter,
+        TMSTileFilter,
+        DistanceToPointFilter,
+    ]
+
+    #: A custom filter for applying complex filters to the queryset of
+    #: `ElectricityNetwork` objects.
+    filterset_class: Type[ElectricityNetworkFilter] = ElectricityNetworkFilter
+
+    #: A list of fields that are used for to apply full-text search
+    #: via query parameters to the queryset of `ElectricityNetwork` objects
+    #: (i.e., `?q=<term>`).
+    search_fields: List[str] = ["status", "source", "from_nm", "to_nm", "network_type"]
+
+    #: A list of fields that are used for ordering the queryset of
+    #: `ElectricityNetwork` objects (e.g., `?ordering=<field>`).
+    ordering_fields: List[str] = ["voltage_kv", "network_type", "created_at", "updated_at"]
+
+    #: A `ElectricityNetwork` geometry field used in performing bounding box filtering
+    #: on the queryset of `ElectricityNetwork` objects via query parameters
+    #: (i.e., `?in_bbox=<bbox>`).
+    bbox_filter_field: str = "geometry"
+
+    #: Whether to include `ElectricityNetwork` objects that overlap the bounding box
+    #: on the queryset.
+    bbox_filter_include_overlapping: bool = False
+
+    #: A `ElectricityNetwork` geometry field used in filtering queryset of `ElectricityNetwork`
+    #: objects based on their distance from a specific point via query
+    #: parameters (i.e., `?point=<x,y>&radius=<distance>`).
+    distance_filter_field: str = "geometry"
+
+    #: Whether to convert the distance value to meters before filtering
+    #: queryset of `ElectricityNetwork` objects based on their distance from a
+    #: specific point
+    distance_filter_convert_meters: bool = True
+
+    #: A default queryset for retrieving `ElectricityNetwork` objects.
+    queryset: QuerySet[ElectricityNetwork] = ElectricityNetwork.objects.select_related("administrative_area").order_by(
+        "-created_at"
+    )
 
     #: Vector tiles layer ID
     id = "electricity-networks"
@@ -603,7 +690,8 @@ class ElectricityNetworkViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
         "administrative_area_name",
     )
 
-    queryset = ElectricityNetwork.objects.order_by("-created_at")
+    #: A serializer class for converting `ElectricityNetwork` objects to CSV format.
+    csv_serializer_class: Type[ElectricityNetworkCSVSerializer] = ElectricityNetworkCSVSerializer
 
     def get_vector_tile_queryset(self, *args, **kwargs):
         """Returns a queryset used to generate vector tiles."""
@@ -619,11 +707,24 @@ class ElectricityNetworkViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
     @action(
         detail=False,
         methods=["get"],
+        name="Download Electric Networks CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Download electric networks as CSV file."""
+
+        return self.export_csv(request, *args, **kwargs)
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Electric Networks Vector Tiles",
         renderer_classes=(MVTRenderer,),
         url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
         url_name="tile",
     )
     @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:electricity-networks", cache=MVT_CACHE_ALIAS))
     def tile(self, request, *args, **kwargs):
-        """Provides Mapbox Vector Tiles for relative wealth index."""
+        """Provides Mapbox Vector Tiles for electric networks."""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
