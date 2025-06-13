@@ -7,6 +7,8 @@ import * as settings from './conf';
 import * as maps from './maps';
 import { fetchCatalogCategories, fetchCatalogLayers, fetchCountries, fetchRegions } from './api';
 
+import { educationInstitutionPopup } from './popups'
+
 /**
  *  HomeDash Vue application.
  */
@@ -291,50 +293,11 @@ const HomeDash = {
                 e.features = features
 
                 if (layerID === 'education-institutions'){
-                    this.educationInstitutionPopup(e);
+                    popup = educationInstitutionPopup(e, this.countriesLookup);
+                    popup.addTo(this._map)
+                    this.currentPopup = popup;
                 }
             });
-        },
-
-         /**
-         * Create a popup for the education institutions layer features.
-         *
-         *
-         * This:
-         *
-         * - Fetch `country` name based on clicked education institution
-         * - Fetch `region` name based on clicked education institution
-         * - Display a popup with education institution properties
-         */
-        educationInstitutionPopup: async function (e){
-            const countryName = this.countriesLookup[e.features[0].properties.country];
-            const name = `${e.features[0].properties.name}`;
-            const selectedRegion = e.features[0].properties.administrative_area_name;
-
-            if (this.currentPopup){
-                this.currentPopup.remove();
-            }
-
-            this.currentPopup = new maplibregl.Popup()
-                .setLngLat(e.lngLat)
-                .setHTML(
-                    `<div class="card border-0">
-                        <div class="card-header text-bg-primary">
-                          <h5 class="text-white pe-3">${name}</h5>
-                        </div>
-
-                        <div class="card-body">
-                            <p class="text-uppercase fs-6 fw-light text-muted">
-                                Country : ${countryName}
-                            </p>
-                            <p class="text-uppercase fs-6 fw-light text-muted">
-                                Region : ${selectedRegion}
-                            </p>
-
-                        </div>
-                    </div>`,
-                )
-                .addTo(this._map);
         },
 
          /**
