@@ -263,7 +263,7 @@ class FiberOptic(models.Model):
 
 
 class FiberOpticNode(models.Model):
-    """A Mobile network Node."""
+    """A fiber optic node."""
 
     uuid = models.UUIDField(
         _("UUID"),
