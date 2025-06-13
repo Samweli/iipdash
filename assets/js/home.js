@@ -7,7 +7,7 @@ import * as settings from './conf';
 import * as maps from './maps';
 import { fetchCatalogCategories, fetchCatalogLayers, fetchCountries, fetchRegions } from './api';
 
-import { educationInstitutionPopup } from './popups'
+import { educationInstitutionPopup, cellTowerPopup, healthFacilityPopup, fiberNodePopup, internetSpeedPopup } from './popups'
 
 /**
  *  HomeDash Vue application.
@@ -275,13 +275,33 @@ const HomeDash = {
             this._map.addSource('regions', mapSources.regions);
             this._map.addLayer(regionsLayer);
 
-            // Handle layers popup
+            this.handleMapLayersClick()
+        },
+
+         /**
+         * Assign map layers operation when layer features are clicked.
+         *
+         *
+         * This:
+         *
+         * - Displays popup for a set of selected layers that have information to be shown.
+         */
+        handleMapLayersClick: async function() {
 
             this._map.on('click', (e) => {
 
                 const features = this._map.queryRenderedFeatures(
                     e.point,
-                    { layers: ['education-institutions'] }
+                    {
+                    layers: [
+                    'education-institutions',
+                    'cell-towers',
+                    'health-facilities',
+                    'fiber-nodes',
+                    'mobile-coverage-3g',
+                    'mobile-coverage-4g'
+                    ]
+                    }
                 );
 
                 if (features.length == 0){
@@ -289,15 +309,42 @@ const HomeDash = {
                 }
                 const layerID = features[0].layer.id;
 
+                const popup = null;
+
                 // Assign queried layer features to the event object
                 e.features = features
 
+                console.log(e.features[0].properties)
+
                 if (layerID === 'education-institutions'){
-                    popup = educationInstitutionPopup(e, this.countriesLookup);
-                    popup.addTo(this._map)
+                    const popup = educationInstitutionPopup(e, this.countriesLookup);
+                    popup.addTo(this._map);
+                }
+                else if (layerID === 'cell-towers'){
+                    const popup = cellTowerPopup(e, this.countriesLookup);
+                    popup.addTo(this._map);
+                }
+                else if (layerID === 'health-facilities'){
+                    const popup = healthFacilityPopup(e, this.countriesLookup);
+                    popup.addTo(this._map);
+                }
+                else if (layerID === 'fiber-nodes'){
+                    const popup = fiberNodePopup(e, this.countriesLookup);
+                    popup.addTo(this._map);
+                }
+                else if (layerID === 'mobile-coverage-3g' || layerID === 'mobile-coverage-4g'){
+                    const popup = internetSpeedPopup(e, this.countriesLookup);
+                    popup.addTo(this._map);
+                }
+
+                if (popup){
+                    if (this.currentPopup){
+                        this.currentPopup.remove();
+                    }
                     this.currentPopup = popup;
                 }
             });
+
         },
 
          /**
@@ -309,7 +356,14 @@ const HomeDash = {
          * - Change cursor style for `mouseenter` and `mouseleave` events on map layers.
          */
          mouseEvents: async function () {
-            const layers = ['education-institutions']
+            const layers = [
+            'education-institutions',
+            'cell-towers',
+            'health-facilities',
+            'fiber-nodes',
+            'mobile-coverage-3g',
+            'mobile-coverage-4g'
+            ];
 
             layers.forEach((layerID) => {
 
