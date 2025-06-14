@@ -144,7 +144,6 @@ const HomeDash = {
                 },
             });
             this._map.addSource('electricity-networks', mapSources['electricity-networks']);
-
             this._map.addLayer(electricityNetworksLayer);
 
             // Relative wealth index layer
@@ -329,6 +328,8 @@ const HomeDash = {
          * Controlled catalog layers are:
          *
          * - `fiber-optics`
+         * - `electricity-networks`
+         * - `relative-wealth-index`
          * - `population-density-hd`
          * - `education-institutions`
          * - `health-facilities`
@@ -351,6 +352,7 @@ const HomeDash = {
             // 1.1 Filter catalog layers based on current selected `country`
             if (this.lookup.country) {
                 this._map.setFilter('fiber-optics', ['==', ['get', 'country'], this.lookup.country]);
+                this._map.setFilter('relative-wealth-index', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('population-density-hd', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('education-institutions', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('health-facilities', ['==', ['get', 'country'], this.lookup.country]);
@@ -359,6 +361,7 @@ const HomeDash = {
                 mobileCoverageTilesLookup.administrative_area = this.selectedCountry.id;
             } else {
                 this._map.setFilter('fiber-optics', null);
+                this._map.setFilter('relative-wealth-index', null);
                 this._map.setFilter('population-density-hd', null);
                 this._map.setFilter('education-institutions', null);
                 this._map.setFilter('health-facilities', null);
@@ -369,6 +372,11 @@ const HomeDash = {
             // 1.2 Filter catalog layers based on current selected `region`
             if (this.lookup.administrative_area) {
                 this._map.setFilter('fiber-optics', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+                this._map.setFilter('relative-wealth-index', [
                     '==',
                     ['get', 'administrative_area_uuid'],
                     this.lookup.administrative_area,
