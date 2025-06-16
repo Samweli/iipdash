@@ -298,8 +298,8 @@ const HomeDash = {
                     'cell-towers',
                     'health-facilities',
                     'fiber-nodes',
-                    'mobile-coverage-3g',
-                    'mobile-coverage-4g'
+                    'areas-internet-speed-mobile',
+                    'areas-internet-speed-fixed'
                     ]
                     }
                 );
@@ -313,8 +313,6 @@ const HomeDash = {
 
                 // Assign queried layer features to the event object
                 e.features = features
-
-                console.log(e.features[0].properties)
 
                 if (layerID === 'education-institutions'){
                     const popup = educationInstitutionPopup(e, this.countriesLookup);
@@ -332,7 +330,7 @@ const HomeDash = {
                     const popup = fiberNodePopup(e, this.countriesLookup);
                     popup.addTo(this._map);
                 }
-                else if (layerID === 'mobile-coverage-3g' || layerID === 'mobile-coverage-4g'){
+                else if (layerID === 'areas-internet-speed-mobile' || layerID === 'areas-internet-speed-fixed'){
                     const popup = internetSpeedPopup(e, this.countriesLookup);
                     popup.addTo(this._map);
                 }
@@ -361,8 +359,8 @@ const HomeDash = {
             'cell-towers',
             'health-facilities',
             'fiber-nodes',
-            'mobile-coverage-3g',
-            'mobile-coverage-4g'
+            'areas-internet-speed-mobile',
+            'areas-internet-speed-fixed'
             ];
 
             layers.forEach((layerID) => {

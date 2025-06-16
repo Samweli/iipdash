@@ -25,23 +25,26 @@ export const educationInstitutionPopup = function (event, countries){
     const popup = new maplibregl.Popup()
         .setLngLat(event.lngLat)
         .setHTML(
-            `<div class="card border-0">
-                <div class="card-header text-bg-primary">
-                  <h5 class="text-white pe-3">${name}</h5>
+            `<div class="card shadow-sm border-0 rounded-3">
+              <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-3 px-4 py-3">
+                <h5 class="mb-0 text-truncate fw-bold" >${name}</h5>
+              </div>
+              <div class="card-body bg-light text-dark px-4 py-3">
+                <div class="d-flex align-items-start mb-3">
+                  <span class="me-3 fs-6 text-primary">🗺️</span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Administrative area</div>
+                    <div class="fw-semibold text-uppercase fs-6">${selectedRegion}</div>
+                  </div>
                 </div>
-
-                <div class="card-body">
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Country : ${countryName}
-                    </p>
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Region : ${selectedRegion}
-                    </p>
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Distance to the nearest fiber(km) : ${avgDistance}
-                    </p>
-
+                <div class="d-flex align-items-start">
+                  <span class="me-3 fs-6 text-primary">📏</span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Distance to the nearest fiber node(km)</div>
+                    <div class="fw-semibold fs-6">${avgDistance}</div>
+                  </div>
                 </div>
+              </div>
             </div>`,
         );
 
@@ -63,35 +66,45 @@ export const educationInstitutionPopup = function (event, countries){
  * - Display a popup with cell tower properties
  */
 export const cellTowerPopup = function (event, countries){
-    const countryName = countries[event.features[0].properties.country];
-    const name = `${event.features[0].properties.name}`;
+    let name = `${event.features[0].properties.name}`;
     const selectedRegion = event.features[0].properties.administrative_area_name;
-    const networkType = event.features[0].properties.networkType;
+    const networkType = event.features[0].properties.network_type;
     const range = event.features[0].properties.range;
+
+    if (isNaN(name)) {
+        name = '-';
+    }
 
     const popup = new maplibregl.Popup()
         .setLngLat(event.lngLat)
         .setHTML(
-            `<div class="card border-0">
-                <div class="card-header text-bg-primary">
-                  <h5 class="text-white pe-3">${name}</h5>
+            `<div class="card shadow-sm border-0 rounded-3">
+              <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-3 px-4 py-3">
+                <h5 class="mb-0 text-truncate fw-bold">${name}</h5>
+              </div>
+              <div class="card-body bg-light text-dark px-4 py-3">
+                <div class="d-flex align-items-start mb-3">
+                  <span class="me-3 fs-6 text-primary">🗺️</span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Administrative area</div>
+                    <div class="fw-semibold text-uppercase fs-6">${selectedRegion}</div>
+                  </div>
                 </div>
-
-                <div class="card-body">
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Country : ${countryName}
-                    </p>
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Region : ${selectedRegion}
-                    </p>
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Network Type : ${networkType}
-                    </p>
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Range : ${range}
-                    </p>
-
+                <div class="d-flex align-items-start">
+                  <span class="me-3 fs-6 text-primary">📶</span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Network type</div>
+                    <div class="fw-semibold fs-6">${networkType}</div>
+                  </div>
                 </div>
+                <div class="d-flex align-items-start">
+                  <span class="me-3 fs-6 text-primary">📡</span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Range</div>
+                    <div class="fw-semibold fs-6">${range}</div>
+                  </div>
+                </div>
+              </div>
             </div>`,
         );
     return popup;
@@ -110,7 +123,6 @@ export const cellTowerPopup = function (event, countries){
  * - Display a popup with health facility properties
  */
 export const healthFacilityPopup = function (event, countries){
-    const countryName = countries[event.features[0].properties.country];
     const name = `${event.features[0].properties.name}`;
     const selectedRegion = event.features[0].properties.administrative_area_name;
     const amenity = event.features[0].properties.amenity;
@@ -118,24 +130,27 @@ export const healthFacilityPopup = function (event, countries){
     const popup = new maplibregl.Popup()
         .setLngLat(event.lngLat)
         .setHTML(
-            `<div class="card border-0">
-                <div class="card-header text-bg-primary">
-                  <h5 class="text-white pe-3">${name}</h5>
+            `<div class="card shadow-sm border-0 rounded-3">
+              <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-3 px-4 py-3">
+                <h5 class="mb-0 text-truncate fw-bold">${name}</h5>
+              </div>
+              <div class="card-body bg-light text-dark px-4 py-3">
+                <div class="d-flex align-items-start mb-3">
+                  <span class="me-3 fs-6 text-primary">🗺️</span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Administrative area</div>
+                    <div class="fw-semibold text-uppercase fs-6">${selectedRegion}</div>
+                  </div>
                 </div>
-
-                <div class="card-body">
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Country : ${countryName}
-                    </p>
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Region : ${selectedRegion}
-                    </p>
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Amenity : ${amenity}
-                    </p>
-
+                <div class="d-flex align-items-start">
+                  <span class="me-3 fs-6 text-primary">🏢</span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Amenity</div>
+                    <div class="fw-semibold fs-6">${amenity}</div>
+                  </div>
                 </div>
-            </div>`,
+              </div>
+            </div>`
         );
 
     return popup;
@@ -154,30 +169,32 @@ export const healthFacilityPopup = function (event, countries){
  * - Display a popup with  fiber node properties
  */
 export const fiberNodePopup = function (event, countries){
-    const countryName = countries[event.features[0].properties.country];
     const selectedRegion = event.features[0].properties.administrative_area_name;
     const node_type = event.features[0].properties.node_type;
 
     const popup = new maplibregl.Popup()
         .setLngLat(event.lngLat)
         .setHTML(
-            `<div class="card border-0">
-                <div class="card-header text-bg-primary">
-                  <h5 class="text-white pe-3">${name}</h5>
+            `<div class="card shadow-sm border-0 rounded-3">
+              <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-3 px-4 py-3">
+                <h5 class="mb-0 text-truncate fw-bold">Node</h5>
+              </div>
+              <div class="card-body bg-light text-dark px-4 py-3">
+                <div class="d-flex align-items-start mb-3">
+                  <span class="me-3 fs-6 text-primary">🗺️</span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Administrative area</div>
+                    <div class="fw-semibold text-uppercase fs-6">${selectedRegion}</div>
+                  </div>
                 </div>
-
-                <div class="card-body">
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Country : ${countryName}
-                    </p>
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Region : ${selectedRegion}
-                    </p>
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Node Type : ${node_type}
-                    </p>
-
+                <div class="d-flex align-items-start">
+                  <span class="me-3 fs-6 text-primary">🪢</span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Node type</div>
+                    <div class="fw-semibold fs-6">${node_type}</div>
+                  </div>
                 </div>
+              </div>
             </div>`,
         );
 
@@ -197,30 +214,42 @@ export const fiberNodePopup = function (event, countries){
  * - Display a popup with  internet speed properties
  */
 export const internetSpeedPopup = function (event, countries){
+    const name = `${event.features[0].properties.name}`;
     const countryName = countries[event.features[0].properties.country];
     const selectedRegion = event.features[0].properties.administrative_area_name;
-    const speed = event.features[0].properties.speed;
+    const speed = event.features[0].properties.mobile_speed;
+
+    if (isNaN(name)) {
+        name = '-';
+    }
 
     const popup = new maplibregl.Popup()
         .setLngLat(event.lngLat)
         .setHTML(
-            `<div class="card border-0">
-                <div class="card-header text-bg-primary">
-                  <h5 class="text-white pe-3">${name}</h5>
+            `<div class="card shadow-sm border-0 rounded-3">
+              <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-3 px-4 py-3">
+                <h5 class="mb-0 text-truncate fw-bold">${name}</h5>
+              </div>
+              <div class="card-body bg-light text-dark px-4 py-3">
+                <div class="d-flex align-items-start mb-3">
+                  <span class="me-3 fs-6 text-primary">
+                    🌍
+                  </span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Country</div>
+                    <div class="fw-semibold text-uppercase fs-6">${countryName}</div>
+                  </div>
                 </div>
-
-                <div class="card-body">
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Country : ${countryName}
-                    </p>
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Region : ${selectedRegion}
-                    </p>
-                    <p class="text-uppercase fs-6 fw-light text-muted">
-                        Speed : ${speed}
-                    </p>
-
+                <div class="d-flex align-items-start">
+                  <span class="me-3 fs-6 text-primary">
+                    ⚡
+                  </span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Speed</div>
+                    <div class="fw-semibold fs-6">${speed}</div>
+                  </div>
                 </div>
+              </div>
             </div>`,
         );
 
