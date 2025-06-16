@@ -365,7 +365,7 @@ class FiberOpticNodeFilter(filters.FilterSet):
             of the `FiberOpticNode` model using `in` comparison.
 
         administrative_area (:class:`django_filters.rest_framework.filters.UUIDFilter`):
-            A filter for matching the`administrative_area__uuid` field of
+            A filter for matching the `administrative_area__uuid` field of
             the `FiberOpticNode` model using `uuid equal` comparison.
 
         administrative_area_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
@@ -481,7 +481,7 @@ class ElectricityNetworkFilter(filters.FilterSet):
             of the `ElectricityNetwork` model using `in` comparison.
 
         administrative_area (:class:`django_filters.rest_framework.filters.UUIDFilter`):
-            A filter for matching the`administrative_area__uuid` field of
+            A filter for matching the `administrative_area__uuid` field of
             the `ElectricityNetwork` model using `uuid equal` comparison.
 
         administrative_area_in (:class:`django_filters.rest_framework.filters.BaseInFilter`):
