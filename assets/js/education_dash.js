@@ -201,34 +201,30 @@ const EducationDash = {
             // Handle layers popup based on layers priority
 
             this._map.on('click', (e) => {
+                const features = this._map.queryRenderedFeatures(e.point, {
+                    layers: ['areas-education', 'education-institutions', 'fiber-nodes'],
+                });
 
-                const features = this._map.queryRenderedFeatures(
-                    e.point,
-                    { layers: ['areas-education', 'education-institutions', 'fiber-nodes'] }
-                );
-
-                if (features.length == 0){
+                if (features.length === 0) {
                     return;
                 }
                 const layerID = features[0].layer.id;
 
                 // Assign queried layer features to the event object
-                e.features = features
+                e.features = features;
 
-                if (layerID === 'areas-education'){
+                if (layerID === 'areas-education') {
                     this.areasEducationPopup(e);
-                }
-                else if (layerID === 'education-institutions'){
+                } else if (layerID === 'education-institutions') {
                     this.schoolsPopup(e);
-                }
-                else if (layerID === 'fiber-nodes'){
+                } else if (layerID === 'fiber-nodes') {
                     this.fiberNodesPopup(e);
                 }
             });
         },
 
-      // Summary stats popups
-        areasEducationPopup: async function (e){
+        // Summary stats popups
+        areasEducationPopup: async function (e) {
             const countryName = this.countriesLookup[e.features[0].properties.country];
             const name = `${e.features[0].properties.name}, ${countryName}`;
 
@@ -245,7 +241,7 @@ const EducationDash = {
                 percent10km = '-';
             }
 
-            if (this.currentPopup){
+            if (this.currentPopup) {
                 this.currentPopup.remove();
             }
 
@@ -288,7 +284,7 @@ const EducationDash = {
                 fonDistance = '-';
             }
 
-            if (this.currentPopup){
+            if (this.currentPopup) {
                 this.currentPopup.remove();
             }
 
@@ -323,7 +319,7 @@ const EducationDash = {
             });
             const schools10kmCount = institutionsAggregates.data.fon_distance_10km_count;
 
-            if (this.currentPopup){
+            if (this.currentPopup) {
                 this.currentPopup.remove();
             }
 
@@ -349,15 +345,14 @@ const EducationDash = {
         },
 
         mouseEvents: async function () {
-            const layers = ['areas-education', 'education-institutions', 'fiber-nodes']
+            const layers = ['areas-education', 'education-institutions', 'fiber-nodes'];
 
             layers.forEach((layerID) => {
-
                 this._map.on('mouseenter', layerID, () => {
                     this._map.getCanvas().style.cursor = 'pointer';
                 });
 
-                 this._map.on('mouseleave', layerID, () => {
+                this._map.on('mouseleave', layerID, () => {
                     this._map.getCanvas().style.cursor = '';
                 });
             });

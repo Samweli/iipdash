@@ -233,19 +233,17 @@ const InfrastructureDash = {
 
             this._map.on('click', 'areas-mobile-coverage-3g', this.showSummaryMapPopup);
             this._map.on('click', 'areas-mobile-coverage-4g', this.showSummaryMapPopup);
-
         },
 
         mouseEvents: async function () {
-            const layers = ['areas-mobile-coverage-3g', 'areas-mobile-coverage-4g']
+            const layers = ['areas-mobile-coverage-3g', 'areas-mobile-coverage-4g'];
 
             layers.forEach((layerID) => {
-
                 this._map.on('mouseenter', layerID, () => {
                     this._map.getCanvas().style.cursor = 'pointer';
                 });
 
-                 this._map.on('mouseleave', layerID, () => {
+                this._map.on('mouseleave', layerID, () => {
                     this._map.getCanvas().style.cursor = '';
                 });
             });
