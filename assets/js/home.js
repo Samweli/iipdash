@@ -7,6 +7,8 @@ import * as settings from './conf';
 import * as maps from './maps';
 import { fetchCatalogCategories, fetchCatalogLayers, fetchCountries, fetchRegions } from './api';
 
+import { educationInstitutionPopup, cellTowerPopup, healthFacilityPopup, fiberNodePopup, internetSpeedPopup } from './popups'
+
 /**
  *  HomeDash Vue application.
  */
@@ -34,6 +36,8 @@ const HomeDash = {
             catalogSelectedLayers: [],
             catalogLayerSearchTerm: '',
             countries: { features: [] },
+            countriesLookup: {},
+            currentPopup: null,
             regions: { features: [] },
             regionOptions: { features: [] },
             selectedCountry: null,
@@ -95,6 +99,10 @@ const HomeDash = {
             this.countries = countries;
             this.regions = _.cloneDeep(regions);
             this.regionOptions = _.cloneDeep(regions);
+
+            this.countries.features.forEach((feature) => {
+                    this.countriesLookup[feature.properties.country] = feature.properties.name;
+                });
         },
 
         /**
@@ -111,6 +119,7 @@ const HomeDash = {
             this._map.on('load', async () => {
                 this.mapLoaded = true;
                 await this.addMapLayers();
+                await this.mouseEvents();
             });
 
             const navigationControl = new maplibregl.NavigationControl({
@@ -120,6 +129,7 @@ const HomeDash = {
                 showCompass: true,
             });
             map.addControl(navigationControl);
+
         },
 
         /**
@@ -264,7 +274,107 @@ const HomeDash = {
             });
             this._map.addSource('regions', mapSources.regions);
             this._map.addLayer(regionsLayer);
+
+            this.handleMapLayersClick()
         },
+
+         /**
+         * Assign map layers operation when layer features are clicked.
+         *
+         *
+         * This:
+         *
+         * - Displays popup for a set of selected layers that have information to be shown.
+         */
+        handleMapLayersClick: async function() {
+
+            this._map.on('click', (e) => {
+
+                const features = this._map.queryRenderedFeatures(
+                    e.point,
+                    {
+                    layers: [
+                    'education-institutions',
+                    'cell-towers',
+                    'health-facilities',
+                    'fiber-nodes',
+                    'areas-internet-speed-mobile',
+                    'areas-internet-speed-fixed'
+                    ]
+                    }
+                );
+
+                if (features.length == 0){
+                    return;
+                }
+                const layerID = features[0].layer.id;
+
+                const popup = null;
+
+                // Assign queried layer features to the event object
+                e.features = features
+
+                if (layerID === 'education-institutions'){
+                    const popup = educationInstitutionPopup(e, this.countriesLookup);
+                    popup.addTo(this._map);
+                }
+                else if (layerID === 'cell-towers'){
+                    const popup = cellTowerPopup(e, this.countriesLookup);
+                    popup.addTo(this._map);
+                }
+                else if (layerID === 'health-facilities'){
+                    const popup = healthFacilityPopup(e, this.countriesLookup);
+                    popup.addTo(this._map);
+                }
+                else if (layerID === 'fiber-nodes'){
+                    const popup = fiberNodePopup(e, this.countriesLookup);
+                    popup.addTo(this._map);
+                }
+                else if (layerID === 'areas-internet-speed-mobile' || layerID === 'areas-internet-speed-fixed'){
+                    const popup = internetSpeedPopup(e, this.countriesLookup);
+                    popup.addTo(this._map);
+                }
+
+                if (popup){
+                    if (this.currentPopup){
+                        this.currentPopup.remove();
+                    }
+                    this.currentPopup = popup;
+                }
+            });
+
+        },
+
+         /**
+         * Handles cursor style for different mouse events on the map layers.
+         *
+         *
+         * This:
+         *
+         * - Change cursor style for `mouseenter` and `mouseleave` events on map layers.
+         */
+         mouseEvents: async function () {
+            const layers = [
+            'education-institutions',
+            'cell-towers',
+            'health-facilities',
+            'fiber-nodes',
+            'areas-internet-speed-mobile',
+            'areas-internet-speed-fixed'
+            ];
+
+            layers.forEach((layerID) => {
+
+                this._map.on('mouseenter', layerID, () => {
+                    this._map.getCanvas().style.cursor = 'pointer';
+                });
+
+                 this._map.on('mouseleave', layerID, () => {
+                    this._map.getCanvas().style.cursor = '';
+                });
+            });
+        },
+
 
         /**
          * Add map layers legend.
