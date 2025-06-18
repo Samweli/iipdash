@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     "education",
     "health",
     "infrastructure",
+    "hazards",
     "dashboards",
     "debug_toolbar",
     "active_link",
