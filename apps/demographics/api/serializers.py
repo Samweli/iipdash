@@ -27,7 +27,7 @@ class RelativeWealthIndexSerializer(GeoFeatureModelSerializer):
         model = RelativeWealthIndex
         id_field = "uuid"
         geo_field = "geometry"
-        exclude = ["id"]
+        exclude = ["id", "bounds"]
 
 
 class RelativeWealthIndexCSVSerializer(serializers.ModelSerializer):
