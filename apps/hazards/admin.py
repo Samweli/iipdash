@@ -38,6 +38,7 @@ class ExposureCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
     raw_id_fields = ["administrative_area"]
     search_fields = ["id", "uuid", "administrative_area__name"]
     readonly_fields = ["id", "uuid", "tms_url", "created_at", "updated_at"]
+    actions = ["refresh_raster"]
 
     def get_actions(self, request):
         actions = super().get_actions(request)
