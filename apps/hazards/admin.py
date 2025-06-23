@@ -1,9 +1,11 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.gis.admin import GISModelAdmin
+from django.utils.translation import ngettext
 
 from import_export.admin import ImportExportModelAdmin
 
 from .models import ExposureCoverage, Hazard, HazardExposure, UrbanizationDegree
+from .tasks import update_exposure_coverage_raster
 
 
 @admin.register(Hazard)
@@ -27,15 +29,40 @@ class UrbanizationDegreeAdmin(ImportExportModelAdmin):
 @admin.register(ExposureCoverage)
 class ExposureCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
     list_display = [
-        "display_name",
+        "administrative_area__name",
         "administrative_area__country",
     ]
-    list_display_links = ["display_name"]
+    list_display_links = ["administrative_area__name"]
     list_select_related = ["administrative_area"]
     list_filter = ["administrative_area__country", "created_at", "updated_at"]
     raw_id_fields = ["administrative_area"]
     search_fields = ["id", "uuid", "administrative_area__name"]
     readonly_fields = ["id", "uuid", "tms_url", "created_at", "updated_at"]
+
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if not request.user.is_superuser:
+            if "refresh_raster" in actions:
+                del actions["refresh_raster"]
+
+        return actions
+
+    @admin.action(description="Refresh selected raster data in the database")
+    def refresh_raster(self, request, queryset):
+        for mobile_coverage in queryset:
+            update_exposure_coverage_raster.delay(pk=mobile_coverage.pk)
+
+        count = len(queryset)
+        self.message_user(
+            request,
+            ngettext(
+                "%d exposure coverage raster will be updated in the database.",
+                "%d exposure coverage rasters will be updated in the database.",
+                count,
+            )
+            % count,
+            messages.SUCCESS,
+        )
 
 
 @admin.register(HazardExposure)
