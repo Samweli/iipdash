@@ -65,6 +65,60 @@ class Hazard(models.Model):
         return self.name
 
 
+class UrbanizationDegree(models.Model):
+    """Degree of Urbanization."""
+
+    uuid = models.UUIDField(
+        _("UUID"),
+        default=uuid.uuid4,
+        editable=False,
+        unique=True,
+    )
+
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        db_index=True,
+    )
+
+    code = models.SlugField(
+        _("code"),
+        blank=True,
+        null=True,
+        max_length=50,
+        unique=True,
+    )
+
+    description = models.TextField(_("description"), blank=True, help_text=_("A long-form description."))
+
+    created_at = models.DateTimeField(
+        "created at",
+        auto_now_add=True,
+        db_default=Now(),
+        db_index=True,
+    )
+
+    updated_at = models.DateTimeField(
+        _("updated at"),
+        auto_now=True,
+        null=True,
+        blank=True,
+    )
+
+    extras = models.JSONField(
+        _("extras"),
+        blank=True,
+        default=dict,
+    )
+
+    class Meta:
+        verbose_name = _("Degree of Urbanization")
+        verbose_name_plural = _("Degrees of Urbanization")
+
+    def __str__(self):
+        return self.name
+
+
 class ExposureCoverage(models.Model):
     """Hazard exposure coverage per administrative area."""
 
@@ -175,14 +229,6 @@ class HazardExposure(models.Model):
         unique=True,
     )
 
-    hazards = models.ManyToManyField(
-        Hazard,
-        related_name="exposures",
-        related_query_name="exposure",
-        blank=True,
-        verbose_name=_("hazards"),
-    )
-
     coverage = models.ForeignKey(
         ExposureCoverage,
         blank=True,
@@ -191,6 +237,24 @@ class HazardExposure(models.Model):
         related_query_name="exposure",
         on_delete=models.SET_NULL,
         verbose_name=_("coverage"),
+    )
+
+    urbanization_degree = models.ForeignKey(
+        UrbanizationDegree,
+        on_delete=models.SET_NULL,
+        related_name="exposures",
+        related_query_name="exposure",
+        blank=True,
+        null=True,
+        verbose_name=_("degree of urbanization"),
+    )
+
+    hazards = models.ManyToManyField(
+        Hazard,
+        related_name="exposures",
+        related_query_name="exposure",
+        blank=True,
+        verbose_name=_("hazards"),
     )
 
     population_exposed = models.PositiveIntegerField(_("population exposed"), blank=True, null=True)

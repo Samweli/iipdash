@@ -3,11 +3,20 @@ from django.contrib.gis.admin import GISModelAdmin
 
 from import_export.admin import ImportExportModelAdmin
 
-from .models import ExposureCoverage, Hazard, HazardExposure
+from .models import ExposureCoverage, Hazard, HazardExposure, UrbanizationDegree
 
 
 @admin.register(Hazard)
 class HazardAdmin(ImportExportModelAdmin):
+    list_display = ["name", "code", "uuid", "id"]
+    list_display_links = ["name", "code"]
+    prepopulated_fields = {"code": ["name"]}
+    search_fields = ["id", "uuid", "name", "code"]
+    readonly_fields = ["id", "uuid", "created_at", "updated_at"]
+
+
+@admin.register(UrbanizationDegree)
+class UrbanizationDegreeAdmin(ImportExportModelAdmin):
     list_display = ["name", "code", "uuid", "id"]
     list_display_links = ["name", "code"]
     prepopulated_fields = {"code": ["name"]}
@@ -39,7 +48,13 @@ class HazardExposureAdmin(ImportExportModelAdmin):
     ]
     list_display_links = ["display_name"]
     list_select_related = ["coverage__administrative_area"]
-    list_filter = ["coverage__administrative_area__country", "hazards", "created_at", "updated_at"]
+    list_filter = [
+        "coverage__administrative_area__country",
+        "hazards",
+        "urbanization_degree",
+        "created_at",
+        "updated_at",
+    ]
     filter_horizontal = ["hazards"]
     raw_id_fields = ["coverage"]
     search_fields = ["id", "uuid", "coverage__administrative_area__name"]
