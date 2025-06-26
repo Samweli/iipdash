@@ -174,7 +174,7 @@ class RelativeWealthIndex(models.Model):
         if (self.bounds is not None and overwrite is not True) or self.geometry is None:
             return
 
-        buffer_size = (settings.RELATIVE_WEALTH_INDEX_RESOLUTION**0.5) / 2
+        buffer_size = settings.RELATIVE_WEALTH_INDEX_RESOLUTION / 2
         bounds = self.geometry.transform(3857, clone=True).buffer(buffer_size).envelope
         bounds.transform(4326)
         self.bounds = bounds
