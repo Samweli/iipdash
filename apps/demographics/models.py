@@ -2,11 +2,14 @@ import uuid
 
 from django.conf import settings
 from django.contrib.gis.db import models
+from django.contrib.gis.db.models.functions import Envelope
 from django.contrib.gis.geos import Point
-from django.db.models.functions import Now
+from django.db.models.functions import Cast, Now
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from administrative.models import Area
+from core.aggregation import StBuffer
 
 
 class PopulationDensityHD(models.Model):
@@ -158,8 +161,8 @@ class RelativeWealthIndex(models.Model):
 
     def save(self, *args, **kwargs):
         self.set_administrative_area(overwrite=False)
-        self.set_bounds(overwrite=False)
         super().save(*args, **kwargs)
+        self.update_bounds(overwrite=False)
 
     def set_administrative_area(self, overwrite=True):
         """Try to detect related administrative area based on the location if not yet provided."""
@@ -170,11 +173,20 @@ class RelativeWealthIndex(models.Model):
         if area:
             self.administrative_area = area
 
-    def set_bounds(self, overwrite=False):
+    def update_bounds(self, overwrite=True):
         if (self.bounds is not None and overwrite is not True) or self.geometry is None:
             return
 
         buffer_size = settings.RELATIVE_WEALTH_INDEX_RESOLUTION / 2
-        bounds = self.geometry.transform(3857, clone=True).buffer(buffer_size).envelope
-        bounds.transform(4326)
-        self.bounds = bounds
+
+        RelativeWealthIndex.objects.filter(pk=self.pk).update(
+            updated_at=now(),
+            bounds=Envelope(
+                Cast(
+                    StBuffer("geometry", buffer_size),
+                    models.PolygonField(),
+                ),
+            ),
+        )
+
+        self.refresh_from_db()
