@@ -40,6 +40,9 @@ class ExposureCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
     readonly_fields = ["id", "uuid", "tms_url", "created_at", "updated_at"]
     actions = ["refresh_raster"]
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).defer("raster")
+
     def get_actions(self, request):
         actions = super().get_actions(request)
         if not request.user.is_superuser:
@@ -70,11 +73,12 @@ class ExposureCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
 class HazardExposureAdmin(ImportExportModelAdmin):
     list_display = [
         "display_name",
+        "coverage__administrative_area__name",
         "coverage__administrative_area__country",
         "population_exposed_percent",
         "population_exposed_ev_percent",
     ]
-    list_display_links = ["display_name"]
+    list_display_links = ["display_name", "coverage__administrative_area__name"]
     list_select_related = ["coverage__administrative_area"]
     list_filter = [
         "coverage__administrative_area__country",
@@ -90,4 +94,4 @@ class HazardExposureAdmin(ImportExportModelAdmin):
 
     def get_queryset(self, request):
         qs = super().get_queryset(request)
-        return qs.prefetch_related("hazards")
+        return qs.prefetch_related("hazards").defer("coverage__raster")

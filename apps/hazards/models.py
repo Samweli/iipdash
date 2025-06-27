@@ -296,7 +296,4 @@ class HazardExposure(models.Model):
 
     @property
     def display_name(self):
-        return _("%(area)s %(hazards)s exposure") % {
-            "area": str(self.coverage.administrative_area),
-            "hazards": ", ".join([str(hazard) for hazard in self.hazards.all()]),
-        }
+        return ", ".join([hazard.name for hazard in self.hazards.all()])
