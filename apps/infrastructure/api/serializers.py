@@ -81,6 +81,7 @@ class CellTowerCSVSerializer(serializers.ModelSerializer):
             "mcc",
             "location_is_approximate",
             "range",
+            "operator_name",
             "country",
             "administrative_area_name",
             "src_created_at",

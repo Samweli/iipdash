@@ -260,6 +260,7 @@ class CellTowerViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelView
         "mcc",
         "location_is_approximate",
         "range",
+        "operator_name",
         "country",
         "administrative_area_uuid",
         "administrative_area_name",

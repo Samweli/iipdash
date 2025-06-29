@@ -492,6 +492,13 @@ class CellTower(models.Model):
         help_text=_("Defines if coordinates of the cell tower are exact or approximate."),
     )
 
+    operator_name = models.CharField(
+        _("operator name"),
+        blank=True,
+        max_length=255,
+        help_text=_("Name of the network operator."),
+    )
+
     #: The estimated coverage range in meters of the cell tower.
     range = models.FloatField(
         _("range (meters)"),
