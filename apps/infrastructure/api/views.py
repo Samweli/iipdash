@@ -256,6 +256,7 @@ class CellTowerViewSet(CSVDownloadMixin, VectorLayer, viewsets.ReadOnlyModelView
     #: A tuple of fields to be included in vector tiles data.
     tile_fields = (
         "uuid",
+        "name",
         "network_type",
         "mcc",
         "location_is_approximate",

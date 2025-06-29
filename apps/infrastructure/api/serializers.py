@@ -77,6 +77,7 @@ class CellTowerCSVSerializer(serializers.ModelSerializer):
         model = CellTower
         fields = [
             "uuid",
+            "name",
             "network_type",
             "mcc",
             "location_is_approximate",
