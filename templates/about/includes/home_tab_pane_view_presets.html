@@ -34,6 +34,20 @@
         </li>
         <li class="nav-item fs-4" role="presentation">
             <button
+                id="tab-link-vulnerable-communities"
+                class="nav-link d-flex flex-column align-items-center"
+                data-bs-toggle="tab"
+                data-bs-target="#tab-pane-vulnerable-communities"
+                type="button"
+                role="tab"
+                aria-controls="tab-pane-vulnerable-communities"
+                aria-selected="false">
+                <i class="fa-solid fa-house-flood-water fa-2x"></i>
+                <span class="mt-2">Vulnerable</span><span>communities</span>
+            </button>
+        </li>
+        <li class="nav-item fs-4" role="presentation">
+            <button
                 id="tab-link-mobile-internet-access"
                 class="nav-link d-flex flex-column align-items-center "
                 data-bs-toggle="tab"
@@ -89,9 +103,24 @@
             role="tabpanel"
             aria-labelledby="tab-link-vulnerable-communities">
             <div class="d-flex flex-column">
-                <p class="mt-3">
-                    {% trans "Vulnerable communities" %}
+                <p class="h-txt-20-primary mt-3">
+                    {% blocktrans trimmed %}
+                        How connected are schools to digital infrastructure?
+                    {% endblocktrans %}
                 </p>
+                <p class="p-txt-16-black ">
+                    {% blocktrans trimmed %}
+                        This preset activates layers including school locations and mobile coverage, affording planners insight into connectivity and access.
+                    {% endblocktrans %}
+                </p>
+                <p class="p-txt-16-black ">
+                    {% blocktrans trimmed %}
+                        Once enabled, click on a region to view summary statistics that have been calculated based on these layers.
+                    {% endblocktrans %}
+                </p>
+                <a href="#" class="btn btn-primary btn-primary-enable-preset align-self-center mt-3">
+                    {% trans "Enable preset" %}
+                </a>
             </div>
         </div>
         {# End: vulnerable communities tab pane #}
