@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     "education",
     "health",
     "infrastructure",
+    "hazards",
     "dashboards",
     "debug_toolbar",
     "active_link",
@@ -432,6 +433,11 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # Administrative
 
 ADMINISTRATIVE_AREAS_SIMPLIFICATION_TOLERANCE = env.float("ADMINISTRATIVE_AREAS_SIMPLIFICATION_TOLERANCE", default=1.0)
+
+
+# Demographics
+
+RELATIVE_WEALTH_INDEX_RESOLUTION = env.float("RELATIVE_WEALTH_INDEX_RESOLUTION", default=2400.0)  # 2.4 KM
 
 # Raster tiles
 

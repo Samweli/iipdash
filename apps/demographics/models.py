@@ -1,11 +1,15 @@
 import uuid
 
+from django.conf import settings
 from django.contrib.gis.db import models
+from django.contrib.gis.db.models.functions import Envelope
 from django.contrib.gis.geos import Point
-from django.db.models.functions import Now
+from django.db.models.functions import Cast, Now
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from administrative.models import Area
+from core.aggregation import StBuffer
 
 
 class PopulationDensityHD(models.Model):
@@ -124,6 +128,10 @@ class RelativeWealthIndex(models.Model):
         help_text=_("The geo-spatial location."),
     )
 
+    bounds = models.PolygonField(
+        _("bounds"), blank=True, null=True, geography=True, help_text=_("Boundaries of the area covered")
+    )
+
     rwi = models.FloatField(_("rwi"))
     error = models.FloatField(_("error"), blank=True, null=True)
 
@@ -154,12 +162,31 @@ class RelativeWealthIndex(models.Model):
     def save(self, *args, **kwargs):
         self.set_administrative_area(overwrite=False)
         super().save(*args, **kwargs)
+        self.update_bounds(overwrite=False)
 
     def set_administrative_area(self, overwrite=True):
         """Try to detect related administrative area based on the location if not yet provided."""
-        if self.administrative_area is not None or self.geometry is None and overwrite is not True:
+        if (self.administrative_area is not None and overwrite is not True) or self.geometry is None:
             return
 
         area = Area.objects.filter(geometry__covers=self.geometry).order_by("-depth").first()
         if area:
             self.administrative_area = area
+
+    def update_bounds(self, overwrite=True):
+        if (self.bounds is not None and overwrite is not True) or self.geometry is None:
+            return
+
+        buffer_size = settings.RELATIVE_WEALTH_INDEX_RESOLUTION / 2
+
+        RelativeWealthIndex.objects.filter(pk=self.pk).update(
+            updated_at=now(),
+            bounds=Envelope(
+                Cast(
+                    StBuffer("geometry", buffer_size),
+                    models.PolygonField(),
+                ),
+            ),
+        )
+
+        self.refresh_from_db()

@@ -126,6 +126,9 @@ class MobileCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
     readonly_fields = ["id", "uuid", "tms_url", "created_at", "updated_at"]
     actions = ["refresh_raster", "refresh_tiles"]
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).defer("raster")
+
     def get_actions(self, request):
         actions = super().get_actions(request)
         if not request.user.is_superuser:

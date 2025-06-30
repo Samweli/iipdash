@@ -458,6 +458,12 @@ class CellTower(models.Model):
         help_text=_("A universally unique identifier (UUID) for the cell tower."),
     )
 
+    name = models.CharField(
+        _("name"),
+        max_length=255,
+        blank=True,
+    )
+
     #: The network type of the cell tower e.g., GSM, UMTS, LTE, CDMA.
     network_type = models.CharField(
         _("network type"),
@@ -490,6 +496,13 @@ class CellTower(models.Model):
         blank=True,
         null=True,
         help_text=_("Defines if coordinates of the cell tower are exact or approximate."),
+    )
+
+    operator_name = models.CharField(
+        _("operator name"),
+        blank=True,
+        max_length=255,
+        help_text=_("Name of the network operator."),
     )
 
     #: The estimated coverage range in meters of the cell tower.
@@ -594,10 +607,14 @@ class CellTower(models.Model):
             str:
                 A user-friendly display name.
         """
-        return _("%(network_type)s cell tower: %(uuid)s") % {
-            "network_type": self.network_type,
-            "uuid": self.uuid,
-        }
+
+        if self.name:
+            return self.name
+        else:
+            return _("%(network_type)s cell tower: %(uuid)s") % {
+                "network_type": self.network_type,
+                "uuid": self.uuid,
+            }
 
     def set_administrative_area(self, overwrite=True):
         """Try to detect related administrative area based on the location if not yet provided."""
