@@ -311,11 +311,28 @@ class HazardExposure(models.Model):
         return _("Hazard Exposure %(uuid)s") % {"uuid": self.uuid}
 
     @cached_property
+    def hazards_names(self):
+        # Not using ``self.hazards.values_list('name', flat=True)`` in order to try to utilize
+        # cached hazards from previous queries if available
+        return [hazard.name for hazard in self.hazards.all()]
+
+    @cached_property
+    def hazards_names_display(self):
+        return ", ".join(self.hazards_names)
+
+    @cached_property
     def administrative_area(self):
         if not self.coverage:
             return None
 
         return self.coverage.administrative_area
+
+    @cached_property
+    def administrative_area_name(self):
+        if not self.administrative_area:
+            return None
+
+        return self.administrative_area.name
 
     def set_population_percents(self):
         if not self.administrative_area:

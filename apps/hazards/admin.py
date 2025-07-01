@@ -72,14 +72,15 @@ class ExposureCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
 @admin.register(HazardExposure)
 class HazardExposureAdmin(ImportExportModelAdmin):
     list_display = [
-        "display_name",
+        "hazards_names_display",
         "coverage__administrative_area__name",
+        "urbanization_degree__name",
         "coverage__administrative_area__country",
         "population_exposed_percent",
         "population_exposed_ev_percent",
     ]
-    list_display_links = ["display_name", "coverage__administrative_area__name"]
-    list_select_related = ["coverage__administrative_area"]
+    list_display_links = ["hazards_names_display", "coverage__administrative_area__name"]
+    list_select_related = ["coverage__administrative_area", "urbanization_degree"]
     list_filter = [
         "coverage__administrative_area__country",
         "hazards",
