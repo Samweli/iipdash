@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.gis.gdal import GDALRaster
 from django.db.models.functions import Now
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 from .files import hazard_exposure_tiff_path
@@ -261,10 +262,14 @@ class HazardExposure(models.Model):
     population_exposed_percent = models.FloatField(_("population exposed (percentage)"), blank=True, null=True)
 
     population_exposed_ev = models.PositiveIntegerField(
-        _("economically vulnerable population exposed"), blank=True, null=True
+        _("economically vulnerable population exposed"),
+        blank=True,
+        null=True,
     )
     population_exposed_ev_percent = models.FloatField(
-        _("economically vulnerable population exposed (percentage)"), blank=True, null=True
+        _("economically vulnerable population exposed (percentage)"),
+        blank=True,
+        null=True,
     )
 
     created_at = models.DateTimeField(
@@ -294,6 +299,33 @@ class HazardExposure(models.Model):
     def __str__(self):
         return self.display_name
 
+    def save(self, *args, **kwargs):
+        self.set_population_percents()
+        super().save(*args, **kwargs)
+
     @property
     def display_name(self):
-        return ", ".join([hazard.name for hazard in self.hazards.all()])
+        # NOTE: display name based in hazards (as below) is disabled  because was causing maximum
+        # recursion error with django-import-export
+        # return ", ".join([hazard.name for hazard in self.hazards.all()])
+        return _("Hazard Exposure %(uuid)s") % {"uuid": self.uuid}
+
+    @cached_property
+    def administrative_area(self):
+        if not self.coverage:
+            return None
+
+        return self.coverage.administrative_area
+
+    def set_population_percents(self):
+        if not self.administrative_area:
+            return
+
+        total_population = self.administrative_area.population
+        if total_population:
+
+            if self.population_exposed is not None:
+                self.population_exposed_percent = self.population_exposed / total_population * 100
+
+            if self.population_exposed_ev is not None:
+                self.population_exposed_ev_percent = self.population_exposed_ev / total_population * 100
