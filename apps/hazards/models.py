@@ -5,6 +5,7 @@ from urllib.parse import urljoin
 from django.conf import settings
 from django.contrib.gis.db import models
 from django.contrib.gis.gdal import GDALRaster
+from django.contrib.postgres.fields import ArrayField
 from django.db.models.functions import Now
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
@@ -258,6 +259,15 @@ class HazardExposure(models.Model):
         verbose_name=_("hazards"),
     )
 
+    hazards_names = ArrayField(
+        models.CharField(max_length=100, blank=True),
+        null=True,
+        blank=True,
+        verbose_name=_("hazards names"),
+        default=list,
+        editable=False,
+    )
+
     population_exposed = models.PositiveIntegerField(_("population exposed"), blank=True, null=True)
     population_exposed_percent = models.FloatField(_("population exposed (percentage)"), blank=True, null=True)
 
@@ -311,12 +321,6 @@ class HazardExposure(models.Model):
         return _("Hazard Exposure %(uuid)s") % {"uuid": self.uuid}
 
     @cached_property
-    def hazards_names(self):
-        # Not using ``self.hazards.values_list('name', flat=True)`` in order to try to utilize
-        # cached hazards from previous queries if available
-        return [hazard.name for hazard in self.hazards.all()]
-
-    @cached_property
     def hazards_names_display(self):
         return ", ".join(self.hazards_names)
 
@@ -333,6 +337,12 @@ class HazardExposure(models.Model):
             return None
 
         return self.administrative_area.name
+
+    def get_hazards_names(self):
+        return list(self.hazards.values_list("name", flat=True).order_by("name"))
+
+    def set_hazards_names(self):
+        self.hazards_names = self.get_hazards_names()
 
     def set_population_percents(self):
         if not self.administrative_area:
