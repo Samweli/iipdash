@@ -29,8 +29,8 @@ help: ## display this message
 .PHONY: install/dev
 install/dev: ## install dependencies for local development
 	python -m pip install -U pip
-	python -m pip install -r requirements_dev.txt -c constraints.txt
-	python -m pip install -r requirements_docs.txt -c constraints.txt
+	python -m pip install -r requirements_dev.txt
+	python -m pip install -r requirements_docs.txt
 
 .PHONY: install/pre-commit
 install/pre-commit: ## install pre-commit for local development
