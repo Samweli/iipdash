@@ -9,6 +9,7 @@ module.exports = {
         home: ['./assets/js/home.js'],
         education_dash: ['./assets/js/education_dash.js'],
         infrastructure_dash: ['./assets/js/infrastructure_dash.js'],
+        hazard_dash: ['./assets/js/hazard_dash.js'],
     },
     output: {
         path: path.resolve('./assets/dist/'),
