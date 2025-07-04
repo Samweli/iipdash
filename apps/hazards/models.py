@@ -344,6 +344,10 @@ class HazardExposure(models.Model):
     def set_hazards_names(self):
         self.hazards_names = self.get_hazards_names()
 
+    def update_hazards_names(self):
+        hazards_names = self.get_hazards_names()
+        type(self).objects.filter(pk=self.pk).update(hazards_names=hazards_names, updated_at=Now())
+
     def set_population_percents(self):
         if not self.administrative_area:
             return
