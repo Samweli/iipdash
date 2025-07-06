@@ -1,7 +1,8 @@
+{% load static %}
 {% load i18n %}
 
 
-{# Start: map pane top pane #}
+{# Start: map pane top left pane #}
 <div class="map-pane map-top-pane">
 
     {# Start: country top map filter #}
@@ -46,4 +47,89 @@
     {# End: summary and underlying data top map toggle #}
 
 </div>
-{# End: map pane top pane #}
+{# End: map pane top left pane #}
+
+
+{# Start: map pane bottom left map legends #}
+<div class="map-pane map-legend-pane">
+    <h5 class="h-txt-20-primary">{% trans 'Active layers' %}</h5>
+
+    {# Start: hazard exposure legend #}
+    <div class="mt-3" v-if="!mapSidebarTabsDetailsTabActive">
+        <div class="form-check ps-0">
+            <label
+                class="form-check-label p-txt-14-black fw-semibold"
+                for="selected-hazard-exposure">
+                {% trans 'Hazard exposure' %}
+            </label>
+            <input
+                class="form-check-input float-none ms-2"
+                type="radio"
+                id="selected-hazard-exposure">
+        </div>
+        <div class="p-txt-12-muted">{% trans '% of population' %}</div>
+
+        <div class="d-flex align-items-center">
+            <div class="me-1 p-txt-12-black fw-medium">0</div>
+            <div>
+                <img src="{% static '/images/legend-hazard-exposure.svg' %}"
+                     class="img-fluid choropleth-img d-flex align-items-center">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">100</div>
+        </div>
+    </div>
+    {# End: hazard exposure legend #}
+
+    {# Start: population density legend #}
+    <div class="mt-3" v-if="!mapSidebarTabsDetailsTabActive && !summaryLayerActive">
+        <div class="form-check ps-0">
+            <label
+                class="form-check-label p-txt-14-black fw-semibold"
+                for="selected-population-density">
+                {% trans 'Population density' %}
+            </label>
+            <input
+                class="form-check-input float-none ms-2"
+                type="radio"
+                id="selected-population-density">
+        </div>
+        <div class="p-txt-12-muted">{% trans 'Count per 30m<sup>2</sup>' %}</div>
+
+        <div class="d-flex align-items-center">
+            <div class="me-1 p-txt-12-black fw-medium">0</div>
+            <div>
+                <img src="{% static '/images/legend-population-density-hd.svg' %}"
+                     class="img-fluid choropleth-img d-flex align-items-center">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">30+</div>
+        </div>
+    </div>
+    {# End: population density legend #}
+
+    {# Start: relative wealth index legend #}
+    <div class="mt-3" v-if="!mapSidebarTabsDetailsTabActive && !summaryLayerActive">
+        <div class="form-check ps-0">
+            <label
+                class="form-check-label p-txt-14-black fw-semibold"
+                for="selected-relative-wealth">
+                {% trans 'Relative wealth' %}
+            </label>
+            <input
+                class="form-check-input float-none ms-2"
+                type="radio"
+                id="selected-relative-wealth">
+        </div>
+        <div class="p-txt-12-muted">{% trans 'Per 2.4km<sup>2</sup>' %}</div>
+
+        <div class="d-flex align-items-center">
+            <div class="me-1 p-txt-12-black fw-medium">Min</div>
+            <div>
+                <img src="{% static '/images/legend-relative-wealth-index.svg' %}"
+                     class="img-fluid choropleth-img d-flex align-items-center">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">Max</div>
+        </div>
+    </div>
+    {# End: relative wealth index legend #}
+</div>
+{# End: map pane bottom left map legends #}
