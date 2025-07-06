@@ -5,10 +5,10 @@
 
 {% block head_title %}{% trans "Vulnerable communities" %}{% endblock %}
 
-{% block body_id %}_hazards-dash{% endblock %}
+{% block body_id %}_hazard-dash{% endblock %}
 {% block body_class %}{% endblock %}
 
-{% block map_id %}_hazards-map{% endblock %}
+{% block map_id %}_hazard-map{% endblock %}
 
 {% block extra_map_sidebar_header_class %}map-sidebar-header map-sidebar-header-primary mb-0{% endblock %}
 {% block extra_map_sidebar_tabs_class %}map-sidebar-tabs{% endblock %}
@@ -71,6 +71,10 @@
     {# End: map sidebar tab content #}
 
 {% endblock map_sidebar_tabs_content %}
+
+{% block map_extras %}
+    {% include "dashboards/includes/hazard_map_extras.html" %}
+{% endblock map_extras %}
 
 
 {% block extra_js %}
