@@ -3,6 +3,7 @@ import * as Vue from 'vue';
 import maplibregl from 'maplibre-gl';
 
 import * as settings from './conf';
+import * as utils from './utils';
 import * as maps from './maps';
 import { fetchCountries, fetchRegions } from './api';
 
@@ -39,7 +40,32 @@ const HazardDash = {
     /**
      * Defines computed properties derived from the component's data.
      */
-    computed: {},
+    computed: {
+        selectedLocation() {
+            const locations = [];
+
+            if (this.selectedRegion) {
+                locations.push(this.selectedRegion.properties.name);
+            }
+
+            if (this.selectedCountry) {
+                locations.push(this.selectedCountry.properties.name);
+            } else if (this.selectedRegion) {
+                locations.push(this.countriesLookup[this.selectedRegion.properties.country]);
+            }
+
+            return locations.join(', ');
+        },
+
+        summaryCSVDownloadURL() {
+            const params = {
+                country: this.lookup.country,
+                uuid: this.lookup.administrative_area,
+                level: settings.ADMINISTRATIVE_AREAS_REGION_LEVEL,
+            };
+            return utils.updateURLParams(`${settings.API_ROOT}<set-path-to-download-here>`, params);
+        },
+    },
 
     /**
      * Defines methods that handle user interactions and component logic.
@@ -155,14 +181,18 @@ const HazardDash = {
          * - Set current selected region
          */
         updateData: async function () {
-            // Update selected region
+            // Update selected country
             if (this.lookup.country) {
                 this.selectedCountry = _.find(this.countries.features, ['properties.country', this.lookup.country]);
+            } else {
+                this.selectedCountry = null;
             }
 
-            // Update selected country
+            // Update selected region
             if (this.lookup.administrative_area) {
                 this.selectedRegion = _.find(this.regions.features, { id: this.lookup.administrative_area });
+            } else {
+                this.selectedRegion = null;
             }
         },
 
