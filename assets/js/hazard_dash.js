@@ -34,6 +34,7 @@ const HazardDash = {
             regionOptions: { features: [] },
             selectedCountry: null,
             selectedRegion: null,
+            summaryLayerActive: true,
         };
     },
 
@@ -339,7 +340,7 @@ const HazardDash = {
         },
 
         /**
-         * Update ui and data once region selected in top map pane country selection
+         * Update ui and data once region selected in top map pane region selection
          *
          * This:
          *
@@ -349,6 +350,24 @@ const HazardDash = {
         handleRegionSelected: async function () {
             await this.update();
             await this.updateMapFitBounds();
+        },
+
+        /**
+         * Update ui, data and map when toggling between underlying data layers
+         * and summary layer in top map pane toggle summary layer button
+         *
+         * This:
+         *
+         * - Set/unset visibility of summary layer
+         * - Set/unset visibility of underlying data layers
+         */
+        handleSummaryLayerToggled: async function () {
+            const summaryVisibility = this._map.getLayoutProperty('areas-hazard', 'visibility');
+            if (summaryVisibility === 'visible') {
+                this.summaryLayerActive = false;
+            } else {
+                this.summaryLayerActive = true;
+            }
         },
 
         // ---

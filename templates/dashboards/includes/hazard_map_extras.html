@@ -34,5 +34,16 @@
     </div>
     {# End: region top map filter #}
 
+    {# Start: summary and underlying data top map toggle #}
+    <div class="m-1">
+        <button type="button" class="btn btn-map-default"
+                @click="handleSummaryLayerToggled()">
+            <i class="fas fa-layer-group me-1"></i>
+            <template v-if="summaryLayerActive">{% trans 'Reveal underlying data' %}</template>
+            <template v-else>{% trans 'Hide underlying data' %}</template>
+        </button>
+    </div>
+    {# End: summary and underlying data top map toggle #}
+
 </div>
 {# End: map pane top pane #}
