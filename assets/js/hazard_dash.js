@@ -35,6 +35,7 @@ const HazardDash = {
             selectedCountry: null,
             selectedRegion: null,
             summaryLayerActive: true,
+            mapSidebarTabsDetailsTabActive: false,
         };
     },
 
@@ -370,6 +371,22 @@ const HazardDash = {
             }
         },
 
+        /**
+         * Update ui and data once tab is selected in map sidebar nav tabs
+         *
+         * This:
+         *
+         * - Listens for the selected tab in `#map-sidebar-tabs-tab-list` in
+         *   `templates/dashboards/hazard.html`
+         * - Updates `mapSidebarTabsDetailsTabActive` to `true` if the selected
+         *   tab is the details tab, otherwise sets it to `false`.
+         */
+        handleMapSidebarTabsTabToggled: async function (event) {
+            // Check if the 'details' tab is now active
+            const selectedTabId = event?.target?.id;
+            this.mapSidebarTabsDetailsTabActive = selectedTabId === 'tab-link-details';
+        },
+
         // ---
         // End: UI event handlers methods
         // ---
@@ -401,6 +418,39 @@ const HazardDash = {
         // ---
         // End: Map bounds control methods
         // ---
+
+        // ---
+        // Start: Boostrap UI methods
+        // ---
+
+        /**
+         * Initialize or update bootstap UI
+         */
+        initBootstrapUI: async function () {
+            await this.initMapSidebarTabsTabUIListener();
+        },
+
+        /**
+         * Initialize event listeners for the map sidebar Bootstrap nav tabs
+         * in `templates/dashboards/hazard.html`
+         *
+         * This method:
+         * - Attaches a listener for the `'shown.bs.tab'` event on the
+         *   `#map-sidebar-tabs-tab-list` element to detect when a tab becomes active.
+         */
+        initMapSidebarTabsTabUIListener: async function () {
+            // Get the map sidebar tab list element
+            const mapSidebarTabsTabList = document.getElementById('map-sidebar-tabs-tab-list');
+
+            if (mapSidebarTabsTabList) {
+                // Listen for the Bootstrap 'shown.bs.tab' event to track active tab changes
+                mapSidebarTabsTabList.addEventListener('shown.bs.tab', this.handleMapSidebarTabsTabToggled);
+            }
+        },
+
+        // ---
+        // End: Boostrap UI methods
+        // ---
     },
 
     /**
@@ -415,13 +465,16 @@ const HazardDash = {
     mounted: async function () {
         await this.initData();
         await this.initMap();
+        await this.initBootstrapUI();
         await this.update();
     },
 
     /**
      * Lifecycle hook called after the component has updated its DOM tree due to a reactive state change.
      */
-    updated: async function () {},
+    updated: async function () {
+        await this.initBootstrapUI();
+    },
 };
 
 // Create a new Vue application instance using the HazardDash root component.
