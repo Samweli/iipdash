@@ -1,3 +1,4 @@
+from hazards.api.urls import router as hazards_router
 from health.api.urls import router as health_router
 from rest_framework import routers
 
@@ -6,7 +7,6 @@ from catalog.api.urls import router as catalog_router
 from demographics.api.urls import router as demographics_router
 from education.api.urls import router as education_router
 from infrastructure.api.urls import router as infrastructure_router
-from hazards.api.urls import router as hazards_router
 
 
 class DefaultRouter(routers.DefaultRouter):
