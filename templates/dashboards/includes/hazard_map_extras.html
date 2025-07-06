@@ -208,3 +208,195 @@
 
 </div>
 {# End: map pane bottom left map legends #}
+
+
+{# Start: map pane bottom right map filters #}
+<div class="map-pane map-filters-pane">
+    <div class="accordion accordion-flush" id="map-filters-accordion">
+        <div class="accordion-item">
+
+            {# Start: map filters header #}
+            <div id="map-filters-header" class="accordion-header">
+                <button class="accordion-button"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#map-filters-body"
+                        aria-expanded="true"
+                        aria-controls="map-filters-body">
+                    {% trans 'Filters' %}
+                </button>
+            </div>
+            {# End: map filters header #}
+
+            {# Start: map filters body #}
+            <div id="map-filters-body" class="accordion-collapse collapse" data-bs-parent="#map-filters-accordion">
+                <div class="accordion-body">
+
+                    {# Start: hazard type filter #}
+                    <fieldset class="py-2 border-bottom">
+                        <legend class="col-form-label p-txt-14-black fw-semibold">{% trans 'Hazard type' %}</legend>
+
+                        <div class="d-flex justify-content-start">
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="selectedHazardTypes"
+                                    value="cyclone"
+                                    id="selected-hazard-type-cyclone"
+                                    :checked="secondaryFilters.selectedHazardTypes.includes('cyclone')"
+                                    @change="handleSecondaryFiltersHazardTypeChecked('cyclone')">
+                                <label
+                                    class="form-check-label p-txt-14"
+                                    for="selected-hazard-type-cyclone">
+                                    {% trans 'Cyclone' %}
+                                </label>
+                            </div>
+
+                            <div class="form-check ms-5">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="selectedHazardTypes"
+                                    value="flood"
+                                    id="selected-hazard-type-flood"
+                                    :checked="secondaryFilters.selectedHazardTypes.includes('flood')"
+                                    @change="handleSecondaryFiltersHazardTypeChecked('flood')">
+                                <label
+                                    class="form-check-label p-txt-14"
+                                    for="selected-hazard-type-flood">
+                                    {% trans 'Flood' %}
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-start">
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="selectedHazardTypes"
+                                    value="drought"
+                                    id="selected-hazard-type-drought"
+                                    :checked="secondaryFilters.selectedHazardTypes.includes('drought')"
+                                    @change="handleSecondaryFiltersHazardTypeChecked('drought')">
+                                <label
+                                    class="form-check-label p-txt-14"
+                                    for="selected-hazard-type-drought">
+                                    {% trans 'Drought' %}
+                                </label>
+                            </div>
+
+                            <div class="form-check ms-5">
+                                <input
+                                    class="form-check-input"
+                                    type="checkbox"
+                                    name="selectedHazardTypes"
+                                    value="heat"
+                                    id="selected-hazard-type-heat"
+                                    :checked="secondaryFilters.selectedHazardTypes.includes('heat')"
+                                    @change="handleSecondaryFiltersHazardTypeChecked('heat')">
+                                <label
+                                    class="form-check-label p-txt-14"
+                                    for="selected-hazard-type-heat">
+                                    {% trans 'Heat' %}
+                                </label>
+                            </div>
+                        </div>
+
+                    </fieldset>
+                    {# End: hazard type filter #}
+
+                    {# Start: urbanicity type filter #}
+                    <fieldset class="py-2 border-bottom">
+                        <legend class="col-form-label p-txt-14-black fw-semibold">{% trans 'Urbanicity' %}</legend>
+                        <div class="d-flex justify-content-start">
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="selectedUrbanicityType"
+                                    value="urban"
+                                    id="selected-urbanicity-type-urban"
+                                    v-model="secondaryFilters.selectedUrbanicityType">
+                                <label
+                                    class="form-check-label p-txt-14"
+                                    for="selected-urbanicity-type-urban">
+                                    {% trans 'Urban' %}
+                                </label>
+                            </div>
+                            <div class="form-check ms-5">
+                                <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="selectedUrbanicityType"
+                                    value="rural"
+                                    id="selected-urbanicity-type-rural"
+                                    v-model="secondaryFilters.selectedUrbanicityType">
+                                <label
+                                    class="form-check-label p-txt-14"
+                                    for="selected-urbanicity-type-rural">
+                                    {% trans 'Rural' %}
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    {# Start: urbanicity type filter #}
+
+                    {# Start: population type filter #}
+                    <fieldset class="py-2">
+                        <legend class="col-form-label p-txt-14-black fw-semibold">{% trans 'Population type' %}</legend>
+                        <div class="d-flex justify-content-start">
+                            <div class="form-check">
+                                <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="selectedPopulationType"
+                                    value="vulnerable"
+                                    id="selected-population-type-vulnerable"
+                                    v-model="secondaryFilters.selectedPopulationType">
+                                <label
+                                    class="form-check-label p-txt-14"
+                                    for="selected-population-type-vulnerable">
+                                    {% trans 'Vulnerable' %}
+                                </label>
+                            </div>
+                            <div class="form-check ms-5">
+                                <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="selectedPopulationType"
+                                    value="all"
+                                    id="selected-population-type-all"
+                                    v-model="secondaryFilters.selectedPopulationType">
+                                <label
+                                    class="form-check-label p-txt-14"
+                                    for="selected-population-type-all">
+                                    {% trans 'All' %}
+                                </label>
+                            </div>
+                        </div>
+                    </fieldset>
+                    {# End: population type filter #}
+
+                    {# Start: action buttons #}
+                    <div class="py-2 d-flex justify-content-between">
+                        <button
+                            id="map-filters-clear-filter"
+                            class="btn btn-sm btn-light px-3"
+                            @click="handleSecondaryFiltersCleared()">{% trans "Clear" %}</button>
+                        <button
+                            id="map-filters-apply-filter"
+                            class="btn btn-sm btn-primary px-3 text-white"
+                            @click="handleSecondaryFiltersApplied()">{% trans "Apply" %}</button>
+                    </div>
+                    {# End: action buttons #}
+
+                </div>
+            </div>
+            {# End: map filters body #}
+
+        </div>
+    </div>
+</div>
+{# End: map pane bottom right map filters #}

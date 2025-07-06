@@ -7,6 +7,10 @@ import * as utils from './utils';
 import * as maps from './maps';
 import { fetchCountries, fetchRegions } from './api';
 
+const HAZARD_TYPES = ['cyclone', 'flood', 'drought', 'heat'];
+const POPULATION_TYPE_VULNERABLE = 'vulnerable';
+const URBANICITY_TYPE_URBAN = 'urban';
+
 /**
  *  HazardDash Vue application.
  */
@@ -36,6 +40,11 @@ const HazardDash = {
             selectedRegion: null,
             summaryLayerActive: true,
             mapSidebarTabsDetailsTabActive: false,
+            secondaryFilters: {
+                selectedHazardTypes: [...HAZARD_TYPES],
+                selectedUrbanicityType: URBANICITY_TYPE_URBAN, // or rural
+                selectedPopulationType: POPULATION_TYPE_VULNERABLE, // or all
+            },
         };
     },
 
@@ -196,6 +205,8 @@ const HazardDash = {
             } else {
                 this.selectedRegion = null;
             }
+
+            // TODO: handle secondary filters and selected legend layer
         },
 
         /**
@@ -278,6 +289,8 @@ const HazardDash = {
 
             // filter, toggle visibility of map layers
             await this.updateMapAdministrativeBoundaryLayers();
+
+            // TODO: handle secondary filters and selected legend layer
         },
 
         /**
@@ -385,6 +398,61 @@ const HazardDash = {
             // Check if the 'details' tab is now active
             const selectedTabId = event?.target?.id;
             this.mapSidebarTabsDetailsTabActive = selectedTabId === 'tab-link-details';
+        },
+
+        /**
+         * Update ui and data once secondary filters hazard type checkboxes are
+         * checked or unchecked in bottom right map filters pane
+         *
+         * This:
+         *
+         * - Update `secondaryFilters.selectedHazardTypes` secondary filters
+         * - Update data and map by calling `update`
+         */
+        handleSecondaryFiltersHazardTypeChecked: async function (hazardType) {
+            // Collect and update selected hazard types
+            const index = this.secondaryFilters.selectedHazardTypes.indexOf(hazardType);
+            if (index === -1) {
+                this.secondaryFilters.selectedHazardTypes.push(hazardType);
+            } else {
+                this.secondaryFilters.selectedHazardTypes.splice(index, 1);
+            }
+
+            // Update map and data
+            await this.update();
+        },
+
+        /**
+         * Update ui and data once secondary filters are cleared in bottom right map filters pane
+         *
+         * This:
+         *
+         * - Clear or reset all secondary filters
+         * - Update data and map by calling `update`
+         */
+        handleSecondaryFiltersCleared: async function () {
+            // Reset secondary filters
+            this.secondaryFilters = {
+                selectedHazardTypes: [...HAZARD_TYPES],
+                selectedUrbanicityType: URBANICITY_TYPE_URBAN,
+                selectedPopulationType: POPULATION_TYPE_VULNERABLE,
+            };
+
+            // Update map and data
+            await this.update();
+        },
+
+        /**
+         * Update ui and data once secondary filters are applied in bottom right map filters pane
+         *
+         * This:
+         *
+         * - Update all secondary filters
+         * - Update data and map by calling `update`
+         */
+        handleSecondaryFiltersApplied: async function () {
+            // Update map and data
+            await this.update();
         },
 
         // ---
