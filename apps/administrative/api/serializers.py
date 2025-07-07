@@ -21,6 +21,7 @@ __all__ = [
     "AreaMobileCoverageCSVSerializer",
     "AreaInternetSpeedSerializer",
     "AreaInternetSpeedCSVSerializer",
+    "AreaHazardExposureSerializer",
     "RelatedAreaSerializer",
 ]
 
@@ -393,3 +394,30 @@ class AreaInternetSpeedCSVSerializer(serializers.ModelSerializer):
             "updated_at",
         ]
         read_only_fields = fields
+
+
+class BaseAreaHazardExpsoureSerializer(serializers.ModelSerializer):
+
+    population_exposed = serializers.IntegerField(read_only=True)
+    population_exposed_ev = serializers.IntegerField(read_only=True)
+    urbanization_degree_codes = serializers.ListField(child=serializers.SlugField(), read_only=True)
+
+
+class AreaHazardExposureSerializer(BaseAreaHazardExpsoureSerializer, BaseGeoFeatureModelSerializer):
+    """GeoJSON serializer for hazard exposure statistics in administrative areas."""
+
+    class Meta:
+        model = Area
+        id_field = "uuid"
+        geo_field = "geometry"
+        exclude = [
+            "id",
+            "depth",
+            "path",
+            "numchild",
+            "geom",
+            "population_male",
+            "population_female",
+            "created_at",
+            "updated_at",
+        ]
