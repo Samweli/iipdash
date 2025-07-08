@@ -38,8 +38,12 @@ class AreaHazardExposureViewSet(AreaViewSet):
     filterset_class = AreaHazardExposureFilter
 
     def get_queryset(self):
+        qs = super().get_queryset()
 
-        qs = Area.objects.annotate(
+        filterset = self.filterset_class(self.request.GET, queryset=qs)
+        qs = filterset.qs
+
+        qs = qs.annotate(
             population_exposed=Sum("hazards_exposure_coverage__exposure__population_exposed"),
             population_exposed_ev=Sum("hazards_exposure_coverage__exposure__population_exposed_ev"),
             urbanization_degree_codes=ArrayAgg(
