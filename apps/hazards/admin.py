@@ -5,7 +5,7 @@ from django.utils.translation import ngettext
 from import_export.admin import ImportExportModelAdmin
 
 from .models import ExposureCoverage, Hazard, HazardExposure, UrbanizationDegree
-from .tasks import update_exposure_coverage_raster
+from .tasks import generate_hazards_exposure_coverage_tiles, update_hazards_exposure_coverage_raster
 
 
 @admin.register(Hazard)
@@ -38,7 +38,7 @@ class ExposureCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
     raw_id_fields = ["administrative_area"]
     search_fields = ["id", "uuid", "administrative_area__name"]
     readonly_fields = ["id", "uuid", "tms_url", "created_at", "updated_at"]
-    actions = ["refresh_raster"]
+    actions = ["refresh_raster", "refresh_tiles"]
 
     def get_queryset(self, request):
         return super().get_queryset(request).defer("raster")
@@ -49,12 +49,14 @@ class ExposureCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
             if "refresh_raster" in actions:
                 del actions["refresh_raster"]
 
+            if "refresh_tiles" in actions:
+                del actions["refresh_tiles"]
         return actions
 
     @admin.action(description="Refresh selected raster data in the database")
     def refresh_raster(self, request, queryset):
         for mobile_coverage in queryset:
-            update_exposure_coverage_raster.delay(pk=mobile_coverage.pk)
+            update_hazards_exposure_coverage_raster.delay(pk=mobile_coverage.pk)
 
         count = len(queryset)
         self.message_user(
@@ -62,6 +64,23 @@ class ExposureCoverageAdmin(GISModelAdmin, ImportExportModelAdmin):
             ngettext(
                 "%d exposure coverage raster will be updated in the database.",
                 "%d exposure coverage rasters will be updated in the database.",
+                count,
+            )
+            % count,
+            messages.SUCCESS,
+        )
+
+    @admin.action(description="Regenerate selected hazards exposure coverage TMS tiles")
+    def refresh_tiles(self, request, queryset):
+        for mobile_coverage in queryset:
+            generate_hazards_exposure_coverage_tiles.delay(pk=mobile_coverage.pk)
+
+        count = len(queryset)
+        self.message_user(
+            request,
+            ngettext(
+                "%d hazards exposure coverage tile set is going to be updated.",
+                "%d hazards exposure coverage tiles sets are going to be updated.",
                 count,
             )
             % count,

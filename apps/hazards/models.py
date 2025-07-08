@@ -1,3 +1,4 @@
+import shutil
 import uuid
 from pathlib import Path
 from urllib.parse import urljoin
@@ -10,6 +11,12 @@ from django.db.models.functions import Now
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
+import gdal2tiles
+import numpy as np
+import rasterio
+from rasterio.enums import ColorInterp
+
+from .colormaps import exposure_coverage_colormap
 from .files import hazard_exposure_tiff_path
 
 
@@ -219,6 +226,116 @@ class ExposureCoverage(models.Model):
             raster = raster.transform(raster_srid)
 
         self.raster = raster
+
+    def clear_tiles(self):
+        try:
+            shutil.rmtree(self.tiles_root)
+        except FileNotFoundError:
+            pass
+
+    def generate_tiles(self, **kwargs):
+        """Generate tiles for using web maps from TIFF file."""
+
+        if not self.tiff:
+            return
+
+        rgb_tiff = self.band2rgba()
+
+        kwargs = {
+            "webviewer": "none",
+            "nb_processes": settings.GDAL2TILES_PROCESSES,
+            "profile": "mercator",
+            "tile_size": 256,
+            "tmscompatible": True,
+            "zoom": (1, 12),
+            **kwargs,
+        }
+
+        self.clear_tiles()
+        gdal2tiles.generate_tiles(str(rgb_tiff), str(self.tiles_root), **kwargs)
+
+    def band2rgba(self):
+        """Converts a single band coverage GeoTIFF to RGBA format.
+
+        Returns:
+            Path: Path to the created RGBA GeoTIFF file.
+        """
+        dataset = rasterio.open(self.tiff.open())
+        data_band = dataset.read(1)
+
+        og_file_name = Path(self.tiff.name).name
+        rgb_rel_path = f"hazards/hazard-exposure/{self.uuid}/tiff-rgba/{og_file_name}"
+        rgb_path = Path(settings.MEDIA_ROOT) / rgb_rel_path
+        Path.mkdir(rgb_path.parent, parents=True, exist_ok=True)
+
+        # output profile
+        output_profile = {
+            "driver": "GTiff",
+            "width": dataset.shape[1],
+            "height": dataset.shape[0],
+            "count": 4,
+            "crs": dataset.crs,
+            "transform": dataset.transform,
+            "dtype": "uint8",
+            "photometric": "RGBA",
+        }
+
+        try:
+            colormap = dataset.colormap(1)
+        except ValueError:
+            colormap = None
+
+        if colormap:
+            rgba_band = np.full((4, data_band.shape[0], data_band.shape[1]), dataset.nodata, dtype=np.uint8)
+
+            colormap.update(exposure_coverage_colormap)
+
+            for index, color in colormap.items():
+                rgba_band[0][data_band == index] = color[0]  # Red
+                rgba_band[1][data_band == index] = color[1]  # Green
+                rgba_band[2][data_band == index] = color[2]  # Blue
+                rgba_band[3][data_band == index] = color[3]  # Alpha
+
+            with rasterio.open(rgb_path, "w", **output_profile) as dst:
+                dst.write(rgba_band)
+                dst.colorinterp = [
+                    ColorInterp.red,
+                    ColorInterp.green,
+                    ColorInterp.blue,
+                    ColorInterp.alpha,
+                ]
+        else:
+            # treat as grayscale image
+            alpha_band = dataset.read_masks(1)
+
+            # find scaling factor to RGB values (0 - 255)
+            min_value = np.nanmin(data_band)
+            max_value = np.nanmax(data_band)
+            value_range = max_value - min_value
+
+            if value_range:
+                rgb_scale = 255 / value_range
+                rgb_offset = 0 - min_value * rgb_scale
+                data_band = data_band * rgb_scale + rgb_offset
+            else:
+                data_band = np.zeros_like(data_band)
+
+            np.nan_to_num(data_band, copy=False)
+            data_band = data_band.astype("uint8")
+
+            with rasterio.open(str(rgb_path), mode="w", **output_profile) as dst:
+                dst.write(data_band, 1)
+                dst.write(data_band, 2)
+                dst.write(data_band, 3)
+                dst.write(alpha_band, 4)
+                dst.colorinterp = [
+                    ColorInterp.red,
+                    ColorInterp.green,
+                    ColorInterp.blue,
+                    ColorInterp.alpha,
+                ]
+
+        return rgb_path
 
 
 class HazardExposure(models.Model):
