@@ -22,6 +22,7 @@ __all__ = [
     "AreaInternetSpeedSerializer",
     "AreaInternetSpeedCSVSerializer",
     "AreaHazardExposureSerializer",
+    "AreaHazardExpsoureCSVSerializer",
     "RelatedAreaSerializer",
 ]
 
@@ -421,3 +422,24 @@ class AreaHazardExposureSerializer(BaseAreaHazardExpsoureSerializer, BaseGeoFeat
             "created_at",
             "updated_at",
         ]
+
+class AreaHazardExpsoureCSVSerializer(BaseAreaHazardExpsoureSerializer):
+    """Serializer for administrative areas hazard exposure CSV export."""
+
+    class Meta:
+        model = Area
+        fields = [
+            "uuid",
+            "type_code",
+            "country",
+            "name",
+            "code",
+            "description",
+            "population_exposed",
+            "population_exposed_ev",
+            "urbanization_degree_codes",
+            "created_at",
+            "updated_at",
+        ]
+        read_only_fields = fields
+

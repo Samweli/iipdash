@@ -1,12 +1,15 @@
-from django.conf import settings
 from django.contrib.postgres.aggregates import ArrayAgg
 from django.db.models import Q, Sum
 from django.utils.translation import gettext_lazy as _
+from django.utils.timezone import now
+
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
+from rest_framework.decorators import action
+
 
 from ...models import Area
-from ..serializers import AreaHazardExposureSerializer
+from ..serializers import AreaHazardExposureSerializer, AreaHazardExpsoureCSVSerializer
 from .base import AreaViewSet
 
 __all__ = ["AreaHazardExposureViewSet"]
@@ -26,6 +29,8 @@ class AreaHazardExposureViewSet(AreaViewSet):
     """Hazard Exposure summary for Administrative Areas API endpoint."""
 
     serializer_class = AreaHazardExposureSerializer
+    csv_serializer_class = AreaHazardExpsoureCSVSerializer
+
     ordering_fields = ["name", "created_at", "updated_at"]
 
     def get_queryset(self):
@@ -41,3 +46,19 @@ class AreaHazardExposureViewSet(AreaViewSet):
         )
 
         return qs
+
+    def get_csv_file_name(self):
+        """Return name of the CSV file produced."""
+        return f"areas-hazards-exposure-summary-{now().date()}.csv"
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Download areas hazards exposure statistics CSV",
+        url_path="download",
+        url_name="list-download",
+    )
+    def download(self, request, *args, **kwargs):
+        """Download Areas Hazard Exposure Statistics as CSV."""
+
+        return self.export_csv(request, *args, **kwargs)
