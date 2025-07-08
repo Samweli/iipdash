@@ -19,7 +19,9 @@ class CommaSeparatedCharFilter(filters.BaseCSVFilter, filters.CharFilter):
 
 class AreaHazardExposureFilter(filters.FilterSet):
 
+    administrative_area = filters.UUIDFilter( field_name="uuid")
     administrative_area_level = filters.NumberFilter(field_name="depth")
+
     hazard_type = CommaSeparatedCharFilter(
         field_name="hazards_exposure_coverage__exposure__hazards__code", lookup_expr="in"
     )
@@ -29,4 +31,4 @@ class AreaHazardExposureFilter(filters.FilterSet):
 
     class Meta:
         model = Area
-        fields = ["administrative_area_level", "hazard_type", "urbanization_degree"]
+        fields = ["administrative_area", "administrative_area_level", "hazard_type", "urbanization_degree"]

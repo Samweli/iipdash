@@ -424,6 +424,7 @@ class AreaHazardExposureSerializer(BaseAreaHazardExpsoureSerializer, BaseGeoFeat
             "updated_at",
         ]
 
+
 class AreaHazardExpsoureCSVSerializer(BaseAreaHazardExpsoureSerializer):
     """Serializer for administrative areas hazard exposure CSV export."""
 
@@ -443,4 +444,3 @@ class AreaHazardExpsoureCSVSerializer(BaseAreaHazardExpsoureSerializer):
             "updated_at",
         ]
         read_only_fields = fields
-
