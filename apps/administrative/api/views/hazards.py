@@ -4,12 +4,14 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.timezone import now
 
 
+from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.decorators import action
 
 
 from ...models import Area
 from ..serializers import AreaHazardExposureSerializer, AreaHazardExpsoureCSVSerializer
+from ..filters import AreaHazardExposureFilter
 from .base import AreaViewSet
 
 __all__ = ["AreaHazardExposureViewSet"]
@@ -32,6 +34,8 @@ class AreaHazardExposureViewSet(AreaViewSet):
     csv_serializer_class = AreaHazardExpsoureCSVSerializer
 
     ordering_fields = ["name", "created_at", "updated_at"]
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = AreaHazardExposureFilter
 
     def get_queryset(self):
 
@@ -42,6 +46,11 @@ class AreaHazardExposureViewSet(AreaViewSet):
                 "hazards_exposure_coverage__exposure__urbanization_degree__code",
                 distinct=True,
                 filter=~Q(hazards_exposure_coverage__exposure__urbanization_degree__code=None),
+            ),
+            hazard_codes=ArrayAgg(
+                "hazards_exposure_coverage__exposure__hazards__code",
+                distinct=True,
+                filter=~Q(hazards_exposure_coverage__exposure__hazards__code=None),
             ),
         )
 

@@ -402,6 +402,7 @@ class BaseAreaHazardExpsoureSerializer(serializers.ModelSerializer):
     population_exposed = serializers.IntegerField(read_only=True)
     population_exposed_ev = serializers.IntegerField(read_only=True)
     urbanization_degree_codes = serializers.ListField(child=serializers.SlugField(), read_only=True)
+    hazard_codes = serializers.ListField(child=serializers.SlugField(), read_only=True)
 
 
 class AreaHazardExposureSerializer(BaseAreaHazardExpsoureSerializer, BaseGeoFeatureModelSerializer):
