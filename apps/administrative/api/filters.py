@@ -19,7 +19,7 @@ class CommaSeparatedCharFilter(filters.BaseCSVFilter, filters.CharFilter):
 
 class AreaHazardExposureFilter(filters.FilterSet):
 
-    administrative_area = filters.UUIDFilter( field_name="uuid")
+    administrative_area = filters.UUIDFilter(field_name="uuid")
     administrative_area_level = filters.NumberFilter(field_name="depth")
 
     hazard_type = CommaSeparatedCharFilter(

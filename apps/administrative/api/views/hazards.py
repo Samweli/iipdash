@@ -42,8 +42,8 @@ class AreaHazardExposureViewSet(AreaViewSet):
         qs = filterset.qs
 
         qs = qs.annotate(
-            population_exposed=Sum("hazards_exposure_coverage__exposure__population_exposed"),
-            population_exposed_ev=Sum("hazards_exposure_coverage__exposure__population_exposed_ev"),
+            population_exposed=Sum("hazards_exposure_coverage__exposure__population_exposed", distinct=True),
+            population_exposed_ev=Sum("hazards_exposure_coverage__exposure__population_exposed_ev", distinct=True),
             urbanization_degree_codes=ArrayAgg(
                 "hazards_exposure_coverage__exposure__urbanization_degree__code",
                 distinct=True,
