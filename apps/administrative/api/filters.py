@@ -1,8 +1,10 @@
 from django_filters import rest_framework as filters
 
+from hazards.models import HazardExposure
+
 from ..models import Area
 
-__all__ = ["AreaFilter", "AreaHazardExposureFilter"]
+__all__ = ["AreaFilter", "AreaHazardExposureFilter", "AreaHazardExposureFilter2"]
 
 
 class AreaFilter(filters.FilterSet):
@@ -32,3 +34,15 @@ class AreaHazardExposureFilter(filters.FilterSet):
     class Meta:
         model = Area
         fields = ["administrative_area", "administrative_area_level", "hazard_type", "urbanization_degree"]
+
+
+class AreaHazardExposureFilter2(filters.FilterSet):
+
+    administrative_area = filters.UUIDFilter(field_name="administrative_area_uuid")
+    administrative_area_level = filters.NumberFilter(field_name="administrative_area_depth")
+    hazard_type_code = filters.BaseInFilter(field_name="hazards__code")
+    urbanization_degree_code = filters.BaseInFilter(field_name="urbanization_degree__code")
+
+    class Meta:
+        model = HazardExposure
+        fields = ["administrative_area", "administrative_area_level", "hazard_type_code", "urbanization_degree_code"]

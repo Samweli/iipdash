@@ -1,5 +1,5 @@
 from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import IntegerField, OuterRef, Subquery, Sum, Value
+from django.db.models import F, IntegerField, OuterRef, Subquery, Sum, Value
 from django.db.models.functions import Coalesce
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -7,15 +7,18 @@ from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import DjangoFilterBackend
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework.decorators import action
+from rest_framework.fields import BooleanField
+from rest_framework.viewsets import ReadOnlyModelViewSet
+from rest_framework_gis.pagination import GeoJsonPagination
+from vectortiles.backends.postgis import VectorLayer
 
 from hazards.models import HazardExposure
 
-from ...models import Area
-from ..filters import AreaHazardExposureFilter
-from ..serializers import AreaHazardExposureSerializer, AreaHazardExpsoureCSVSerializer
+from ..filters import AreaHazardExposureFilter, AreaHazardExposureFilter2
+from ..serializers import AreaHazardExposureSerializer, AreaHazardExposureSerializer2, AreaHazardExpsoureCSVSerializer
 from .base import AreaViewSet
 
-__all__ = ["AreaHazardExposureViewSet"]
+__all__ = ["AreaHazardExposureViewSet", "AreaHazardExposureViewSet2"]
 
 
 @extend_schema_view(
@@ -45,10 +48,12 @@ class AreaHazardExposureViewSet(AreaViewSet):
         This method:
 
         - Filter first the queryset using the request parameters
-          via the `filterset_class` to ensure that only relevant data is considered before any annotation or aggregation.
+          via the `filterset_class` to ensure that only relevant data is considered before any annotation
+          or aggregation.
 
         - The `population_exposed` and `population_exposed_ev`
-          annotations use `Subquery` to perform accurate aggregation of hazard exposure values per administrative area.
+          annotations use `Subquery` to perform accurate aggregation of hazard exposure values per
+          administrative area.
           This avoids inflated results due to duplicate joins across related models.
 
         - Applies `.distinct()` to the queryset to avoid duplicate administrative areas in the
@@ -124,3 +129,38 @@ class AreaHazardExposureViewSet(AreaViewSet):
         """Download Areas Hazard Exposure Statistics as  aCSV."""
 
         return self.export_csv(request, *args, **kwargs)
+
+
+class AreaHazardExposureViewSet2(VectorLayer, ReadOnlyModelViewSet):
+    """Hazard Exposure summary for Administrative Areas API endpoint."""
+
+    serializer_class = AreaHazardExposureSerializer2
+    filterset_class = AreaHazardExposureFilter2
+    pagination_class = GeoJsonPagination
+    required_scopes = ["default"]
+
+    def get_serializer(self, *args, **kwargs):
+
+        # Optionally exclude geometry values in the response.
+        exclude_geometry = self.request.query_params.get("exclude_geometry", "")
+        kwargs["exclude_geometry"] = exclude_geometry.lower() in BooleanField.TRUE_VALUES
+        return super().get_serializer(*args, **kwargs)
+
+    def get_queryset(self):
+        qs = (
+            HazardExposure.objects.values(administrative_area_uuid=F("coverage__administrative_area__uuid"))
+            .annotate(
+                country=F("coverage__administrative_area__country"),
+                administrative_area_name=F("coverage__administrative_area__name"),
+                administrative_area_depth=F("coverage__administrative_area__depth"),
+                exposed_population=Sum("population_exposed"),
+                ev_exposed_population=Sum("population_exposed_ev"),
+                exposed_population_percent=Sum("population_exposed_percent"),
+                ev_exposed_population_percent=Sum("population_exposed_ev_percent"),
+                geom=F("coverage__administrative_area__geom"),
+                population=F("coverage__administrative_area__population"),
+            )
+            .order_by("country", "administrative_area_name")
+        )
+
+        return qs

@@ -5,6 +5,8 @@ from rest_framework.fields import empty
 from rest_framework_gis.fields import GeometrySerializerMethodField
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
+from hazards.models import HazardExposure
+
 from ..models import Area
 
 __all__ = [
@@ -23,6 +25,7 @@ __all__ = [
     "AreaInternetSpeedCSVSerializer",
     "AreaHazardExposureSerializer",
     "AreaHazardExpsoureCSVSerializer",
+    "AreaHazardExposureSerializer2",
     "RelatedAreaSerializer",
 ]
 
@@ -444,3 +447,37 @@ class AreaHazardExpsoureCSVSerializer(BaseAreaHazardExpsoureSerializer):
             "updated_at",
         ]
         read_only_fields = fields
+
+
+class AreaHazardExposureSerializer2(BaseGeoFeatureModelSerializer):
+
+    uuid = serializers.UUIDField(source="administrative_area_uuid", read_only=True)
+    name = serializers.CharField(source="administrative_area_name", read_only=True)
+    country = serializers.CharField(read_only=True)
+    population = serializers.IntegerField(read_only=True)
+    population_exposed = serializers.IntegerField(source="exposed_population", read_only=True)
+    population_exposed_percent = serializers.FloatField(source="exposed_population_percent", read_only=True)
+    population_exposed_ev = serializers.IntegerField(source="ev_exposed_population", read_only=True)
+    population_exposed_ev_percent = serializers.FloatField(source="ev_exposed_population_percent", read_only=True)
+    geom = GeometrySerializerMethodField(read_only="True")
+
+    class Meta:
+        model = HazardExposure
+        id_field = "uuid"
+        geo_field = "geom"
+        fields = [
+            "uuid",
+            "name",
+            "country",
+            "population",
+            "population_exposed",
+            "population_exposed_percent",
+            "population_exposed_ev",
+            "population_exposed_ev_percent",
+        ]
+        read_only_fields = fields
+
+    def get_geom(self, obj):
+        if self.exclude_geometry is True:
+            return None
+        return obj.get("geom")

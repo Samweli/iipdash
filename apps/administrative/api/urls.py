@@ -14,3 +14,4 @@ router.register(
 router.register(r"areas-mobile-coverage", views.AreaMobileCoverageViewSet, basename="area-mobile-coverage")
 router.register(r"areas-internet-speed", views.AreaInternetSpeedViewSet, basename="area-internet-speed")
 router.register(r"areas-hazards-exposure", views.AreaHazardExposureViewSet, basename="area-hazards-exposure")
+router.register(r"areas-hazards-exposure-2", views.AreaHazardExposureViewSet2, basename="area-hazards-exposure-2")
