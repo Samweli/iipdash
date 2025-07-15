@@ -1,5 +1,6 @@
 services:
   iipdash: &app
+    restart: unless-stopped
     network_mode: host
     build:
       context: .
