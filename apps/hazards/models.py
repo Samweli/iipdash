@@ -247,7 +247,7 @@ class ExposureCoverage(models.Model):
             "profile": "mercator",
             "tile_size": 256,
             "tmscompatible": True,
-            "zoom": (1, 12),
+            "zoom": (1, 15),
             **kwargs,
         }
 
