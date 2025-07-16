@@ -1,5 +1,4 @@
-from django.contrib.postgres.aggregates import ArrayAgg
-from django.db.models import IntegerField, OuterRef, Subquery, Sum, Value
+from django.db.models import F, FloatField, IntegerField, OuterRef, Subquery, Sum, Value
 from django.db.models.functions import Coalesce
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
@@ -10,7 +9,6 @@ from rest_framework.decorators import action
 
 from hazards.models import HazardExposure
 
-from ...models import Area
 from ..filters import AreaHazardExposureFilter
 from ..serializers import AreaHazardExposureSerializer, AreaHazardExpsoureCSVSerializer
 from .base import AreaViewSet
@@ -66,9 +64,6 @@ class AreaHazardExposureViewSet(AreaViewSet):
         if "urbanization_degree" in query_params:
             query_params.setlist("urbanization_degree__code", query_params.getlist("urbanization_degree"))
 
-        filterset = self.filterset_class(query_params, queryset=qs)
-        qs = filterset.qs
-
         hazard_codes = query_params.getlist("hazards__code")
         urban_codes = query_params.getlist("urbanization_degree__code")
 
@@ -88,20 +83,34 @@ class AreaHazardExposureViewSet(AreaViewSet):
             .values("total_exposed")[:1]
         )
 
+        hazard_percent_qs = (
+            hazard_qs.values("coverage__administrative_area")
+            .annotate(total_exposed_percent=Sum("population_exposed_percent"))
+            .values("total_exposed_percent")[:1]
+        )
+
         hazard_ev_qs = (
             hazard_ev_qs.values("coverage__administrative_area")
             .annotate(total_exposed_ev=Sum("population_exposed_ev"))
             .values("total_exposed_ev")[:1]
         )
 
+        hazard_ev_percent_qs = (
+            hazard_qs.values("coverage__administrative_area")
+            .annotate(total_exposed_ev_percent=Sum("population_exposed_ev_percent"))
+            .values("total_exposed_ev_percent")[:1]
+        )
+
         qs = (
             qs.annotate(
                 population_exposed=Coalesce(Subquery(hazard_qs, output_field=IntegerField()), Value(0)),
-                population_exposed_ev=Coalesce(Subquery(hazard_ev_qs, output_field=IntegerField()), Value(0)),
-                urbanization_degree_codes=ArrayAgg(
-                    "hazards_exposure_coverage__exposure__urbanization_degree__code", distinct=True
+                population_exposed_percent=Coalesce(
+                    Subquery(hazard_percent_qs, output_field=FloatField()), Value(0.0)
                 ),
-                hazard_codes=ArrayAgg("hazards_exposure_coverage__exposure__hazards__code", distinct=True),
+                population_exposed_ev=Coalesce(Subquery(hazard_ev_qs, output_field=IntegerField()), Value(0)),
+                population_exposed_ev_percent=Coalesce(
+                    Subquery(hazard_ev_percent_qs, output_field=FloatField()), Value(0.0)
+                ),
             )
             .order_by("id", "name")
             .distinct()

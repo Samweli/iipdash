@@ -400,9 +400,9 @@ class AreaInternetSpeedCSVSerializer(serializers.ModelSerializer):
 class BaseAreaHazardExpsoureSerializer(serializers.ModelSerializer):
 
     population_exposed = serializers.IntegerField(read_only=True)
+    population_exposed_percent = serializers.FloatField(read_only=True)
     population_exposed_ev = serializers.IntegerField(read_only=True)
-    urbanization_degree_codes = serializers.ListField(child=serializers.SlugField(), read_only=True)
-    hazard_codes = serializers.ListField(child=serializers.SlugField(), read_only=True)
+    population_exposed_ev_percent = serializers.FloatField(read_only=True)
 
 
 class AreaHazardExposureSerializer(BaseAreaHazardExpsoureSerializer, BaseGeoFeatureModelSerializer):
@@ -412,16 +412,15 @@ class AreaHazardExposureSerializer(BaseAreaHazardExpsoureSerializer, BaseGeoFeat
         model = Area
         id_field = "uuid"
         geo_field = "geometry"
-        exclude = [
-            "id",
-            "depth",
-            "path",
-            "numchild",
-            "geom",
-            "population_male",
-            "population_female",
-            "created_at",
-            "updated_at",
+        fields = [
+            "uuid",
+            "name",
+            "country",
+            "population",
+            "population_exposed",
+            "population_exposed_percent",
+            "population_exposed_ev",
+            "population_exposed_ev_percent",
         ]
 
 
