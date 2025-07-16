@@ -215,6 +215,15 @@ class Area(MP_Node):
         help_text=_("Obtained by averaging of high resolution population density"),
     )
 
+    rwi_population_weighted = models.FloatField(
+        _("population weighted relative wealth index"),
+        null=True,
+        blank=True,
+        help_text=_(
+            "https://dataforgood.facebook.com/dfg/docs/tutorial-calculating-population-weighted-relative-wealth-index"
+        ),
+    )
+
     #: The total area of the `area` in square meters.
     area = models.GeneratedField(
         expression=GeoArea("geometry"),
