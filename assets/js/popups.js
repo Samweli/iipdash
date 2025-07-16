@@ -14,10 +14,15 @@ import * as utils from './utils';
  */
 export const educationInstitutionPopup = function (event, countries){
     const countryName = countries[event.features[0].properties.country];
-    const name = `${event.features[0].properties.name}`;
+    let name = `${event.features[0].properties.name}`;
     const selectedRegion = event.features[0].properties.administrative_area_name;
 
     let avgDistance = utils.meters2km(event.features[0].properties.fon_distance);
+
+    if (!name) {
+        name = 'School';
+    }
+
     if (isNaN(avgDistance)) {
         avgDistance = '-';
     }
