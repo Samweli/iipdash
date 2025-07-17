@@ -214,21 +214,21 @@ export const fiberNodePopup = function (event, countries){
  * - Display a popup with  internet speed properties
  */
 export const internetSpeedPopup = function (event, countries){
-    const name = `${event.features[0].properties.name}`;
     const countryName = countries[event.features[0].properties.country];
-    const selectedRegion = event.features[0].properties.administrative_area_name;
-    const speed = event.features[0].properties.mobile_speed;
+    const name = event.features[0].properties.name;
+    let speed = event.features[0].properties.mobile_speed;
 
-    if (isNaN(name)) {
-        name = '-';
+    if (isNaN(speed)) {
+        speed = '-';
     }
+
 
     const popup = new maplibregl.Popup()
         .setLngLat(event.lngLat)
         .setHTML(
             `<div class="card shadow-sm border-0 rounded-3">
               <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center rounded-top-3 px-4 py-3">
-                <h5 class="mb-0 text-truncate fw-bold">${name}</h5>
+                <h5 class="mb-0 text-truncate fw-bold">Internet speed</h5>
               </div>
               <div class="card-body bg-light text-dark px-4 py-3">
                 <div class="d-flex align-items-start mb-3">
@@ -238,6 +238,13 @@ export const internetSpeedPopup = function (event, countries){
                   <div class="flex-grow-1">
                     <div class="text-muted small">Country</div>
                     <div class="fw-semibold text-uppercase fs-6">${countryName}</div>
+                  </div>
+                </div>
+                <div class="d-flex align-items-start mb-3">
+                  <span class="me-3 fs-6 text-primary">🗺️</span>
+                  <div class="flex-grow-1">
+                    <div class="text-muted small">Administrative area</div>
+                    <div class="fw-semibold text-uppercase fs-6">${name}</div>
                   </div>
                 </div>
                 <div class="d-flex align-items-start">
