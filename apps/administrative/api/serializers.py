@@ -5,6 +5,8 @@ from rest_framework.fields import empty
 from rest_framework_gis.fields import GeometrySerializerMethodField
 from rest_framework_gis.serializers import GeoFeatureModelSerializer
 
+from hazards.models import HazardExposure
+
 from ..models import Area
 
 __all__ = [
@@ -21,6 +23,8 @@ __all__ = [
     "AreaMobileCoverageCSVSerializer",
     "AreaInternetSpeedSerializer",
     "AreaInternetSpeedCSVSerializer",
+    "AreaHazardExposureSerializer",
+    "AreaHazardExposureCSVSerializer",
     "RelatedAreaSerializer",
 ]
 
@@ -391,5 +395,63 @@ class AreaInternetSpeedCSVSerializer(serializers.ModelSerializer):
             "fixed_speed",
             "created_at",
             "updated_at",
+        ]
+        read_only_fields = fields
+
+
+class BaseAreaHazardExposureSerializer(serializers.ModelSerializer):
+
+    uuid = serializers.UUIDField(source="administrative_area_uuid", read_only=True)
+    name = serializers.CharField(read_only=True)
+    country = serializers.CharField(read_only=True)
+    population = serializers.IntegerField(read_only=True)
+    population_exposed = serializers.IntegerField(source="exposed_population", read_only=True)
+    population_exposed_percent = serializers.FloatField(source="exposed_population_percent", read_only=True)
+    population_exposed_ev = serializers.IntegerField(source="ev_exposed_population", read_only=True)
+    population_exposed_ev_percent = serializers.FloatField(source="ev_exposed_population_percent", read_only=True)
+    rwi_population_weighted = serializers.FloatField(source="population_weighted_rwi", read_only=True)
+
+
+class AreaHazardExposureSerializer(BaseAreaHazardExposureSerializer, BaseGeoFeatureModelSerializer):
+    geom = GeometrySerializerMethodField(read_only="True")
+
+    class Meta:
+        model = HazardExposure
+        id_field = "uuid"
+        geo_field = "geom"
+        fields = [
+            "uuid",
+            "name",
+            "country",
+            "population",
+            "population_exposed",
+            "population_exposed_percent",
+            "population_exposed_ev",
+            "population_exposed_ev_percent",
+            "rwi_population_weighted",
+        ]
+        read_only_fields = fields
+
+    def get_geom(self, obj):
+        if self.exclude_geometry is True:
+            return None
+        return obj.get("geom")
+
+
+class AreaHazardExposureCSVSerializer(BaseAreaHazardExposureSerializer):
+    """Serializer for administrative areas hazards exposure CSV export."""
+
+    class Meta:
+        model = HazardExposure
+        fields = [
+            "uuid",
+            "name",
+            "country",
+            "population",
+            "population_exposed",
+            "population_exposed_percent",
+            "population_exposed_ev",
+            "population_exposed_ev_percent",
+            "rwi_population_weighted",
         ]
         read_only_fields = fields
