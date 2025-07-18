@@ -33,8 +33,7 @@ class ExposureCoverageSerializer(serializers.ModelSerializer):
 class HazardExposureSerializer(serializers.ModelSerializer):
     """A ModelSerializer for serializing :class:`hazards.models.HazardExposure` model."""
 
-    country = RelatedAreaSerializer(source="coverage.administrative_area", read_only=True)
-    administrative_area_name = serializers.CharField(source="coverage.administrative_area.name", read_only=True)
+    administrative_area = RelatedAreaSerializer(source="coverage.administrative_area", read_only=True)
     urbanization_degree_name = serializers.CharField(source="urbanization_degree.name", read_only=True)
 
     class Meta:
@@ -55,9 +54,8 @@ class HazardExposureSerializer(serializers.ModelSerializer):
         fields = [
             "uuid",
             "hazards_names_display",
-            "administrative_area_name",
+            "administrative_area",
             "urbanization_degree_name",
-            "country",
             "population_exposed",
             "population_exposed_percent",
             "population_exposed_ev",

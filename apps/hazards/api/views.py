@@ -2,14 +2,14 @@ from typing import List, Type
 
 from django.conf import settings
 from django.contrib.gis.db.models import MultiPolygonField
-from django.db.models import F, QuerySet
-from django.db.models.functions import Cast
+from django.db.models import ExpressionWrapper, F, FloatField, QuerySet, Sum
+from django.db.models.functions import Cast, Coalesce, NullIf
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.cache import cache_page
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from vectortiles.backends.postgis import VectorLayer
@@ -36,6 +36,7 @@ MVT_CACHE_TIMEOUT = settings.CACHE_TIMEOUTS["mvt"]
         summary=_("Hazard Exposure Coverage"),
         description=_("Retrieve details of a specific hazard exposure coverage."),
     ),
+    aggregates=extend_schema(summary=_("Hazards Exposure aggregates")),
 )
 class ExposureCoverageViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -76,6 +77,7 @@ class ExposureCoverageViewSet(viewsets.ReadOnlyModelViewSet):
         summary=_("Hazards Exposure"),
         description=_("Retrieve details of a specific hazards exposure."),
     ),
+    aggregates=extend_schema(summary=_("Hazards Exposure aggregates")),
 )
 class HazardExposureViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
     """
@@ -87,6 +89,7 @@ class HazardExposureViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
     - Retrieving a specific hazards exposure by UUID (`retrieve` endpoint).
     - Export hazards exposures to a `CSV` file (`download` endpoint).
     - Provides Mapbox Vector Tiles (`mvt`) for hazards exposures (`tiles` endpoint).
+    - Retrieving aggregates summary for hazards exposures (`aggregates` endpoint).
     """
 
     #: A serializer class for converting `HazardExposure` objects to GeoJSON format.
@@ -147,3 +150,39 @@ class HazardExposureViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
     def tile(self, request, *args, **kwargs):
         """Provides Mapbox Vector Tiles for hazards exposures."""
         return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
+
+    @action(
+        detail=False,
+        methods=["get"],
+        name="Summary statistics related to hazards exposure.",
+        url_path="aggregates",
+        url_name="aggregates",
+    )
+    def aggregates(self, request, *args, **kwargs):
+        """Returns summary statistics related to hazards exposure."""
+        base_queryset = self.filter_queryset(self.get_queryset())
+
+        data = (
+            base_queryset.values("coverage__administrative_area_id")
+            .annotate(
+                area_population=F("coverage__administrative_area__population"),
+                area_population_exposed=Coalesce(Sum("population_exposed"), 0),
+                area_population_exposed_ev=Coalesce(Sum("population_exposed_ev"), 0),
+            )
+            .order_by("coverage__administrative_area_id")
+            .aggregate(
+                population=Sum("area_population"),
+                population_exposed=Sum("area_population_exposed"),
+                population_exposed_ev=Sum("area_population_exposed_ev"),
+                population_exposed_percent=ExpressionWrapper(
+                    F("population_exposed") * 100 / NullIf(F("population"), 0),
+                    output_field=FloatField(),
+                ),
+                population_exposed_ev_percent=ExpressionWrapper(
+                    F("population_exposed_ev") * 100 / NullIf(F("population"), 0),
+                    output_field=FloatField(),
+                ),
+            )
+        )
+
+        return Response(data, status=status.HTTP_200_OK)

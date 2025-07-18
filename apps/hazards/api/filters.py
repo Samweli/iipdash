@@ -202,6 +202,9 @@ class HazardExposureFilter(filters.FilterSet):
         help_text=_("Filter by administrative area level."),
     )
 
+    hazard_code_in = filters.BaseInFilter(field_name="hazards__code")
+    urbanization_degree_code_in = filters.BaseInFilter(field_name="urbanization_degree__code")
+
     class Meta:
         """
         Metadata for the :class:`HazardExposureFilter`.
@@ -222,4 +225,6 @@ class HazardExposureFilter(filters.FilterSet):
             "administrative_area",
             "administrative_area_in",
             "administrative_area_level",
+            "hazard_code_in",
+            "urbanization_degree_code_in",
         ]
