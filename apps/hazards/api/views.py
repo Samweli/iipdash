@@ -1,19 +1,14 @@
 from typing import List, Type
 
 from django.conf import settings
-from django.contrib.gis.db.models import MultiPolygonField
 from django.db.models import ExpressionWrapper, F, FloatField, QuerySet, Sum
-from django.db.models.functions import Cast, Coalesce, NullIf
-from django.utils.decorators import method_decorator
+from django.db.models.functions import Coalesce, NullIf
 from django.utils.translation import gettext_lazy as _
-from django.views.decorators.cache import cache_page
 
 from drf_spectacular.utils import extend_schema, extend_schema_view
 from rest_framework import status, viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from vectortiles.backends.postgis import VectorLayer
-from vectortiles.rest_framework.renderers import MVTRenderer
 
 from ..models import ExposureCoverage, HazardExposure
 from .filters import ExposureCoverageFilter, HazardExposureFilter
@@ -36,7 +31,6 @@ MVT_CACHE_TIMEOUT = settings.CACHE_TIMEOUTS["mvt"]
         summary=_("Hazard Exposure Coverage"),
         description=_("Retrieve details of a specific hazard exposure coverage."),
     ),
-    aggregates=extend_schema(summary=_("Hazards Exposure aggregates")),
 )
 class ExposureCoverageViewSet(viewsets.ReadOnlyModelViewSet):
     """
@@ -77,9 +71,9 @@ class ExposureCoverageViewSet(viewsets.ReadOnlyModelViewSet):
         summary=_("Hazards Exposure"),
         description=_("Retrieve details of a specific hazards exposure."),
     ),
-    aggregates=extend_schema(summary=_("Hazards Exposure aggregates")),
+    aggregates=extend_schema(summary=_("Hazards Exposure Aggregates")),
 )
-class HazardExposureViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
+class HazardExposureViewSet(viewsets.ReadOnlyModelViewSet):
     """
     A ViewSet for managing :class:`hazards.models.HazardExposure` objects.
 
@@ -87,8 +81,6 @@ class HazardExposureViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
 
     - Listing all hazards exposures (`list` endpoint).
     - Retrieving a specific hazards exposure by UUID (`retrieve` endpoint).
-    - Export hazards exposures to a `CSV` file (`download` endpoint).
-    - Provides Mapbox Vector Tiles (`mvt`) for hazards exposures (`tiles` endpoint).
     - Retrieving aggregates summary for hazards exposures (`aggregates` endpoint).
     """
 
@@ -109,47 +101,6 @@ class HazardExposureViewSet(VectorLayer, viewsets.ReadOnlyModelViewSet):
     queryset: QuerySet[HazardExposure] = HazardExposure.objects.prefetch_related(
         "coverage", "urbanization_degree", "hazards"
     ).order_by("-created_at")
-
-    #: Vector tiles layer ID
-    id = "hazard-exposures"
-
-    #: A tuple of fields to be included in vector tiles data.
-    tile_fields = (
-        "hazards_names",
-        "urbanization_degree_name",
-        "population_exposed",
-        "population_exposed_percent",
-        "population_exposed_ev",
-        "population_exposed_ev_percent",
-        "country",
-        "administrative_area_uuid",
-        "administrative_area_name",
-    )
-
-    def get_vector_tile_queryset(self, *args, **kwargs):
-        """Returns a queryset used to generate vector tiles."""
-        queryset = self.get_queryset().annotate(
-            geom=Cast("coverage__administrative_area__geometry", MultiPolygonField()),
-            country=F("coverage__administrative_area__country"),
-            administrative_area_uuid=F("coverage__administrative_area__uuid"),
-            administrative_area_name=F("coverage__administrative_area__name"),
-            urbanization_degree_name=F("urbanization_degree__name"),
-        )
-        queryset = self.filter_queryset(queryset)
-        return queryset
-
-    @action(
-        detail=False,
-        methods=["get"],
-        name="Hazards Exposures Vector Tiles",
-        renderer_classes=(MVTRenderer,),
-        url_path=r"tiles/(?P<z>\d+)/(?P<x>\d+)/(?P<y>\d+).mvt",
-        url_name="tile",
-    )
-    @method_decorator(cache_page(MVT_CACHE_TIMEOUT, key_prefix="mvt:electricity-networks", cache=MVT_CACHE_ALIAS))
-    def tile(self, request, *args, **kwargs):
-        """Provides Mapbox Vector Tiles for hazards exposures."""
-        return Response(self.get_tile(x=int(kwargs.get("x")), y=int(kwargs.get("y")), z=int(kwargs.get("z"))))
 
     @action(
         detail=False,
