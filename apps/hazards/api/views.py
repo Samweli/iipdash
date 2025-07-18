@@ -97,10 +97,19 @@ class HazardExposureViewSet(viewsets.ReadOnlyModelViewSet):
     #: `HazardExposure` objects.
     filterset_class: Type[HazardExposureFilter] = HazardExposureFilter
 
-    #: A default queryset for retrieving `HazardExposure` objects.
-    queryset: QuerySet[HazardExposure] = HazardExposure.objects.prefetch_related(
-        "coverage", "urbanization_degree", "hazards"
-    ).order_by("-created_at")
+    def get_queryset(self):
+        """Returns HazardExposure queryset.
+
+        Note: by default this excludes groups not exposed to any hazards.
+        """
+
+        # TODO: adding an ability to explicitly override the default behavior
+        #  (including or excluding groups with no hazards)
+        return (
+            HazardExposure.objects.exclude(hazards=None)
+            .prefetch_related("coverage", "urbanization_degree", "hazards")
+            .order_by("-created_at")
+        )
 
     @action(
         detail=False,
