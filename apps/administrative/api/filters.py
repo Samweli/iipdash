@@ -22,12 +22,12 @@ class AreaHazardExposureFilter(filters.FilterSet):
     uuid = filters.UUIDFilter(field_name="administrative_area_uuid")
     country = filters.CharFilter(field_name="country")
     level = filters.NumberFilter(field_name="depth")
-    hazard_code = filters.BaseCSVFilter(method="noop")
-    urbanization_degree_code = filters.BaseCSVFilter(method="noop")
+    hazard_code_in = filters.BaseCSVFilter(method="noop")
+    urbanization_degree_code_in = filters.BaseCSVFilter(method="noop")
 
     class Meta:
         model = HazardExposure
-        fields = ["uuid", "country", "level", "hazard_code", "urbanization_degree_code"]
+        fields = ["uuid", "country", "level", "hazard_code_in", "urbanization_degree_code_in"]
 
     def noop(self, queryset, *args, **kwargs):
         """Return the queryset as is.
@@ -43,17 +43,17 @@ class AreaHazardExposureFilter(filters.FilterSet):
         if self.is_valid():
 
             # hazards
-            hazard_code = self.form.cleaned_data.get("hazard_code")
-            if hazard_code:
+            hazard_code_in = self.form.cleaned_data.get("hazard_code_in")
+            if hazard_code_in:
                 # hazards matching any of the codes
-                q_filters &= Q(hazards__code__in=hazard_code)
+                q_filters &= Q(hazards__code__in=hazard_code_in)
             else:
                 # don't include exposures with no hazards
                 q_filters &= ~Q(hazards__code=None)
 
             # urbanization degrees
-            urbanization_degree_code = self.form.cleaned_data.get("urbanization_degree_code")
-            if urbanization_degree_code:
-                q_filters &= Q(urbanization_degree_code__in=urbanization_degree_code)
+            urbanization_degree_code_in = self.form.cleaned_data.get("urbanization_degree_code_in")
+            if urbanization_degree_code_in:
+                q_filters &= Q(urbanization_degree_code__in=urbanization_degree_code_in)
 
         return q_filters
