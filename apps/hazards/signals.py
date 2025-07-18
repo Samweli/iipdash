@@ -7,4 +7,4 @@ from .models import HazardExposure
 
 @receiver(m2m_changed, sender=HazardExposure.hazards.through)
 def update_exposure_hazards_names(sender, instance, **kwargs):
-    transaction.on_commit(lambda: instance.update_hazards_names())
+    transaction.on_commit(lambda: instance.update_hazards_fields())

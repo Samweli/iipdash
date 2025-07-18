@@ -385,6 +385,15 @@ class HazardExposure(models.Model):
         editable=False,
     )
 
+    hazards_codes = ArrayField(
+        models.CharField(max_length=100, blank=True),
+        null=True,
+        blank=True,
+        verbose_name=_("hazards codes"),
+        default=list,
+        editable=False,
+    )
+
     population_exposed = models.PositiveIntegerField(_("population exposed"), blank=True, null=True)
     population_exposed_percent = models.FloatField(_("population exposed (percentage)"), blank=True, null=True)
 
@@ -461,9 +470,21 @@ class HazardExposure(models.Model):
     def set_hazards_names(self):
         self.hazards_names = self.get_hazards_names()
 
-    def update_hazards_names(self):
+    def get_hazards_codes(self):
+        return list(self.hazards.values_list("code", flat=True).order_by("code"))
+
+    def set_hazards_codes(self):
+        self.hazards_codes = self.get_hazards_codes()
+
+    def update_hazards_fields(self):
+        """Updates object's cached hazards fields in the database"""
         hazards_names = self.get_hazards_names()
-        type(self).objects.filter(pk=self.pk).update(hazards_names=hazards_names, updated_at=Now())
+        hazards_codes = self.get_hazards_codes()
+        type(self).objects.filter(pk=self.pk).update(
+            hazards_names=hazards_names,
+            hazards_codes=hazards_codes,
+            updated_at=Now(),
+        )
 
     def set_population_percents(self):
         if not self.administrative_area:
