@@ -202,7 +202,7 @@ class HazardExposureFilter(filters.FilterSet):
         help_text=_("Filter by administrative area level."),
     )
 
-    hazard_code_in = filters.BaseInFilter(field_name="hazards__code")
+    hazard_code_in = filters.BaseCSVFilter(field_name="hazards_codes", lookup_expr="overlap")
     urbanization_degree_code_in = filters.BaseInFilter(field_name="urbanization_degree__code")
 
     class Meta:

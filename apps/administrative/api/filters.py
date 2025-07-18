@@ -46,10 +46,10 @@ class AreaHazardExposureFilter(filters.FilterSet):
             hazard_code_in = self.form.cleaned_data.get("hazard_code_in")
             if hazard_code_in:
                 # hazards matching any of the codes
-                q_filters &= Q(hazards__code__in=hazard_code_in)
+                q_filters &= Q(hazards_codes__overlap=hazard_code_in)
             else:
                 # don't include exposures with no hazards
-                q_filters &= ~Q(hazards__code=None)
+                q_filters &= ~Q(hazards_codes=[])
 
             # urbanization degrees
             urbanization_degree_code_in = self.form.cleaned_data.get("urbanization_degree_code_in")
