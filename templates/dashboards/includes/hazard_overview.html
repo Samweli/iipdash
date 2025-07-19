@@ -8,13 +8,41 @@
     role="tabpanel"
     aria-labelledby="tab-link-overview">
 
-    {# Start: summary statistics #}
+     {# Start: summary statistics #}
     <div class="mt-3">
 
-        {# TODO: add summary statistics #}
+        <p class="h-txt-20-primary">
+            {% trans "Summary statistics" %}
+        </p>
+
+        {# Start: statistics rectangle #}
+        <div class="my-4 d-flex d-flex align-items-center">
+
+            <div class="mb-3 col-sm-9" style="height: 50px">
+                <canvas id="hazard-exposure-summary-chart"></canvas>
+                <p class="p-txt-stats-description">
+                    {% trans "Population exposed to selected hazards" %}
+                </p>
+            </div>
+
+            <div class="">
+                <p class="h2 fw-bold text-primary ms-3 text-nowrap">
+                    <span v-text="round(hazardExposureAggregates[`${selectedHazardAggregate}`])"></span> %
+                </p>
+            </div>
+
+        </div>
+        <hr class="border-secondary border-2">
+        {# End: statistics rectangle #}
+
+        <div class="my-5 chart-container-md">
+            <canvas id="regions-hazard-exposure-chart"></canvas>
+        </div>
+        <hr class="border-secondary border-2">
 
     </div>
     {# End: summary statistics #}
+
 
     {# Start: dive #}
     <div class="mt-4">
