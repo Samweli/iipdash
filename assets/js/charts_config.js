@@ -121,3 +121,62 @@ export const regionsMobileCoverage = {
         },
     },
 };
+
+
+export const hazardExposureSummary = {
+    type: 'bar',
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                stacked: true,
+                display: false,
+            },
+            y: {
+                stacked: true,
+                display: false,
+            },
+        },
+        plugins: {
+            legend: {
+                display: false,
+            },
+            tooltip: { enabled: false },
+        },
+    },
+};
+
+
+
+export const regionsHazardExposure = {
+    type: 'scatter',
+    options: {
+        indexAxis: 'y', // Horizontal bar
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+            x: {
+                grid: { display: false },
+                title: {
+                    text: 'WEIGHTED RELATIVE WEALTH',
+                    display: true,
+                },
+            },
+            y: {
+                grid: { display: false },
+                title: {
+                    text: 'EXPOSED TO HAZARD %',
+                    display: true,
+                },
+            },
+        },
+        plugins: {
+            legend: {
+                display: false,
+            },
+            tooltip: { enabled: false },
+        },
+    },
+};

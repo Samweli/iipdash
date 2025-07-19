@@ -1,11 +1,15 @@
 import _ from 'lodash';
 import * as Vue from 'vue';
 import maplibregl from 'maplibre-gl';
+import axios from 'axios';
 
 import * as settings from './conf';
 import * as utils from './utils';
 import * as maps from './maps';
 import { fetchCountries, fetchRegions } from './api';
+import Chart from 'chart.js/auto';
+import * as chartsConfig from './charts_config.js';
+
 
 const HAZARD_TYPES = ['cyclone', 'flood', 'drought', 'heat'];
 const POPULATION_TYPE_VULNERABLE = 'vulnerable';
@@ -36,6 +40,9 @@ const HazardDash = {
             countriesLookup: {},
             regions: { features: [] },
             regionOptions: { features: [] },
+            hazardExposureAggregates: {},
+            regionsHazardExposure: { features: [] },
+            selectedHazardAggregate: 'population_exposed_percent',
             selectedCountry: null,
             selectedRegion: null,
             summaryLayerActive: true,
@@ -44,6 +51,14 @@ const HazardDash = {
                 selectedHazardTypes: [...HAZARD_TYPES],
                 selectedUrbanicityType: URBANICITY_TYPE_URBAN, // or rural
                 selectedPopulationType: POPULATION_TYPE_VULNERABLE, // or all
+            },
+            charts: {
+                hazardExposureSummary: {
+                    id: 'hazard-exposure-summary-chart',
+                },
+                regionsHazardExposureSummary: {
+                    id: 'regions-hazard-exposure-chart',
+                },
             },
         };
     },
@@ -224,6 +239,38 @@ const HazardDash = {
                 this.selectedRegion = null;
             }
 
+            // hazard exposure aggregations
+            try {
+                const hazardExposureAggregates = await axios.get(
+                    `${settings.API_ROOT}hazards/hazard-exposures/aggregates/`,
+                    {
+                        params: {
+                             ...this.lookup,
+                             administrative_area_level: 3,
+                             hazard_code_in: this.secondaryFilters.selectedHazardTypes.join(',')
+                        },
+                    },
+                );
+                this.hazardExposureAggregates = hazardExposureAggregates.data;
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
+            }
+
+            // hazard per region
+            try {
+                const regionsHazardExposure = await axios.get(`${settings.API_ROOT}administrative/areas-hazards-exposure/`, {
+                    params: {
+                        country: this.lookup.country || '',
+                        administrative_area_level: 3,
+                        exclude_geometry: true,
+                        hazard_code_in: this.secondaryFilters.selectedHazardTypes.join(',')
+                    },
+                });
+                this.regionsHazardExposure = regionsHazardExposure.data;
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
+            }
+
             // TODO: handle secondary filters and selected legend layer
         },
 
@@ -359,6 +406,78 @@ const HazardDash = {
             // TODO: handle secondary filters and selected legend layer
         },
 
+        updateCharts() {
+            // summary hazard exposure bar
+
+            const hazardExposureSummaryData = {
+                labels: [' '], // Empty label to remove Y-axis text
+                datasets: [
+                    {
+                        label: 'Population exposed',
+                        data: [this.hazardExposureAggregates[this.selectedHazardAggregate]],
+                        backgroundColor: '#007FFF',
+                    },
+                    {
+                        label: 'Population not exposed',
+                        data: [100 - this.hazardExposureAggregates[this.selectedHazardAggregate]],
+                        backgroundColor: '#D9D9D9',
+                    },
+                ],
+            };
+
+            const hazardExposureSummaryConfig = {
+                ...chartsConfig.hazardExposureSummary,
+                data: hazardExposureSummaryData,
+            };
+
+            this.clearChart(this.charts.hazardExposureSummary.id);
+            const hazardExposureSummaryCtx = document
+                .getElementById(this.charts.hazardExposureSummary.id)
+                .getContext('2d');
+
+            new Chart(hazardExposureSummaryCtx, hazardExposureSummaryConfig); // eslint-disable-line no-new
+
+
+            // regions hazard exposure
+            const regionsHazardExposureData = {
+                datasets: [
+                    {
+                        label: '',
+                        data: this.regionsHazardExposure.features.map((coverage) => {
+                            return {
+                                x: this.round(coverage.properties.rwi_population_weighted, 2),
+                                y: this.round(coverage.properties[`${this.selectedHazardAggregate}`], 2),
+                                uuid: coverage.id,
+                            };
+                        }),
+                        backgroundColor: (context) => {
+                            const index = context.dataIndex;
+                            const value = context.dataset.data[index];
+
+                            if (value.uuid === this.selectedRegion?.id) {
+                                return settings.COLOR_PRIMARY;
+                            }
+
+                            return 'rgba(100, 100, 100, 0.5)';
+                        },
+                        pointRadius: 4,
+                        pointHoverRadius: 4.5,
+                    },
+                ],
+            };
+
+            const regionsHazardExposureConfig = {
+                ...chartsConfig.regionsHazardExposure,
+                data: regionsHazardExposureData,
+            };
+
+            this.clearChart(this.charts.regionsHazardExposureSummary.id);
+            const regionsHazardExposureCtx = document
+                .getElementById(this.charts.regionsHazardExposureSummary.id)
+                .getContext('2d');
+            new Chart(regionsHazardExposureCtx, regionsHazardExposureConfig); // eslint-disable-line no-new
+        },
+
         /**
          * Update data and map.
          *
@@ -372,11 +491,22 @@ const HazardDash = {
             try {
                 await this.updateData();
                 await this.updateMap();
+                await this.updateCharts();
 
                 const event = new Event('page-updated');
                 window.dispatchEvent(event);
             } catch (e) {
                 console.log(e); // eslint-disable-line no-console
+            }
+        },
+
+        clearChart(elementID) {
+            const ctx = document.getElementById(elementID);
+
+            try {
+                Chart.getChart(ctx).destroy();
+            } catch (e) {
+                // chart didn't exist yet
             }
         },
 
@@ -588,6 +718,7 @@ const HazardDash = {
         // ---
         // End: Boostrap UI methods
         // ---
+        round: utils.round,
     },
 
     /**
