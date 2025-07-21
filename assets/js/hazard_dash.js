@@ -147,6 +147,24 @@ const HazardDash = {
             // map style sources
             const mapSources = await maps.getSources();
 
+            // Relative wealth index layer
+            const relativeWealthIndexLayer = _.merge({}, maps.layers['relative-wealth-index'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('relative-wealth-index', mapSources['relative-wealth-index']);
+            this._map.addLayer(relativeWealthIndexLayer);
+
+            // High resolution population density layer
+            const populationDensityHDLayer = _.merge({}, maps.layers['population-density-hd'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('population-density-hd', mapSources['population-density-hd']);
+            this._map.addLayer(populationDensityHDLayer);
+
             // country boundaries layer
             this._map.addSource(maps.layers.countries.id, mapSources.countries);
             this._map.addLayer(maps.layers.countries);
@@ -276,6 +294,53 @@ const HazardDash = {
         },
 
         /**
+         * Update (set or unset) map filters and visibilities to control underlying data layers.
+         *
+         * Controlled layers are:
+         *
+         * - `relative-wealth-index`
+         * - `population-density-hd`.
+         *
+         * This:
+         *
+         * - Filter underlying data layers based on current selected `country` and `region` (i.e `administrative_area`)
+         * - Toggle underlying data layers visibility when `summaryLayerActive` toggled to `false`
+         */
+        updateMapUnderlyingDataLayers: async function () {
+            // Update map filter based on current country
+            if (this.lookup.country) {
+                this._map.setFilter('relative-wealth-index', ['==', ['get', 'country'], this.lookup.country]);
+                this._map.setFilter('population-density-hd', ['==', ['get', 'country'], this.lookup.country]);
+            } else {
+                this._map.setFilter('relative-wealth-index', null);
+                this._map.setFilter('population-density-hd', null);
+            }
+
+            // Update map filter based on current administrative region
+            if (this.lookup.administrative_area) {
+                this._map.setFilter('relative-wealth-index', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+                this._map.setFilter('population-density-hd', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
+            }
+
+            // Toggle underlying data layers visibility when `summaryLayerActive` toggled to `false`
+            if (this.summaryLayerActive) {
+                this._map.setLayoutProperty('relative-wealth-index', 'visibility', 'none');
+                this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
+            } else {
+                this._map.setLayoutProperty('relative-wealth-index', 'visibility', 'visible');
+                this._map.setLayoutProperty('population-density-hd', 'visibility', 'visible');
+            }
+        },
+
+        /**
          * Update (set filters, unset filters) map.
          *
          * This:
@@ -289,6 +354,7 @@ const HazardDash = {
 
             // filter, toggle visibility of map layers
             await this.updateMapAdministrativeBoundaryLayers();
+            await this.updateMapUnderlyingDataLayers();
 
             // TODO: handle secondary filters and selected legend layer
         },
@@ -376,11 +442,14 @@ const HazardDash = {
          * - Set/unset visibility of underlying data layers
          */
         handleSummaryLayerToggled: async function () {
+            // TODO: ensure 'areas-hazard' layer is loaded
             const summaryVisibility = this._map.getLayoutProperty('areas-hazard', 'visibility');
             if (summaryVisibility === 'visible') {
                 this.summaryLayerActive = false;
+                await this.updateMapUnderlyingDataLayers();
             } else {
                 this.summaryLayerActive = true;
+                await this.updateMapUnderlyingDataLayers();
             }
         },
 
