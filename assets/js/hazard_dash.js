@@ -74,7 +74,7 @@ const HazardDash = {
                 uuid: this.lookup.administrative_area,
                 level: settings.ADMINISTRATIVE_AREAS_REGION_LEVEL,
             };
-            return utils.updateURLParams(`${settings.API_ROOT}<set-path-to-download-here>`, params);
+            return utils.updateURLParams(`${settings.API_ROOT}administrative/areas-hazards-exposure/download`, params);
         },
     },
 
