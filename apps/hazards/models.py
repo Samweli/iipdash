@@ -20,6 +20,11 @@ from .colormaps import exposure_coverage_colormap
 from .files import hazard_exposure_tiff_path
 
 
+class UrbanizationGroup(models.TextChoices):
+    URBAN = "urban", _("Urban")
+    RURAL = "rural", _("Rural")
+
+
 class Hazard(models.Model):
     """A hazard type."""
 
@@ -96,6 +101,13 @@ class UrbanizationDegree(models.Model):
         null=True,
         max_length=50,
         unique=True,
+    )
+
+    group = models.CharField(
+        _("group"),
+        choices=UrbanizationGroup,
+        max_length=64,
+        blank=True,
     )
 
     description = models.TextField(_("description"), blank=True, help_text=_("A long-form description."))

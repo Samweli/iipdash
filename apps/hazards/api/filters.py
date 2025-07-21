@@ -204,6 +204,7 @@ class HazardExposureFilter(filters.FilterSet):
 
     hazard_code_in = filters.BaseCSVFilter(field_name="hazards_codes", lookup_expr="overlap")
     urbanization_degree_code_in = filters.BaseInFilter(field_name="urbanization_degree__code")
+    urbanization_degree_group = filters.CharFilter(field_name="urbanization_degree__group")
 
     class Meta:
         """

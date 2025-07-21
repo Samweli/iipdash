@@ -21,6 +21,7 @@ class HazardAdmin(ImportExportModelAdmin):
 class UrbanizationDegreeAdmin(ImportExportModelAdmin):
     list_display = ["name", "code", "uuid", "id"]
     list_display_links = ["name", "code"]
+    list_filter = ["group", "created_at", "updated_at"]
     prepopulated_fields = {"code": ["name"]}
     search_fields = ["id", "uuid", "name", "code"]
     readonly_fields = ["id", "uuid", "created_at", "updated_at"]
@@ -104,6 +105,7 @@ class HazardExposureAdmin(ImportExportModelAdmin):
         "coverage__administrative_area__country",
         "hazards",
         "urbanization_degree",
+        "urbanization_degree__group",
         "created_at",
         "updated_at",
     ]

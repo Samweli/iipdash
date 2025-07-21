@@ -4,9 +4,17 @@ from rest_framework import serializers
 
 from administrative.api.serializers import RelatedAreaSerializer
 
-from ..models import ExposureCoverage, HazardExposure
+from ..models import ExposureCoverage, HazardExposure, UrbanizationDegree
 
-__all__ = ["ExposureCoverageSerializer", "HazardExposureSerializer"]
+__all__ = ["ExposureCoverageSerializer", "HazardExposureSerializer", "RelatedUrbanizationDegreeSerializer"]
+
+
+class RelatedUrbanizationDegreeSerializer(serializers.ModelSerializer):
+    """A related urbanization degree serializer."""
+
+    class Meta:
+        model = UrbanizationDegree
+        fields = ["uuid", "name", "code", "group"]
 
 
 class ExposureCoverageSerializer(serializers.ModelSerializer):
@@ -34,7 +42,7 @@ class HazardExposureSerializer(serializers.ModelSerializer):
     """A ModelSerializer for serializing :class:`hazards.models.HazardExposure` model."""
 
     administrative_area = RelatedAreaSerializer(source="coverage.administrative_area", read_only=True)
-    urbanization_degree_name = serializers.CharField(source="urbanization_degree.name", read_only=True)
+    urbanization_degree = RelatedUrbanizationDegreeSerializer(read_only=True)
 
     class Meta:
         """Metadata for the :class:`HazardExposureSerializer`.
@@ -55,7 +63,7 @@ class HazardExposureSerializer(serializers.ModelSerializer):
             "uuid",
             "hazards_names_display",
             "administrative_area",
-            "urbanization_degree_name",
+            "urbanization_degree",
             "population_exposed",
             "population_exposed_percent",
             "population_exposed_ev",

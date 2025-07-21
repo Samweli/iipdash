@@ -24,6 +24,7 @@ class AreaHazardExposureFilter(filters.FilterSet):
     level = filters.NumberFilter(field_name="depth")
     hazard_code_in = filters.BaseCSVFilter(method="noop")
     urbanization_degree_code_in = filters.BaseCSVFilter(method="noop")
+    urbanization_degree_group = filters.CharFilter(method="noop")
 
     class Meta:
         model = HazardExposure
@@ -54,6 +55,11 @@ class AreaHazardExposureFilter(filters.FilterSet):
             # urbanization degrees
             urbanization_degree_code_in = self.form.cleaned_data.get("urbanization_degree_code_in")
             if urbanization_degree_code_in:
-                q_filters &= Q(urbanization_degree_code__in=urbanization_degree_code_in)
+                q_filters &= Q(urbanization_degree__code__in=urbanization_degree_code_in)
+
+            # urbanization degree group
+            urbanization_degree_group = self.form.cleaned_data.get("urbanization_degree_group")
+            if urbanization_degree_group:
+                q_filters &= Q(urbanization_degree__group=urbanization_degree_group)
 
         return q_filters
