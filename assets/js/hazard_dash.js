@@ -12,8 +12,9 @@ import * as chartsConfig from './charts_config.js';
 
 
 const HAZARD_TYPES = ['cyclone', 'flood', 'drought', 'heat'];
-const POPULATION_TYPE_VULNERABLE = 'vulnerable';
 const URBANICITY_TYPE_URBAN = 'urban';
+
+const POPULATION_EXPOSED_PERCENT = 'population_exposed_percent';
 
 /**
  *  HazardDash Vue application.
@@ -42,7 +43,6 @@ const HazardDash = {
             regionOptions: { features: [] },
             hazardExposureAggregates: {},
             regionsHazardExposure: { features: [] },
-            selectedHazardAggregate: 'population_exposed_percent',
             selectedCountry: null,
             selectedRegion: null,
             summaryLayerActive: true,
@@ -50,7 +50,7 @@ const HazardDash = {
             secondaryFilters: {
                 selectedHazardTypes: [...HAZARD_TYPES],
                 selectedUrbanicityType: URBANICITY_TYPE_URBAN, // or rural
-                selectedPopulationType: POPULATION_TYPE_VULNERABLE, // or all
+                selectedPopulationExposed: POPULATION_EXPOSED_PERCENT, // or population_exposed_ev_percent
             },
             charts: {
                 hazardExposureSummary: {
@@ -414,12 +414,12 @@ const HazardDash = {
                 datasets: [
                     {
                         label: 'Population exposed',
-                        data: [this.hazardExposureAggregates[this.selectedHazardAggregate]],
+                        data: [this.hazardExposureAggregates[this.secondaryFilters.selectedPopulationExposed]],
                         backgroundColor: '#007FFF',
                     },
                     {
                         label: 'Population not exposed',
-                        data: [100 - this.hazardExposureAggregates[this.selectedHazardAggregate]],
+                        data: [100 - this.hazardExposureAggregates[this.secondaryFilters.selectedPopulationExposed]],
                         backgroundColor: '#D9D9D9',
                     },
                 ],
@@ -446,7 +446,7 @@ const HazardDash = {
                         data: this.regionsHazardExposure.features.map((coverage) => {
                             return {
                                 x: this.round(coverage.properties.rwi_population_weighted, 2),
-                                y: this.round(coverage.properties[`${this.selectedHazardAggregate}`], 2),
+                                y: this.round(coverage.properties[`${this.secondaryFilters.selectedPopulationExposed}`], 2),
                                 uuid: coverage.id,
                             };
                         }),
@@ -622,6 +622,23 @@ const HazardDash = {
         },
 
         /**
+         * Update data once secondary filters population exposed type radio buttons are
+         * checked.
+         *
+         * This:
+         *
+         * - Update `secondaryFilters.selectedPopulationExposed` secondary filters
+         * - Update data and map by calling `update`
+         */
+        handleSecondaryFiltersPopulationExposedChange: async function (populationExposed) {
+            // Update selected population exposed type
+            this.secondaryFilters.selectedPopulationExposed = populationExposed;
+
+            // Update map and data
+            await this.update();
+        },
+
+        /**
          * Update ui and data once secondary filters are cleared in bottom right map filters pane
          *
          * This:
@@ -634,7 +651,7 @@ const HazardDash = {
             this.secondaryFilters = {
                 selectedHazardTypes: [...HAZARD_TYPES],
                 selectedUrbanicityType: URBANICITY_TYPE_URBAN,
-                selectedPopulationType: POPULATION_TYPE_VULNERABLE,
+                selectedPopulationExposed: POPULATION_EXPOSED_PERCENT,
             };
 
             // Update map and data

@@ -345,34 +345,36 @@
 
                     {# Start: population type filter #}
                     <fieldset class="py-2">
-                        <legend class="col-form-label p-txt-14-black fw-semibold">{% trans 'Population type' %}</legend>
+                        <legend class="col-form-label p-txt-14-black fw-semibold">{% trans 'Population exposed' %}</legend>
                         <div class="d-flex justify-content-start">
                             <div class="form-check">
                                 <input
                                     class="form-check-input"
                                     type="radio"
-                                    name="selectedPopulationType"
-                                    value="vulnerable"
-                                    id="selected-population-type-vulnerable"
-                                    v-model="secondaryFilters.selectedPopulationType">
+                                    name="selectedPopulationExposed"
+                                    value="population_exposed_percent"
+                                    id="selected-population-exposed-all"
+                                    v-model="secondaryFilters.selectedPopulationExposed"
+                                    @change="handleSecondaryFiltersPopulationExposedChange('population_exposed_percent')">
                                 <label
                                     class="form-check-label p-txt-14"
-                                    for="selected-population-type-vulnerable">
-                                    {% trans 'Vulnerable' %}
+                                    for="selected-population-exposed-all">
+                                    {% trans 'All' %}
                                 </label>
                             </div>
                             <div class="form-check ms-5">
                                 <input
                                     class="form-check-input"
                                     type="radio"
-                                    name="selectedPopulationType"
-                                    value="all"
-                                    id="selected-population-type-all"
-                                    v-model="secondaryFilters.selectedPopulationType">
+                                    name="selectedPopulationExposed"
+                                    value="population_exposed_ev_percent"
+                                    id="selected-population-exposed-ev-vulnerable"
+                                    v-model="secondaryFilters.selectedPopulationExposed"
+                                    @change="handleSecondaryFiltersPopulationExposedChange('population_exposed_ev_percent')">
                                 <label
                                     class="form-check-label p-txt-14"
-                                    for="selected-population-type-all">
-                                    {% trans 'All' %}
+                                    for="selected-population-exposed-ev-vulnerable">
+                                    {% trans 'Economically vulnerable' %}
                                 </label>
                             </div>
                         </div>
