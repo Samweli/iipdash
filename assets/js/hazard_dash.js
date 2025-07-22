@@ -12,7 +12,7 @@ import * as chartsConfig from './charts_config.js';
 
 
 const HAZARD_TYPES = ['cyclone', 'flood', 'drought', 'heat'];
-const URBANICITY_TYPE_URBAN = 'urban';
+const URBANICITY_TYPE_ALL = 'urban,rural'
 
 const POPULATION_EXPOSED_PERCENT = 'population_exposed_percent';
 
@@ -49,7 +49,7 @@ const HazardDash = {
             mapSidebarTabsDetailsTabActive: false,
             secondaryFilters: {
                 selectedHazardTypes: [...HAZARD_TYPES],
-                selectedUrbanicityType: URBANICITY_TYPE_URBAN, // or rural
+                selectedUrbanicityType: URBANICITY_TYPE_ALL, // or urban and rural
                 selectedPopulationExposed: POPULATION_EXPOSED_PERCENT, // or population_exposed_ev_percent
             },
             charts: {
@@ -247,7 +247,8 @@ const HazardDash = {
                         params: {
                              ...this.lookup,
                              administrative_area_level: 3,
-                             hazard_code_in: this.secondaryFilters.selectedHazardTypes.join(',')
+                             hazard_code_in: this.secondaryFilters.selectedHazardTypes.join(','),
+                             urbanization_degree_group: this.secondaryFilters.selectedUrbanicityType
                         },
                     },
                 );
@@ -263,7 +264,9 @@ const HazardDash = {
                         country: this.lookup.country || '',
                         administrative_area_level: 3,
                         exclude_geometry: true,
-                        hazard_code_in: this.secondaryFilters.selectedHazardTypes.join(',')
+                        hazard_code_in: this.secondaryFilters.selectedHazardTypes.join(','),
+                        urbanization_degree_group: this.secondaryFilters.selectedUrbanicityType
+
                     },
                 });
                 this.regionsHazardExposure = regionsHazardExposure.data;
@@ -639,6 +642,24 @@ const HazardDash = {
         },
 
         /**
+         * Update data once secondary filters urbanicity type radio buttons are
+         * checked.
+         *
+         * This:
+         *
+         * - Update `secondaryFilters.selectedUrbanicityType` secondary filters
+         * - Update data and map by calling `update`
+         */
+        handleSecondaryFiltersUrbanicityChange: async function (urbanicityType) {
+            // Update selected urbanicity type
+            this.secondaryFilters.selectedUrbanicityType = urbanicityType;
+
+            // Update map and data
+            await this.update();
+        },
+
+
+        /**
          * Update ui and data once secondary filters are cleared in bottom right map filters pane
          *
          * This:
@@ -650,7 +671,7 @@ const HazardDash = {
             // Reset secondary filters
             this.secondaryFilters = {
                 selectedHazardTypes: [...HAZARD_TYPES],
-                selectedUrbanicityType: URBANICITY_TYPE_URBAN,
+                selectedUrbanicityType: URBANICITY_TYPE_ALL,
                 selectedPopulationExposed: POPULATION_EXPOSED_PERCENT,
             };
 
