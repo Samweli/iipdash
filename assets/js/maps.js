@@ -56,6 +56,8 @@ export const areasMobileCoverageTilesURL =
     API_ROOT + 'administrative/areas-mobile-coverage/tiles/{z}/{x}/{y}.mvt/?level=3';
 export const areasInternetSpeedTilesURL =
     API_ROOT + 'administrative/areas-internet-speed/tiles/{z}/{x}/{y}.mvt/?level=3';
+export const areasHazardsExposureTilesURL =
+    API_ROOT + 'administrative/areas-hazards-exposure/tiles/{z}/{x}/{y}.mvt/?level=3';
 
 const predefinedSources = {
     countries: {
@@ -109,6 +111,12 @@ const predefinedSources = {
     'areas-internet-speed': {
         type: 'vector',
         tiles: [areasInternetSpeedTilesURL],
+        minzoom: defaultMinZoom,
+        maxzoom: defaultMaxZoom,
+    },
+    'areas-hazards-exposure': {
+        type: 'vector',
+        tiles: [areasHazardsExposureTilesURL],
         minzoom: defaultMinZoom,
         maxzoom: defaultMaxZoom,
     },
@@ -708,6 +716,46 @@ const cellTowersLayer = {
     },
 };
 
+const areasHazardsExposureLayer = {
+    id: 'areas-hazards-exposure',
+    source: 'areas-hazards-exposure',
+    'source-layer': 'areas-hazards-exposure',
+    type: 'fill',
+    paint: {
+        'fill-outline-color': colorPrimary,
+        'fill-color': [
+            'case',
+            ['==', ['get', 'exposed_population_percent'], null],
+            'rgba(0, 0, 0, 0)',
+            [
+                'interpolate', // interpolation expression
+                ['linear'], // interpolation type
+                ['get', 'exposed_population_percent'], // value to be used for interpolation
+                // color stops,
+                0,
+                '#ffffff',
+                5,
+                '#dae1ff',
+                60,
+                colorPrimary,
+            ],
+        ],
+        'fill-opacity': [
+            // Zoom-dependent opacity
+            'interpolate',
+            ['linear'],
+            ['zoom'],
+            0,
+            1.0, // Opacity at zoom level 0
+            5,
+            0.7, // Opacity at zoom level 5
+            10,
+            0.3, // Opacity at zoom level 10
+        ],
+    },
+};
+
+
 const mobileCoverage3GLayer = {
     id: 'mobile-coverage-3g',
     type: 'raster',
@@ -736,6 +784,7 @@ export const layers = {
     'areas-mobile-coverage-4g': areasMobileCoverage4GLayer,
     'areas-internet-speed-mobile': areasInternetSpeedMobile,
     'areas-internet-speed-fixed': areasInternetSpeedFixed,
+    'areas-hazards-exposure': areasHazardsExposureLayer,
     'education-institutions': educationInstitutionsLayer,
     'health-facilities': healthFacilitiesLayer,
     'fiber-nodes': fiberNodesLayer,

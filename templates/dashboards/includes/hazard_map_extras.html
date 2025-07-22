@@ -65,7 +65,8 @@
             <input
                 class="form-check-input float-none ms-2"
                 type="radio"
-                id="selected-hazard-exposure">
+                id="selected-hazard-exposure"
+                :checked="summaryLayerActive">
         </div>
         <div class="p-txt-12-muted">{% trans '% of population' %}</div>
 
@@ -91,7 +92,8 @@
             <input
                 class="form-check-input float-none ms-2"
                 type="radio"
-                id="selected-population-density">
+                id="selected-population-density"
+                :checked="!summaryLayerActive">
         </div>
         <div class="p-txt-12-muted">{% trans 'Count per 30m<sup>2</sup>' %}</div>
 
@@ -117,7 +119,8 @@
             <input
                 class="form-check-input float-none ms-2"
                 type="radio"
-                id="selected-relative-wealth">
+                id="selected-relative-wealth"
+                :checked="!summaryLayerActive">
         </div>
         <div class="p-txt-12-muted">{% trans 'Per 2.4km<sup>2</sup>' %}</div>
 
