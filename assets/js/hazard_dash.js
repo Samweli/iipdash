@@ -12,7 +12,7 @@ import * as chartsConfig from './charts_config.js';
 
 
 const HAZARD_TYPES = ['cyclone', 'flood', 'drought', 'heat'];
-const URBANICITY_TYPE_ALL = 'urban,rural'
+const URBANICITY_TYPE_ALL = ''
 
 const POPULATION_EXPOSED_PERCENT = 'population_exposed_percent';
 

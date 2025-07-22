@@ -316,10 +316,10 @@
                                     class="form-check-input"
                                     type="radio"
                                     name="selectedUrbanicityType"
-                                    value="urban,rural"
+                                    value=""
                                     id="selected-urbanicity-type-all"
                                     v-model="secondaryFilters.selectedUrbanicityType"
-                                    @change="handleSecondaryFiltersUrbanicityChange('urban,rural')">
+                                    @change="handleSecondaryFiltersUrbanicityChange('')">
                                 <label
                                     class="form-check-label p-txt-14"
                                     for="selected-urbanicity-type-all">
@@ -403,7 +403,7 @@
                         <button
                             id="map-filters-clear-filter"
                             class="btn btn-sm btn-light px-3"
-                            @click="handleSecondaryFiltersCleared()">{% trans "Clear" %}</button>
+                            @click="handleSecondaryFiltersCleared()">{% trans "Reset" %}</button>
                         <button
                             id="map-filters-apply-filter"
                             class="btn btn-sm btn-primary px-3 text-white"
