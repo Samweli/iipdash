@@ -646,15 +646,24 @@ const HazardDash = {
          * This:
          *
          * - Update `secondaryFilters.selectedHazardTypes` secondary filters
+         * - Checks if there are no selected checkboxes and re-selects the last one.
          * - Update data and map by calling `update`
+         *
          */
-        handleSecondaryFiltersHazardTypeChecked: async function (hazardType) {
+        handleSecondaryFiltersHazardTypeChecked: async function (event, hazardType) {
             // Collect and update selected hazard types
             const index = this.secondaryFilters.selectedHazardTypes.indexOf(hazardType);
             if (index === -1) {
                 this.secondaryFilters.selectedHazardTypes.push(hazardType);
             } else {
                 this.secondaryFilters.selectedHazardTypes.splice(index, 1);
+            }
+
+            // Check if there is no hazard type and reselect the last one
+            if (this.secondaryFilters.selectedHazardTypes.length == 0){
+                const checkbox = event.target;
+                checkbox.checked = true;
+                this.secondaryFilters.selectedHazardTypes.push(hazardType);
             }
 
             // Update map and data
@@ -748,6 +757,9 @@ const HazardDash = {
             if (!hazardLayer || !hazardSource) {
                 return;
             }
+
+            const hazardLayerVisibility = this._map.getLayoutProperty(hazardExposureLayerId, 'visibility')
+
             const params = {
                 administrative_area_level: 3,
                 hazard_code_in: this.secondaryFilters.selectedHazardTypes.join(','),
@@ -772,9 +784,43 @@ const HazardDash = {
                 maxzoom: maps.defaultMaxZoom,
             });
 
-            const areasHazardsExposureLayer = _.merge({}, maps.layers[hazardExposureLayerId], {
+            // Handle updates to the exposed population type
+
+            let hazardMapLayer = maps.layers[hazardExposureLayerId];
+
+            let fillColorProperty = 'exposed_population_percent';
+
+            if (this.secondaryFilters.selectedPopulationExposed != POPULATION_EXPOSED_PERCENT){
+               fillColorProperty = 'ev_exposed_population_percent';
+            }
+            const layerFillColor = [
+                'case',
+                ['==', ['get', fillColorProperty], null],
+                'rgba(0, 0, 0, 0)',
+                [
+                    'interpolate',
+                    ['linear'],
+                    ['get', fillColorProperty],
+                    // color stops,
+                    0,
+                    '#ffffff',
+                    2,
+                    '#ecf0ff',
+                    8,
+                    '#dae1ff',
+                    30,
+                    '#3a9fff',
+                    60,
+                    settings.COLOR_PRIMARY,
+                ],
+            ];
+
+            hazardMapLayer['paint']['fill-color'] = layerFillColor;
+
+            // Update the map layer
+            const areasHazardsExposureLayer = _.merge({}, hazardMapLayer, {
                 layout: {
-                    visibility: 'visible',
+                    visibility: hazardLayerVisibility,
                 },
             });
 
@@ -850,14 +896,20 @@ const HazardDash = {
          * This:
          *
          * - Fetch `country` name and `area` name
-         * - Fetch `exposed_population_percent` for the area exposed population
+         * - Show exposed population for the whole area or economically
          * - Display a popup with areas hazard exposure properties
          */
         showSummaryMapPopup(e) {
             const countryName = this.countriesLookup[e.features[0].properties.country];
             const name = `${e.features[0].properties.name}, ${countryName}`;
 
-            let population_exposed_percent = this.round(e.features[0].properties.exposed_population_percent);
+            let hazard_percent_property = 'exposed_population_percent';
+
+            if (this.secondaryFilters.selectedPopulationExposed != POPULATION_EXPOSED_PERCENT){
+               hazard_percent_property = 'ev_exposed_population_percent';
+            }
+
+            let population_exposed_percent = this.round(e.features[0].properties[hazard_percent_property]);
             if (isNaN(population_exposed_percent)) {
                 population_exposed_percent = '-';
             }
