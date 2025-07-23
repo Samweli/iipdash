@@ -233,6 +233,15 @@ const HomeDash = {
             this._map.addSource('mobile-coverage-4g', mapSources['mobile-coverage-4g']);
             this._map.addLayer(mobileCoverage4GLayer);
 
+            // Hazard exposure coverage layer
+            const exposureCoverageLayer = _.merge({}, maps.layers['exposure-coverage'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('exposure-coverage', mapSources['exposure-coverage']);
+            this._map.addLayer(exposureCoverageLayer);
+
             // add catalog raster layers
             for (const catalogLayer of this.catalogLayers) {
                 if (catalogLayer.tms_url) {
@@ -440,6 +449,7 @@ const HomeDash = {
          * - `cell-towers`
          * - `mobile-coverage-3g`
          * - `mobile-coverage-4g`
+         * - `exposure-coverage`
          *
          * This:
          *
@@ -452,6 +462,9 @@ const HomeDash = {
             // 1.0 Lookup for mobile coverage layers i.e `mobile-coverage-3g` or `mobile-coverage-4g`
             const mobileCoverageTilesLookup = {};
 
+            // 1.0.1 Lookup for hazard exposure coverage layer i.e `exposure-coverage`
+            const exposureCoverageTileLookup = {};
+
             // 1.1 Filter catalog layers based on current selected `country`
             if (this.lookup.country) {
                 this._map.setFilter('fiber-optics', ['==', ['get', 'country'], this.lookup.country]);
@@ -463,6 +476,7 @@ const HomeDash = {
                 this._map.setFilter('fiber-nodes', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('cell-towers', ['==', ['get', 'country'], this.lookup.country]);
                 mobileCoverageTilesLookup.administrative_area = this.selectedCountry.id;
+                exposureCoverageTileLookup.administrative_area = this.selectedCountry.id;
             } else {
                 this._map.setFilter('fiber-optics', null);
                 this._map.setFilter('electricity-networks', null);
@@ -517,6 +531,7 @@ const HomeDash = {
                     this.lookup.administrative_area,
                 ]);
                 mobileCoverageTilesLookup.administrative_area = this.selectedRegion.id;
+                exposureCoverageTileLookup.administrative_area = this.selectedRegion.id;
             }
 
             // 1.3 Filter mobile coverage layers i.e `mobile-coverage-3g` or `mobile-coverage-4g`
@@ -542,6 +557,19 @@ const HomeDash = {
                 });
                 const mobileCoverage4gTilesURLs = await maps.getMobileCoverageTMSURLs(mobileCoverage4gTilesLookup);
                 this._map.getSource('mobile-coverage-4g').setTiles(mobileCoverage4gTilesURLs);
+            }
+
+            // 1.4 Filter hazard exposure coverage layer i.e `exposure-coverage`
+            // based on current selected `country` and `region`
+            if (!this.lookup.country && !this.lookup.administrative_area) {
+                exposureCoverageTileLookup.administrative_area_level = settings.ADMINISTRATIVE_AREAS_ROOT_LEVEL;
+                delete exposureCoverageTileLookup.administrative_area;
+            }
+
+            // 1.4.1 Filter hazard `exposure-coverage` based on current selected `country` and `region`
+            if (this.catalogSelectedLayers.includes('exposure-coverage')) {
+                const exposureCoverageTilesUrls = await maps.getExposureCoverageTMSURLs(exposureCoverageTileLookup);
+                this._map.getSource('exposure-coverage').setTiles(exposureCoverageTilesUrls);
             }
 
             // 2. Toggle catalog layer visibility based on current selected catalog layers

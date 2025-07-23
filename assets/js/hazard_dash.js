@@ -11,6 +11,16 @@ const HAZARD_TYPES = ['cyclone', 'flood', 'drought', 'heat'];
 const POPULATION_TYPE_VULNERABLE = 'vulnerable';
 const URBANICITY_TYPE_URBAN = 'urban';
 
+// exposure coverage:
+// - add hazard exposure to catalog layers
+// - add hazard exposure legend (fix colors/legend image)
+// - add map source in maps.js
+// - add map layer in maps.js
+// - add map layers in hazard_dash
+// - add map layers in home_dash
+// - filter in hazard_dash
+// - filter in home_dash
+
 /**
  *  HazardDash Vue application.
  */

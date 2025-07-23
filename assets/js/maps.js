@@ -157,6 +157,25 @@ export const getMobileCoverageTMSURLs = async (lookup) => {
     }
 };
 
+export const getExposureCoverageTMSURLs = async (lookup) => {
+    if (!window.userIsAuthenticated) {
+        return [];
+    }
+
+    try {
+        const exposureCoverages = await axios.get(`${API_ROOT}hazards/exposure-coverage/`, {
+            params: { ...lookup, tiff_empty: false },
+        });
+
+        return exposureCoverages.data.results.map((coverage) => {
+            return coverage.tms_url;
+        });
+    } catch (e) {
+        console.log(e); // eslint-disable-line no-console
+        return [];
+    }
+};
+
 export const getCatalogSources = async (lookup = {}) => {
     try {
         const catalogLayers = await axios.get(`${API_ROOT}catalog/layers/`, { params: lookup });
@@ -192,19 +211,24 @@ export const getSources = async (catalogLookup = {}) => {
     let catalogSources = {};
     let mobileCoverage3GTilesUrls = [];
     let mobileCoverage4GTilesUrls = [];
+    let exposureCoverageTilesUrls = [];
 
     try {
-        [catalogSources, mobileCoverage3GTilesUrls, mobileCoverage4GTilesUrls] = await Promise.all([
-            getCatalogSources(catalogLookup),
-            getMobileCoverageTMSURLs({
-                network_generation_code: '3g',
-                administrative_area_level: settings.ADMINISTRATIVE_AREAS_ROOT_LEVEL,
-            }),
-            getMobileCoverageTMSURLs({
-                network_generation_code: '4g',
-                administrative_area_level: settings.ADMINISTRATIVE_AREAS_ROOT_LEVEL,
-            }),
-        ]);
+        [catalogSources, mobileCoverage3GTilesUrls, mobileCoverage4GTilesUrls, exposureCoverageTilesUrls] =
+            await Promise.all([
+                getCatalogSources(catalogLookup),
+                getMobileCoverageTMSURLs({
+                    network_generation_code: '3g',
+                    administrative_area_level: settings.ADMINISTRATIVE_AREAS_ROOT_LEVEL,
+                }),
+                getMobileCoverageTMSURLs({
+                    network_generation_code: '4g',
+                    administrative_area_level: settings.ADMINISTRATIVE_AREAS_ROOT_LEVEL,
+                }),
+                getExposureCoverageTMSURLs({
+                    administrative_area_level: settings.ADMINISTRATIVE_AREAS_ROOT_LEVEL,
+                }),
+            ]);
     } catch (e) {
         console.log(e); // eslint-disable-line no-console
     }
@@ -221,6 +245,12 @@ export const getSources = async (catalogLookup = {}) => {
         'mobile-coverage-4g': {
             type: 'raster',
             tiles: mobileCoverage4GTilesUrls,
+            tileSize: 256,
+            scheme: 'tms',
+        },
+        'exposure-coverage': {
+            type: 'raster',
+            tiles: exposureCoverageTilesUrls,
             tileSize: 256,
             scheme: 'tms',
         },
@@ -724,6 +754,14 @@ const mobileCoverage4GLayer = {
     maxzoom: defaultMaxZoom,
 };
 
+const exposureCoverageLayer = {
+    id: 'exposure-coverage',
+    type: 'raster',
+    source: 'exposure-coverage',
+    minzoom: defaultMinZoom,
+    maxzoom: defaultMaxZoom,
+};
+
 export const layers = {
     countries: countriesLayer,
     regions: regionsLayer,
@@ -742,4 +780,5 @@ export const layers = {
     'cell-towers': cellTowersLayer,
     'mobile-coverage-3g': mobileCoverage3GLayer,
     'mobile-coverage-4g': mobileCoverage4GLayer,
+    'exposure-coverage': exposureCoverageLayer,
 };
