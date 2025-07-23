@@ -65,7 +65,8 @@
             <input
                 class="form-check-input float-none ms-2"
                 type="radio"
-                id="selected-hazard-exposure">
+                id="selected-hazard-exposure"
+                :checked="summaryLayerActive">
         </div>
         <div class="p-txt-12-muted">{% trans '% of population' %}</div>
 
@@ -91,7 +92,8 @@
             <input
                 class="form-check-input float-none ms-2"
                 type="radio"
-                id="selected-population-density">
+                id="selected-population-density"
+                :checked="!summaryLayerActive">
         </div>
         <div class="p-txt-12-muted">{% trans 'Count per 30m<sup>2</sup>' %}</div>
 
@@ -117,7 +119,8 @@
             <input
                 class="form-check-input float-none ms-2"
                 type="radio"
-                id="selected-relative-wealth">
+                id="selected-relative-wealth"
+                :checked="!summaryLayerActive">
         </div>
         <div class="p-txt-12-muted">{% trans 'Per 2.4km<sup>2</sup>' %}</div>
 
@@ -316,9 +319,25 @@
                                     class="form-check-input"
                                     type="radio"
                                     name="selectedUrbanicityType"
+                                    value=""
+                                    id="selected-urbanicity-type-all"
+                                    v-model="secondaryFilters.selectedUrbanicityType"
+                                    @change="handleSecondaryFiltersUrbanicityChange('')">
+                                <label
+                                    class="form-check-label p-txt-14"
+                                    for="selected-urbanicity-type-all">
+                                    {% trans 'All' %}
+                                </label>
+                            </div>
+                            <div class="form-check ms-5">
+                                <input
+                                    class="form-check-input"
+                                    type="radio"
+                                    name="selectedUrbanicityType"
                                     value="urban"
                                     id="selected-urbanicity-type-urban"
-                                    v-model="secondaryFilters.selectedUrbanicityType">
+                                    v-model="secondaryFilters.selectedUrbanicityType"
+                                    @change="handleSecondaryFiltersUrbanicityChange('urban')">
                                 <label
                                     class="form-check-label p-txt-14"
                                     for="selected-urbanicity-type-urban">
@@ -332,7 +351,8 @@
                                     name="selectedUrbanicityType"
                                     value="rural"
                                     id="selected-urbanicity-type-rural"
-                                    v-model="secondaryFilters.selectedUrbanicityType">
+                                    v-model="secondaryFilters.selectedUrbanicityType"
+                                    @change="handleSecondaryFiltersUrbanicityChange('rural')">
                                 <label
                                     class="form-check-label p-txt-14"
                                     for="selected-urbanicity-type-rural">
@@ -345,34 +365,36 @@
 
                     {# Start: population type filter #}
                     <fieldset class="py-2">
-                        <legend class="col-form-label p-txt-14-black fw-semibold">{% trans 'Population type' %}</legend>
+                        <legend class="col-form-label p-txt-14-black fw-semibold">{% trans 'Exposed population' %}</legend>
                         <div class="d-flex justify-content-start">
                             <div class="form-check">
                                 <input
                                     class="form-check-input"
                                     type="radio"
-                                    name="selectedPopulationType"
-                                    value="vulnerable"
-                                    id="selected-population-type-vulnerable"
-                                    v-model="secondaryFilters.selectedPopulationType">
+                                    name="selectedPopulationExposed"
+                                    value="population_exposed_percent"
+                                    id="selected-population-exposed-all"
+                                    v-model="secondaryFilters.selectedPopulationExposed"
+                                    @change="handleSecondaryFiltersPopulationExposedChange('population_exposed_percent')">
                                 <label
                                     class="form-check-label p-txt-14"
-                                    for="selected-population-type-vulnerable">
-                                    {% trans 'Vulnerable' %}
+                                    for="selected-population-exposed-all">
+                                    {% trans 'All' %}
                                 </label>
                             </div>
                             <div class="form-check ms-5">
                                 <input
                                     class="form-check-input"
                                     type="radio"
-                                    name="selectedPopulationType"
-                                    value="all"
-                                    id="selected-population-type-all"
-                                    v-model="secondaryFilters.selectedPopulationType">
+                                    name="selectedPopulationExposed"
+                                    value="population_exposed_ev_percent"
+                                    id="selected-population-exposed-ev-vulnerable"
+                                    v-model="secondaryFilters.selectedPopulationExposed"
+                                    @change="handleSecondaryFiltersPopulationExposedChange('population_exposed_ev_percent')">
                                 <label
                                     class="form-check-label p-txt-14"
-                                    for="selected-population-type-all">
-                                    {% trans 'All' %}
+                                    for="selected-population-exposed-ev-vulnerable">
+                                    {% trans 'Economically vulnerable' %}
                                 </label>
                             </div>
                         </div>
@@ -384,7 +406,7 @@
                         <button
                             id="map-filters-clear-filter"
                             class="btn btn-sm btn-light px-3"
-                            @click="handleSecondaryFiltersCleared()">{% trans "Clear" %}</button>
+                            @click="handleSecondaryFiltersCleared()">{% trans "Reset" %}</button>
                         <button
                             id="map-filters-apply-filter"
                             class="btn btn-sm btn-primary px-3 text-white"

@@ -1,15 +1,20 @@
 import _ from 'lodash';
 import * as Vue from 'vue';
 import maplibregl from 'maplibre-gl';
+import axios from 'axios';
 
 import * as settings from './conf';
 import * as utils from './utils';
 import * as maps from './maps';
 import { fetchCountries, fetchRegions } from './api';
+import Chart from 'chart.js/auto';
+import * as chartsConfig from './charts_config.js';
+
 
 const HAZARD_TYPES = ['cyclone', 'flood', 'drought', 'heat'];
-const POPULATION_TYPE_VULNERABLE = 'vulnerable';
-const URBANICITY_TYPE_URBAN = 'urban';
+const URBANICITY_TYPE_ALL = ''
+
+const POPULATION_EXPOSED_PERCENT = 'population_exposed_percent';
 
 /**
  *  HazardDash Vue application.
@@ -36,14 +41,24 @@ const HazardDash = {
             countriesLookup: {},
             regions: { features: [] },
             regionOptions: { features: [] },
+            hazardExposureAggregates: {},
+            regionsHazardExposure: { features: [] },
             selectedCountry: null,
             selectedRegion: null,
             summaryLayerActive: true,
             mapSidebarTabsDetailsTabActive: false,
             secondaryFilters: {
                 selectedHazardTypes: [...HAZARD_TYPES],
-                selectedUrbanicityType: URBANICITY_TYPE_URBAN, // or rural
-                selectedPopulationType: POPULATION_TYPE_VULNERABLE, // or all
+                selectedUrbanicityType: URBANICITY_TYPE_ALL, // or urban and rural
+                selectedPopulationExposed: POPULATION_EXPOSED_PERCENT, // or population_exposed_ev_percent
+            },
+            charts: {
+                hazardExposureSummary: {
+                    id: 'hazard-exposure-summary-chart',
+                },
+                regionsHazardExposureSummary: {
+                    id: 'regions-hazard-exposure-chart',
+                },
             },
         };
     },
@@ -147,6 +162,18 @@ const HazardDash = {
             // map style sources
             const mapSources = await maps.getSources();
 
+             // Areas hazard exposure
+            const areasHazardsExposureLayer = _.merge({}, maps.layers['areas-hazards-exposure'], {
+                layout: {
+                    visibility: 'visible',
+                },
+            },);
+
+            this._map.addSource('areas-hazards-exposure', mapSources['areas-hazards-exposure']);
+            this._map.addLayer(areasHazardsExposureLayer);
+
+            this._map.on('click', 'areas-hazards-exposure', this.showSummaryMapPopup);
+
             // Relative wealth index layer
             const relativeWealthIndexLayer = _.merge({}, maps.layers['relative-wealth-index'], {
                 layout: {
@@ -186,7 +213,21 @@ const HazardDash = {
          *
          * - Change cursor style for `mouseenter` and `mouseleave` events on map layers.
          */
-        addMouseEvents: async function () {},
+        addMouseEvents: async function () {
+
+            const layers = ['areas-hazards-exposure'];
+
+            layers.forEach((layerID) => {
+                this._map.on('mouseenter', layerID, () => {
+                    this._map.getCanvas().style.cursor = 'pointer';
+                });
+
+                this._map.on('mouseleave', layerID, () => {
+                    this._map.getCanvas().style.cursor = '';
+                });
+            });
+
+        },
 
         /**
          * Add map layers legend.
@@ -222,6 +263,41 @@ const HazardDash = {
                 this.selectedRegion = _.find(this.regions.features, { id: this.lookup.administrative_area });
             } else {
                 this.selectedRegion = null;
+            }
+
+            // hazard exposure aggregations
+            try {
+                const hazardExposureAggregates = await axios.get(
+                    `${settings.API_ROOT}hazards/hazard-exposures/aggregates/`,
+                    {
+                        params: {
+                             ...this.lookup,
+                             administrative_area_level: 3,
+                             hazard_code_in: this.secondaryFilters.selectedHazardTypes.join(','),
+                             urbanization_degree_group: this.secondaryFilters.selectedUrbanicityType
+                        },
+                    },
+                );
+                this.hazardExposureAggregates = hazardExposureAggregates.data;
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
+            }
+
+            // hazard per region
+            try {
+                const regionsHazardExposure = await axios.get(`${settings.API_ROOT}administrative/areas-hazards-exposure/`, {
+                    params: {
+                        country: this.lookup.country || '',
+                        administrative_area_level: 3,
+                        exclude_geometry: true,
+                        hazard_code_in: this.secondaryFilters.selectedHazardTypes.join(','),
+                        urbanization_degree_group: this.secondaryFilters.selectedUrbanicityType
+
+                    },
+                });
+                this.regionsHazardExposure = regionsHazardExposure.data;
+            } catch (e) {
+                console.log(e); // eslint-disable-line no-console
             }
 
             // TODO: handle secondary filters and selected legend layer
@@ -300,6 +376,7 @@ const HazardDash = {
          *
          * - `relative-wealth-index`
          * - `population-density-hd`.
+         * - `areas-hazards-exposure`.
          *
          * This:
          *
@@ -311,9 +388,11 @@ const HazardDash = {
             if (this.lookup.country) {
                 this._map.setFilter('relative-wealth-index', ['==', ['get', 'country'], this.lookup.country]);
                 this._map.setFilter('population-density-hd', ['==', ['get', 'country'], this.lookup.country]);
+                this._map.setFilter('areas-hazards-exposure', ['==', ['get', 'country'], this.lookup.country]);
             } else {
                 this._map.setFilter('relative-wealth-index', null);
                 this._map.setFilter('population-density-hd', null);
+                this._map.setFilter('areas-hazards-exposure', null);
             }
 
             // Update map filter based on current administrative region
@@ -328,16 +407,24 @@ const HazardDash = {
                     ['get', 'administrative_area_uuid'],
                     this.lookup.administrative_area,
                 ]);
+                 this._map.setFilter('areas-hazards-exposure', [
+                    '==',
+                    ['get', 'administrative_area_uuid'],
+                    this.lookup.administrative_area,
+                ]);
             }
 
             // Toggle underlying data layers visibility when `summaryLayerActive` toggled to `false`
             if (this.summaryLayerActive) {
+                this._map.setLayoutProperty('areas-hazards-exposure', 'visibility', 'visible');
                 this._map.setLayoutProperty('relative-wealth-index', 'visibility', 'none');
                 this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
             } else {
+                this._map.setLayoutProperty('areas-hazards-exposure', 'visibility', 'none');
                 this._map.setLayoutProperty('relative-wealth-index', 'visibility', 'visible');
                 this._map.setLayoutProperty('population-density-hd', 'visibility', 'visible');
             }
+            await this.handleHazardsExposureLayerFilter();
         },
 
         /**
@@ -359,6 +446,78 @@ const HazardDash = {
             // TODO: handle secondary filters and selected legend layer
         },
 
+        updateCharts() {
+            // summary hazard exposure bar
+
+            const hazardExposureSummaryData = {
+                labels: [' '], // Empty label to remove Y-axis text
+                datasets: [
+                    {
+                        label: 'Population exposed',
+                        data: [this.hazardExposureAggregates[this.secondaryFilters.selectedPopulationExposed]],
+                        backgroundColor: '#007FFF',
+                    },
+                    {
+                        label: 'Population not exposed',
+                        data: [100 - this.hazardExposureAggregates[this.secondaryFilters.selectedPopulationExposed]],
+                        backgroundColor: '#D9D9D9',
+                    },
+                ],
+            };
+
+            const hazardExposureSummaryConfig = {
+                ...chartsConfig.hazardExposureSummary,
+                data: hazardExposureSummaryData,
+            };
+
+            this.clearChart(this.charts.hazardExposureSummary.id);
+            const hazardExposureSummaryCtx = document
+                .getElementById(this.charts.hazardExposureSummary.id)
+                .getContext('2d');
+
+            new Chart(hazardExposureSummaryCtx, hazardExposureSummaryConfig); // eslint-disable-line no-new
+
+
+            // regions hazard exposure
+            const regionsHazardExposureData = {
+                datasets: [
+                    {
+                        label: '',
+                        data: this.regionsHazardExposure.features.map((coverage) => {
+                            return {
+                                x: this.round(coverage.properties.rwi_population_weighted, 2),
+                                y: this.round(coverage.properties[`${this.secondaryFilters.selectedPopulationExposed}`], 2),
+                                uuid: coverage.id,
+                            };
+                        }),
+                        backgroundColor: (context) => {
+                            const index = context.dataIndex;
+                            const value = context.dataset.data[index];
+
+                            if (value.uuid === this.selectedRegion?.id) {
+                                return settings.COLOR_PRIMARY;
+                            }
+
+                            return 'rgba(100, 100, 100, 0.5)';
+                        },
+                        pointRadius: 4,
+                        pointHoverRadius: 4.5,
+                    },
+                ],
+            };
+
+            const regionsHazardExposureConfig = {
+                ...chartsConfig.regionsHazardExposure,
+                data: regionsHazardExposureData,
+            };
+
+            this.clearChart(this.charts.regionsHazardExposureSummary.id);
+            const regionsHazardExposureCtx = document
+                .getElementById(this.charts.regionsHazardExposureSummary.id)
+                .getContext('2d');
+            new Chart(regionsHazardExposureCtx, regionsHazardExposureConfig); // eslint-disable-line no-new
+        },
+
         /**
          * Update data and map.
          *
@@ -372,11 +531,22 @@ const HazardDash = {
             try {
                 await this.updateData();
                 await this.updateMap();
+                await this.updateCharts();
 
                 const event = new Event('page-updated');
                 window.dispatchEvent(event);
             } catch (e) {
                 console.log(e); // eslint-disable-line no-console
+            }
+        },
+
+        clearChart(elementID) {
+            const ctx = document.getElementById(elementID);
+
+            try {
+                Chart.getChart(ctx).destroy();
+            } catch (e) {
+                // chart didn't exist yet
             }
         },
 
@@ -443,7 +613,7 @@ const HazardDash = {
          */
         handleSummaryLayerToggled: async function () {
             // TODO: ensure 'areas-hazard' layer is loaded
-            const summaryVisibility = this._map.getLayoutProperty('areas-hazard', 'visibility');
+            const summaryVisibility = this._map.getLayoutProperty('areas-hazards-exposure', 'visibility');
             if (summaryVisibility === 'visible') {
                 this.summaryLayerActive = false;
                 await this.updateMapUnderlyingDataLayers();
@@ -492,6 +662,41 @@ const HazardDash = {
         },
 
         /**
+         * Update data once secondary filters population exposed type radio buttons are
+         * checked.
+         *
+         * This:
+         *
+         * - Update `secondaryFilters.selectedPopulationExposed` secondary filters
+         * - Update data and map by calling `update`
+         */
+        handleSecondaryFiltersPopulationExposedChange: async function (populationExposed) {
+            // Update selected population exposed type
+            this.secondaryFilters.selectedPopulationExposed = populationExposed;
+
+            // Update map and data
+            await this.update();
+        },
+
+        /**
+         * Update data once secondary filters urbanicity type radio buttons are
+         * checked.
+         *
+         * This:
+         *
+         * - Update `secondaryFilters.selectedUrbanicityType` secondary filters
+         * - Update data and map by calling `update`
+         */
+        handleSecondaryFiltersUrbanicityChange: async function (urbanicityType) {
+            // Update selected urbanicity type
+            this.secondaryFilters.selectedUrbanicityType = urbanicityType;
+
+            // Update map and data
+            await this.update();
+        },
+
+
+        /**
          * Update ui and data once secondary filters are cleared in bottom right map filters pane
          *
          * This:
@@ -503,8 +708,8 @@ const HazardDash = {
             // Reset secondary filters
             this.secondaryFilters = {
                 selectedHazardTypes: [...HAZARD_TYPES],
-                selectedUrbanicityType: URBANICITY_TYPE_URBAN,
-                selectedPopulationType: POPULATION_TYPE_VULNERABLE,
+                selectedUrbanicityType: URBANICITY_TYPE_ALL,
+                selectedPopulationExposed: POPULATION_EXPOSED_PERCENT,
             };
 
             // Update map and data
@@ -523,6 +728,59 @@ const HazardDash = {
             // Update map and data
             await this.update();
         },
+
+        /**
+         * Updates the vector tile source and layer for areas-hazards-exposure
+         * using current secondary filter values.
+         *
+         * This:
+         *
+         * - Removes the existing "areas-hazards-exposure" layer and source (if any)
+         * - Constructs a new tile URL with query parameters using `axios.getUri`
+         * - Re-adds the vector tile source and corresponding layer with updated filters
+         */
+        handleHazardsExposureLayerFilter: async function () {
+            const hazardExposureLayerId = 'areas-hazards-exposure';
+            const hazardLayer = this._map.getLayer(hazardExposureLayerId);
+            const hazardSource = this._map.getSource(hazardExposureLayerId);
+
+            // Only continue if both the layer and source exist
+            if (!hazardLayer || !hazardSource) {
+                return;
+            }
+            const params = {
+                administrative_area_level: 3,
+                hazard_code_in: this.secondaryFilters.selectedHazardTypes.join(','),
+                urbanization_degree_group: this.secondaryFilters.selectedUrbanicityType,
+            };
+
+            // Build updated tile URL
+            const updatedTileUrl = axios.getUri({
+                url: maps.areasHazardsExposureTilesURL,
+                params: params,
+            });
+
+            // Remove existing layer and source
+            this._map.removeLayer(hazardExposureLayerId);
+            this._map.removeSource(hazardExposureLayerId);
+
+            // Re-add vector source with updated tile URL
+            this._map.addSource(hazardExposureLayerId, {
+                type: 'vector',
+                tiles: [updatedTileUrl],
+                minzoom: maps.defaultMinZoom,
+                maxzoom: maps.defaultMaxZoom,
+            });
+
+            const areasHazardsExposureLayer = _.merge({}, maps.layers[hazardExposureLayerId], {
+                layout: {
+                    visibility: 'visible',
+                },
+            });
+
+            this._map.addLayer(areasHazardsExposureLayer);
+        },
+
 
         // ---
         // End: UI event handlers methods
@@ -585,9 +843,50 @@ const HazardDash = {
             }
         },
 
+         /**
+         * Create a summary popup for the areas hazard exposure layer features.
+         *
+         *
+         * This:
+         *
+         * - Fetch `country` name and `area` name
+         * - Fetch `exposed_population_percent` for the area exposed population
+         * - Display a popup with areas hazard exposure properties
+         */
+        showSummaryMapPopup(e) {
+            const countryName = this.countriesLookup[e.features[0].properties.country];
+            const name = `${e.features[0].properties.name}, ${countryName}`;
+
+            let population_exposed_percent = this.round(e.features[0].properties.exposed_population_percent);
+            if (isNaN(population_exposed_percent)) {
+                population_exposed_percent = '-';
+            }
+
+            new maplibregl.Popup()
+                .setLngLat(e.lngLat)
+                .setHTML(
+                    `<div class="card border-0">
+                        <div class="card-header text-bg-primary">
+                          <h5 class="text-white pe-3">${name}</h5>
+                        </div>
+
+                        <div class="card-body">
+                            <p class="p-txt-stats-description">
+                                Exposed population <strong></strong>
+                            </p>
+                            <div class="d-flex flex-row align-items-center">
+                                <p class="p-txt-stats-value-primary">${population_exposed_percent} %</p>
+                            </div>
+                        </div>
+                    </div>`,
+                )
+                .addTo(this._map);
+        },
+
         // ---
         // End: Boostrap UI methods
         // ---
+        round: utils.round,
     },
 
     /**
