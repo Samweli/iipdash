@@ -248,7 +248,7 @@
                                     value="cyclone"
                                     id="selected-hazard-type-cyclone"
                                     :checked="secondaryFilters.selectedHazardTypes.includes('cyclone')"
-                                    @change="handleSecondaryFiltersHazardTypeChecked('cyclone')">
+                                    @change="handleSecondaryFiltersHazardTypeChecked($event, 'cyclone')">
                                 <label
                                     class="form-check-label p-txt-14"
                                     for="selected-hazard-type-cyclone">
@@ -264,7 +264,7 @@
                                     value="flood"
                                     id="selected-hazard-type-flood"
                                     :checked="secondaryFilters.selectedHazardTypes.includes('flood')"
-                                    @change="handleSecondaryFiltersHazardTypeChecked('flood')">
+                                    @change="handleSecondaryFiltersHazardTypeChecked($event, 'flood')">
                                 <label
                                     class="form-check-label p-txt-14"
                                     for="selected-hazard-type-flood">
@@ -282,7 +282,7 @@
                                     value="drought"
                                     id="selected-hazard-type-drought"
                                     :checked="secondaryFilters.selectedHazardTypes.includes('drought')"
-                                    @change="handleSecondaryFiltersHazardTypeChecked('drought')">
+                                    @change="handleSecondaryFiltersHazardTypeChecked($event, 'drought')">
                                 <label
                                     class="form-check-label p-txt-14"
                                     for="selected-hazard-type-drought">
@@ -298,7 +298,7 @@
                                     value="heat"
                                     id="selected-hazard-type-heat"
                                     :checked="secondaryFilters.selectedHazardTypes.includes('heat')"
-                                    @change="handleSecondaryFiltersHazardTypeChecked('heat')">
+                                    @change="handleSecondaryFiltersHazardTypeChecked($event, 'heat')">
                                 <label
                                     class="form-check-label p-txt-14"
                                     for="selected-hazard-type-heat">
