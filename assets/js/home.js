@@ -161,6 +161,15 @@ const HomeDash = {
             this._map.addSource('electricity-networks', mapSources['electricity-networks']);
             this._map.addLayer(electricityNetworksLayer);
 
+            // Hazard exposure coverage layer
+            const exposureCoverageLayer = _.merge({}, maps.layers['exposure-coverage'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('exposure-coverage', mapSources['exposure-coverage']);
+            this._map.addLayer(exposureCoverageLayer);
+
             // Relative wealth index layer
             const relativeWealthIndexLayer = _.merge({}, maps.layers['relative-wealth-index'], {
                 layout: {
@@ -232,15 +241,6 @@ const HomeDash = {
             });
             this._map.addSource('mobile-coverage-4g', mapSources['mobile-coverage-4g']);
             this._map.addLayer(mobileCoverage4GLayer);
-
-            // Hazard exposure coverage layer
-            const exposureCoverageLayer = _.merge({}, maps.layers['exposure-coverage'], {
-                layout: {
-                    visibility: 'none',
-                },
-            });
-            this._map.addSource('exposure-coverage', mapSources['exposure-coverage']);
-            this._map.addLayer(exposureCoverageLayer);
 
             // add catalog raster layers
             for (const catalogLayer of this.catalogLayers) {
@@ -559,7 +559,7 @@ const HomeDash = {
                 this._map.getSource('mobile-coverage-4g').setTiles(mobileCoverage4gTilesURLs);
             }
 
-            // 1.4 Filter hazard exposure coverage layer i.e `exposure-coverage`
+            // 1.4 Update hazard exposure coverage layer i.e `exposure-coverage` lookup
             // based on current selected `country` and `region`
             if (!this.lookup.country && !this.lookup.administrative_area) {
                 exposureCoverageTileLookup.administrative_area_level = settings.ADMINISTRATIVE_AREAS_ROOT_LEVEL;

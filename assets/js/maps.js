@@ -789,7 +789,6 @@ const areasHazardsExposureLayer = {
     },
 };
 
-
 const mobileCoverage3GLayer = {
     id: 'mobile-coverage-3g',
     type: 'raster',

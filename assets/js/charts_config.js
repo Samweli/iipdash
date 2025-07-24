@@ -122,7 +122,6 @@ export const regionsMobileCoverage = {
     },
 };
 
-
 export const hazardExposureSummary = {
     type: 'bar',
     options: {
@@ -147,8 +146,6 @@ export const hazardExposureSummary = {
         },
     },
 };
-
-
 
 export const regionsHazardExposure = {
     type: 'scatter',
