@@ -28,10 +28,9 @@ gdal2tiles
 rasterio
 numpy<2.0
 
-# TODO: replace with direct "django-vectortiles" eventually
-# PYPI release doesn't include DRF renderers yet
-# https://github.com/submarcos/django-vectortiles/issues/20#issuecomment-1416927523
-django-vectortiles @ git+https://github.com/submarcos/django-vectortiles
+# django-vectortiles>1.0.2 causes error due to passing extra arguments (*args & **kwargs) to get_queryset()
+# https://github.com/submarcos/django-vectortiles/blob/d98530e0ff0f986520ab04fd2389e52f737e26a1/vectortiles/backends/__init__.py#L80
+django-vectortiles>=1.0.0,<=1.0.2
 
 celery
 flower
