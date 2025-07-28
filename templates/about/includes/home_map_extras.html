@@ -276,16 +276,87 @@
     {# Start: hazard exposure coverage legend #}
     <div class="mt-3" v-if="catalogSelectedLayers.includes('exposure-coverage')">
         <div class="p-txt-14-black fw-semibold">{% trans 'Hazards coverage' %}</div>
-        <div class="p-txt-12-muted">{% trans '% of population' %}</div>
 
+        {# Start: none #}
         <div class="d-flex align-items-center">
-            <div class="me-1 p-txt-12-black fw-medium">0</div>
             <div>
-                <img src="{% static '/images/legend-hazard-exposure-coverage.svg' %}"
+                <img src="{% static '/images/legend-hazard-exposure-coverage-none.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
-            <div class="ms-1 p-txt-12-black fw-medium">100</div>
+            <div class="ms-1 p-txt-12-black fw-medium">{% trans 'None' %}</div>
         </div>
+        {# End: none #}
+
+        {# Start: drought #}
+        <div class="d-flex align-items-center">
+            <div>
+                <img src="{% static '/images/legend-hazard-exposure-coverage-drought.svg' %}"
+                     class="img-fluid choropleth-img d-flex align-items-center">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Drought' %}</div>
+        </div>
+        {# End: drought #}
+
+        {# Start: flood #}
+        <div class="d-flex align-items-center">
+            <div>
+                <img src="{% static '/images/legend-hazard-exposure-coverage-flood.svg' %}"
+                     class="img-fluid choropleth-img d-flex align-items-center">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Flood' %}</div>
+        </div>
+        {# End: flood #}
+
+        {# Start: heat #}
+        <div class="d-flex align-items-center">
+            <div>
+                <img src="{% static '/images/legend-hazard-exposure-coverage-heat.svg' %}"
+                     class="img-fluid choropleth-img d-flex align-items-center">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Heat' %}</div>
+        </div>
+        {# End: heat #}
+
+        {# Start: Drought and flood #}
+        <div class="d-flex align-items-center">
+            <div>
+                <img src="{% static '/images/legend-hazard-exposure-coverage-drought-and-flood.svg' %}"
+                     class="img-fluid choropleth-img d-flex align-items-center">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Drought and flood' %}</div>
+        </div>
+        {# End: Drought and flood #}
+
+        {# Start: Drought and heat #}
+        <div class="d-flex align-items-center">
+            <div>
+                <img src="{% static '/images/legend-hazard-exposure-coverage-drought-and-heat.svg' %}"
+                     class="img-fluid choropleth-img d-flex align-items-center">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Drought and heat' %}</div>
+        </div>
+        {# End: Drought and heat #}
+
+        {# Start: Flood and heat #}
+        <div class="d-flex align-items-center">
+            <div>
+                <img src="{% static '/images/legend-hazard-exposure-coverage-flood-and-heat.svg' %}"
+                     class="img-fluid choropleth-img d-flex align-items-center">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Flood and heat' %}</div>
+        </div>
+        {# End: Flood and heat #}
+
+        {# Start: Drought, flood, and heat #}
+        <div class="d-flex align-items-center">
+            <div>
+                <img src="{% static '/images/legend-hazard-exposure-coverage-drought-flood-and-heat.svg' %}"
+                     class="img-fluid choropleth-img d-flex align-items-center">
+            </div>
+            <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Drought, flood, and heat' %}</div>
+        </div>
+        {# End: Drought, flood, and heat #}
+
     </div>
     {# End: hazard exposure coverage legend #}
 
