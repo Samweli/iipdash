@@ -221,3 +221,9 @@
     line-height: 1.3125; // ~ (21px / 16px )
     text-transform: uppercase;
 }
+
+.p-txt-stats-description-small {
+    @extend .p-txt, .fw-light, .fs-14;
+    line-height: 1.3125; // ~ (21px / 16px )
+    text-transform: uppercase;
+}
