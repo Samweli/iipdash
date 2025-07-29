@@ -16,21 +16,24 @@
         </p>
 
         {# Start: statistics rectangle #}
-        <div class="my-4 d-flex d-flex align-items-center">
+        <div class="my-4">
+            <div class="d-flex d-flex align-items-center">
 
-            <div class="mb-3 col-sm-9" style="height: 50px">
-                <canvas id="hazard-exposure-summary-chart"></canvas>
-                <p class="p-txt-stats-description-small">
-                    {% trans "Population exposed to selected hazards" %}
-                </p>
+                <div class="col-sm-9" style="height: 50px">
+                    <canvas id="hazard-exposure-summary-chart"></canvas>
+                </div>
+
+                <div class="">
+                    <p class="h2 fw-bold text-primary ms-3 text-nowrap">
+                        <span v-text="round(hazardExposureAggregates[`${secondaryFilters.selectedPopulationExposed}`])"></span> %
+                    </p>
+                </div>
+
             </div>
 
-            <div class="">
-                <p class="h2 fw-bold text-primary ms-3 text-nowrap">
-                    <span v-text="round(hazardExposureAggregates[`${secondaryFilters.selectedPopulationExposed}`])"></span> %
-                </p>
-            </div>
-
+            <p class="p-txt-stats-description-small text-secondary my-2">
+                {% trans "Population exposed to selected hazards" %}
+            </p>
         </div>
         <hr class="border-secondary border-2">
         {# End: statistics rectangle #}
