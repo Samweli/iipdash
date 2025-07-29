@@ -143,6 +143,67 @@ const HomeDash = {
         addMapLayers: async function () {
             const mapSources = await maps.getSources();
 
+            // Hazard exposure coverage layer
+            const exposureCoverageLayer = _.merge({}, maps.layers['exposure-coverage'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('exposure-coverage', mapSources['exposure-coverage']);
+            this._map.addLayer(exposureCoverageLayer);
+
+            // 3G mobile coverage layer
+            const mobileCoverage3GLayer = _.merge({}, maps.layers['mobile-coverage-3g'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('mobile-coverage-3g', mapSources['mobile-coverage-3g']);
+            this._map.addLayer(mobileCoverage3GLayer);
+
+            // 4G mobile coverage layer
+            const mobileCoverage4GLayer = _.merge({}, maps.layers['mobile-coverage-4g'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('mobile-coverage-4g', mapSources['mobile-coverage-4g']);
+            this._map.addLayer(mobileCoverage4GLayer);
+
+            // add catalog raster layers
+            for (const catalogLayer of this.catalogLayers) {
+                if (catalogLayer.tms_url) {
+                    const newLayer = {
+                        id: catalogLayer.code,
+                        type: 'raster',
+                        source: catalogLayer.code,
+                        minzoom: maps.defaultMinZoom,
+                        maxzoom: maps.defaultMaxZoom,
+                        layout: {
+                            visibility: 'none',
+                        },
+                    };
+
+                    this._map.addSource(catalogLayer.code, mapSources[catalogLayer.code]);
+                    this._map.addLayer(newLayer);
+                }
+            }
+
+            // mobile and fixed internet speed layer (choropleth)
+            const areasInternetSpeedMobile = _.merge({}, maps.layers['areas-internet-speed-mobile'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            const areasInternetSpeedFixed = _.merge({}, maps.layers['areas-internet-speed-fixed'], {
+                layout: {
+                    visibility: 'none',
+                },
+            });
+            this._map.addSource('areas-internet-speed', mapSources['areas-internet-speed']);
+            this._map.addLayer(areasInternetSpeedMobile);
+            this._map.addLayer(areasInternetSpeedFixed);
+
             // Fiber optics layer
             const fiberOpticsLayer = _.merge({}, maps.layers['fiber-optics'], {
                 layout: {
@@ -160,15 +221,6 @@ const HomeDash = {
             });
             this._map.addSource('electricity-networks', mapSources['electricity-networks']);
             this._map.addLayer(electricityNetworksLayer);
-
-            // Hazard exposure coverage layer
-            const exposureCoverageLayer = _.merge({}, maps.layers['exposure-coverage'], {
-                layout: {
-                    visibility: 'none',
-                },
-            });
-            this._map.addSource('exposure-coverage', mapSources['exposure-coverage']);
-            this._map.addLayer(exposureCoverageLayer);
 
             // Relative wealth index layer
             const relativeWealthIndexLayer = _.merge({}, maps.layers['relative-wealth-index'], {
@@ -223,58 +275,6 @@ const HomeDash = {
             });
             this._map.addSource('cell-towers', mapSources['cell-towers']);
             this._map.addLayer(cellTowersLayer);
-
-            // 3G mobile coverage layer
-            const mobileCoverage3GLayer = _.merge({}, maps.layers['mobile-coverage-3g'], {
-                layout: {
-                    visibility: 'none',
-                },
-            });
-            this._map.addSource('mobile-coverage-3g', mapSources['mobile-coverage-3g']);
-            this._map.addLayer(mobileCoverage3GLayer);
-
-            // 4G mobile coverage layer
-            const mobileCoverage4GLayer = _.merge({}, maps.layers['mobile-coverage-4g'], {
-                layout: {
-                    visibility: 'none',
-                },
-            });
-            this._map.addSource('mobile-coverage-4g', mapSources['mobile-coverage-4g']);
-            this._map.addLayer(mobileCoverage4GLayer);
-
-            // add catalog raster layers
-            for (const catalogLayer of this.catalogLayers) {
-                if (catalogLayer.tms_url) {
-                    const newLayer = {
-                        id: catalogLayer.code,
-                        type: 'raster',
-                        source: catalogLayer.code,
-                        minzoom: maps.defaultMinZoom,
-                        maxzoom: maps.defaultMaxZoom,
-                        layout: {
-                            visibility: 'none',
-                        },
-                    };
-
-                    this._map.addSource(catalogLayer.code, mapSources[catalogLayer.code]);
-                    this._map.addLayer(newLayer);
-                }
-            }
-
-            // mobile and fixed internet speed layer (choropleth)
-            const areasInternetSpeedMobile = _.merge({}, maps.layers['areas-internet-speed-mobile'], {
-                layout: {
-                    visibility: 'none',
-                },
-            });
-            const areasInternetSpeedFixed = _.merge({}, maps.layers['areas-internet-speed-fixed'], {
-                layout: {
-                    visibility: 'none',
-                },
-            });
-            this._map.addSource('areas-internet-speed', mapSources['areas-internet-speed']);
-            this._map.addLayer(areasInternetSpeedMobile);
-            this._map.addLayer(areasInternetSpeedFixed);
 
             // country boundaries layer
             this._map.addSource(maps.layers.countries.id, mapSources.countries);
