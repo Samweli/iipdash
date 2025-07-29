@@ -263,6 +263,7 @@ const HazardDash = {
          * - Set current selected region
          */
         updateData: async function () {
+
             // Update selected country
             if (this.lookup.country) {
                 this.selectedCountry = _.find(this.countries.features, ['properties.country', this.lookup.country]);
@@ -270,9 +271,14 @@ const HazardDash = {
                 this.selectedCountry = null;
             }
 
-            // Update selected region
+            // Update selected region, if there is no selected country then also update the country selection
             if (this.lookup.administrative_area) {
                 this.selectedRegion = _.find(this.regions.features, { id: this.lookup.administrative_area });
+                if(!this.lookup.country){
+                    this.lookup.country = this.selectedRegion.properties.country;
+                    this.selectedCountry = _.find(this.countries.features, ['properties.country', this.lookup.country]);
+                    this.regionOptions.features = _.filter(this.regions.features, ['properties.country', this.lookup.country]);
+                }
             } else {
                 this.selectedRegion = null;
             }
@@ -399,6 +405,9 @@ const HazardDash = {
          * - Toggle underlying data layers visibility when `summaryLayerActive` toggled to `false`
          */
         updateMapUnderlyingDataLayers: async function () {
+            // Update summary layer with available filters first
+            await this.handleHazardsExposureLayerFilter();
+
             // Lookup for hazard exposure coverage layer i.e `exposure-coverage`
             const exposureCoverageTileLookup = {};
 
@@ -457,7 +466,6 @@ const HazardDash = {
                 this._map.setLayoutProperty('population-density-hd', 'visibility', 'visible');
                 this._map.setLayoutProperty('exposure-coverage', 'visibility', 'visible');
             }
-            await this.handleHazardsExposureLayerFilter();
         },
 
         /**
