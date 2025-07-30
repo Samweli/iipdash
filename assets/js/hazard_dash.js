@@ -14,12 +14,7 @@ const HAZARD_TYPES = ['cyclone', 'flood', 'drought', 'heat'];
 const URBANICITY_TYPE_ALL = '';
 
 const POPULATION_EXPOSED_PERCENT = 'population_exposed_percent';
-
-// exposure coverage:
-// - add hazard exposure legend (fix colors/legend image)
-// - filter in hazard_dash
-// - filter in home_dash
-// - rename legend svg to hazard exposure coverage
+const UNDERLYING_DATA_LAYERS = ['relative-wealth-index', 'population-density-hd', 'exposure-coverage'];
 
 /**
  *  HazardDash Vue application.
@@ -42,6 +37,7 @@ const HazardDash = {
                 administrative_area: '',
                 country: '',
             },
+            underlyingDataSelectedLayers: [...UNDERLYING_DATA_LAYERS],
             countries: { features: [] },
             countriesLookup: {},
             regions: { features: [] },
@@ -263,7 +259,6 @@ const HazardDash = {
          * - Set current selected region
          */
         updateData: async function () {
-
             // Update selected country
             if (this.lookup.country) {
                 this.selectedCountry = _.find(this.countries.features, ['properties.country', this.lookup.country]);
@@ -274,10 +269,13 @@ const HazardDash = {
             // Update selected region, if there is no selected country then also update the country selection
             if (this.lookup.administrative_area) {
                 this.selectedRegion = _.find(this.regions.features, { id: this.lookup.administrative_area });
-                if(!this.lookup.country){
+                if (!this.lookup.country) {
                     this.lookup.country = this.selectedRegion.properties.country;
                     this.selectedCountry = _.find(this.countries.features, ['properties.country', this.lookup.country]);
-                    this.regionOptions.features = _.filter(this.regions.features, ['properties.country', this.lookup.country]);
+                    this.regionOptions.features = _.filter(this.regions.features, [
+                        'properties.country',
+                        this.lookup.country,
+                    ]);
                 }
             } else {
                 this.selectedRegion = null;
@@ -390,6 +388,45 @@ const HazardDash = {
         },
 
         /**
+         * Toggle map data layers visibility based on `underlyingDataSelectedLayers`
+         * and `summaryLayerActive`
+         *
+         * This:
+         *
+         * - Set/unset visibility of `areas-hazards-exposure` layer
+         * - Set/unset visibility of `relative-wealth-index` layer
+         * - Set/unset visibility of `population-density-hd` data layers
+         * - Set/unset visibility of `exposure-coverage` data layers
+         *
+         */
+        updateMapDataLayersVisibility: async function () {
+            const underlyingDataLayers = [...UNDERLYING_DATA_LAYERS];
+
+            if (this.summaryLayerActive) {
+                // make areas hazards exposure layer visible
+                this._map.setLayoutProperty('areas-hazards-exposure', 'visibility', 'visible');
+
+                // make underlying data layers invisible
+                underlyingDataLayers.forEach((underlyingDataLayer) => {
+                    this._map.setLayoutProperty(underlyingDataLayer, 'visibility', 'none');
+                });
+            } else {
+                // make areas hazards exposure layer invisible
+                this._map.setLayoutProperty('areas-hazards-exposure', 'visibility', 'none');
+
+                // make underlying data layer visible
+                // if its selected, otherwise invisible
+                underlyingDataLayers.forEach((underlyingDataLayer) => {
+                    if (this.underlyingDataSelectedLayers.includes(underlyingDataLayer)) {
+                        this._map.setLayoutProperty(underlyingDataLayer, 'visibility', 'visible');
+                    } else {
+                        this._map.setLayoutProperty(underlyingDataLayer, 'visibility', 'none');
+                    }
+                });
+            }
+        },
+
+        /**
          * Update (set or unset) map filters and visibilities to control underlying data layers.
          *
          * Controlled layers are:
@@ -455,17 +492,7 @@ const HazardDash = {
             this._map.getSource('exposure-coverage').setTiles(exposureCoverageTilesUrls);
 
             // Toggle underlying data layers visibility when `summaryLayerActive` toggled to `false`
-            if (this.summaryLayerActive) {
-                this._map.setLayoutProperty('areas-hazards-exposure', 'visibility', 'visible');
-                this._map.setLayoutProperty('relative-wealth-index', 'visibility', 'none');
-                this._map.setLayoutProperty('population-density-hd', 'visibility', 'none');
-                this._map.setLayoutProperty('exposure-coverage', 'visibility', 'none');
-            } else {
-                this._map.setLayoutProperty('areas-hazards-exposure', 'visibility', 'none');
-                this._map.setLayoutProperty('relative-wealth-index', 'visibility', 'visible');
-                this._map.setLayoutProperty('population-density-hd', 'visibility', 'visible');
-                this._map.setLayoutProperty('exposure-coverage', 'visibility', 'visible');
-            }
+            await this.updateMapDataLayersVisibility();
         },
 
         /**
@@ -653,12 +680,13 @@ const HazardDash = {
          *
          * - Set/unset visibility of summary layer
          * - Set/unset visibility of underlying data layers
+         * - Reset `underlyingDataSelectedLayers` to all underlying data layers
          */
         handleSummaryLayerToggled: async function () {
-            // TODO: ensure 'areas-hazard' layer is loaded
             const summaryVisibility = this._map.getLayoutProperty('areas-hazards-exposure', 'visibility');
             if (summaryVisibility === 'visible') {
                 this.summaryLayerActive = false;
+                this.underlyingDataSelectedLayers = [...UNDERLYING_DATA_LAYERS];
                 await this.updateMapUnderlyingDataLayers();
             } else {
                 this.summaryLayerActive = true;
@@ -680,6 +708,29 @@ const HazardDash = {
             // Check if the 'details' tab is now active
             const selectedTabId = event?.target?.id;
             this.mapSidebarTabsDetailsTabActive = selectedTabId === 'tab-link-details';
+        },
+
+        /**
+         * Handle underlying data layer checked once a checkbox checked or unchecked
+         *
+         * This:
+         *
+         * - Set/unset visibility of `relative-wealth-index` layer
+         * - Set/unset visibility of `population-density-hd` data layers
+         * - Set/unset visibility of `exposure-coverage` data layers
+         *
+         */
+        handleUnderlyingDataLayerChecked: async function (underlyingDataLayer) {
+            // Collect and update underlying data selected layers
+            const index = this.underlyingDataSelectedLayers.indexOf(underlyingDataLayer);
+            if (index === -1) {
+                this.underlyingDataSelectedLayers.push(underlyingDataLayer);
+            } else {
+                this.underlyingDataSelectedLayers.splice(index, 1);
+            }
+
+            // Set/unset visibility of underlying data layers
+            await this.updateMapDataLayersVisibility();
         },
 
         /**

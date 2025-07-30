@@ -62,11 +62,6 @@
                 for="selected-hazard-exposure">
                 {% trans 'Hazards exposure' %}
             </label>
-            <input
-                class="form-check-input float-none ms-2"
-                type="radio"
-                id="selected-hazard-exposure"
-                :checked="summaryLayerActive">
         </div>
         <div class="p-txt-12-muted">{% trans '% of population' %}</div>
 
@@ -91,9 +86,10 @@
             </label>
             <input
                 class="form-check-input float-none ms-2"
-                type="radio"
+                type="checkbox"
                 id="selected-hazard-exposure-coverage"
-                :checked="!summaryLayerActive">
+                :checked="underlyingDataSelectedLayers.includes('exposure-coverage')"
+                @change="handleUnderlyingDataLayerChecked('exposure-coverage')">
         </div>
 
         {# Start: none #}
@@ -189,9 +185,10 @@
             </label>
             <input
                 class="form-check-input float-none ms-2"
-                type="radio"
+                type="checkbox"
                 id="selected-population-density"
-                :checked="!summaryLayerActive">
+                :checked="underlyingDataSelectedLayers.includes('population-density-hd')"
+                @change="handleUnderlyingDataLayerChecked('population-density-hd')">
         </div>
         <div class="p-txt-12-muted">{% trans 'Count per 30m<sup>2</sup>' %}</div>
 
@@ -216,9 +213,10 @@
             </label>
             <input
                 class="form-check-input float-none ms-2"
-                type="radio"
+                type="checkbox"
                 id="selected-relative-wealth"
-                :checked="!summaryLayerActive">
+                :checked="underlyingDataSelectedLayers.includes('relative-wealth-index')"
+                @change="handleUnderlyingDataLayerChecked('relative-wealth-index')">
         </div>
         <div class="p-txt-12-muted">{% trans 'Per 2.4km<sup>2</sup>' %}</div>
 
