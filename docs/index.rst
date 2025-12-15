@@ -11,9 +11,10 @@ Welcome to IIP Dashboard documentation!
    :caption: Content:
 
    readme
-   ref/modules
+   installation
    contributing
    admin_guide
+   IIPDash Modules <ref/modules>
 
 
 Indices and tables
