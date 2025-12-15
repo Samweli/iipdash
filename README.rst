@@ -255,8 +255,11 @@ To automatically sort imports, use isort_
 
 Docker Installation
 ===================
-IIPDash development can be setup using Docker. This approach simplifies 
-setup by containerizing all application dependencies and services.
+Using Docker to install IIPDash is the recommended way for most users, as it requires
+minimal setup and works consistently across systems.
+
+The IIPDash project already contains Docker configurations enabling it to be setup using Docker for development and production.
+This approach simplifies setup by containerizing all application dependencies and services.
 
 The following are instructions on how to install IIPdash using Docker.
 
@@ -281,20 +284,20 @@ If docker and docker compose are all installed and setup properly, the above com
 .. code:: bash
 
     docker --version
-    Docker version {version}, build {build_id}
+    Docker version `version`, build `build_id`
 
     docker compose --version
-    Docker Compose version {version}
+    Docker Compose version `version`
 
 
 Development with Docker Compose
 --------------------------------
 
-For local development using Docker, use the development configuration:
+For local development using Docker, use the folllowing configurations and setup:
 
-Make sure to run the below docker command at the project root. 
+Make sure to run the below docker commands at the project root. 
 
-The command builds all necessary Docker images, creates containers for each service and finally starts all services.
+The following command builds all necessary Docker images, creates containers for each service and finally starts all services.
 Make sure to have internet connection on when running the below command for the first time. This is because the command will
 fetch Docker base images from Docker Hub and Python packages from PyPI and install some system packages.
 
@@ -338,7 +341,11 @@ After successfully running the above command the following services should be up
      - 7379
      - 6379
 
-Accessing  `0.0.0.0:8000` will provide the main application landing page.
+When the application starts successfully:
+
+- Open http://0.0.0.0:8000 in your browser
+- You should see the IIPDash landing page
+- Admin interface is available at http://0.0.0.0:8000/admin
 
 
 **Running Commands in Development Container:**
@@ -413,6 +420,18 @@ Then run it with custom settings:
         -e DEBUG=False \
         -e SECRET_KEY=your-secret-key \
         iipdash:latest
+
+Common Issues
+-------------
+
+- Port `number` already in use:
+  Stop the application and edit docker configuration files to use a different port.
+
+- Docker command not found:
+  Ensure Docker is installed and restarted.
+
+- Page does not load:
+  Check that containers are running using `docker compose ps` command.
 
 
 
