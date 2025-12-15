@@ -253,6 +253,188 @@ To automatically sort imports, use isort_
     isort .
 
 
+Docker Installation
+===================
+Using Docker to install IIPDash is the recommended way for most users, as it requires
+minimal setup and works consistently across systems.
+
+The IIPDash project already contains Docker configurations enabling it to be setup using Docker for development and production.
+This approach simplifies setup by containerizing all application dependencies and services.
+
+The following are instructions on how to install IIPdash using Docker.
+
+Prerequisites
+-------------
+
+Docker and Docker Compose should be installed on your system.
+
+
+- `Install Docker <https://docs.docker.com/get-docker/>`_
+- `Install Docker Compose <https://docs.docker.com/compose/install/>`_
+
+To verify installation:
+
+.. code:: bash
+
+    docker --version
+    docker compose --version
+
+If docker and docker compose are all installed and setup properly, the above commands should display the following respectively
+
+.. code:: bash
+
+    docker --version
+    Docker version `version`, build `build_id`
+
+    docker compose --version
+    Docker Compose version `version`
+
+
+Development with Docker Compose
+--------------------------------
+
+For local development using Docker, use the folllowing configurations and setup:
+
+Make sure to run the below docker commands at the project root. 
+
+The following command builds all necessary Docker images, creates containers for each service and finally starts all services.
+Make sure to have internet connection on when running the below command for the first time. This is because the command will
+fetch Docker base images from Docker Hub and Python packages from PyPI and install some system packages.
+
+
+.. code:: bash
+
+    docker compose -f docker-compose-development.yaml up --build
+
+After successfully running the above command the following services should be up and running.
+
+.. list-table:: Services and Port Mapping
+   :header-rows: 1
+   :widths: 25 35 15 15
+
+   * - Service
+     - Purpose
+     - Port on Host
+     - Port in Container
+   * - iipdash-dev-django
+     - Main application
+     - 8000
+     - 8000
+   * - iipdash-dev-docs
+     - Sphinx documentation
+     - 9000
+     - 9000
+   * - iipdash-dev-pg
+     - Development database
+     - 6432
+     - 5432
+   * - iipdash-test-pg
+     - Testing database
+     - 7432
+     - 5432
+   * - iipdash-dev-rabbitmq
+     - Message broker (AMQP)
+     - 6672
+     - 5672
+   * - iipdash-dev-redis
+     - Cache
+     - 7379
+     - 6379
+
+When the application starts successfully:
+
+- Open http://0.0.0.0:8000 in your browser
+- You should see the IIPDash landing page
+- Admin interface is available at http://0.0.0.0:8000/admin
+
+
+**Running Commands in Development Container:**
+
+After successfully starting the IIPDash services and they are up and running. Run the below commands to apply migrations, 
+prepare database with superusers and run tests before using the application.
+
+
+.. code:: bash
+
+    # Run migrations
+    docker compose -f docker-compose-development.yaml exec iipdash-dev-django ./manage.py migrate
+
+    # Create superuser
+    docker compose -f docker-compose-development.yaml exec iipdash-dev-django ./manage.py createsuperuser
+
+    # Run tests (Optional)
+    docker compose -f docker-compose-development.yaml exec iipdash-dev-django ./manage.py test apps
+
+    # Start Celery worker
+    docker compose -f docker-compose-development.yaml exec iipdash-dev-django celery -A iipdash worker -l info
+
+Remember to pass the target docker compose configuration file eg. `docker-compose-development.yaml`. This will ensure docker compose
+uses the correct docker configurations to create and access the required services.
+
+**Stopping the Development Server:**
+
+Use the below docker compose command to stop running services.
+
+.. code:: bash
+
+    docker compose -f docker-compose-development.yaml down
+
+To remove volumes (database data):
+
+.. code:: bash
+
+    docker compose -f docker-compose-development.yaml down -v
+
+
+Viewing Logs
+____________
+
+View logs from all services:
+
+.. code:: bash
+
+    docker compose logs -f
+
+View logs from a specific service:
+
+.. code:: bash
+
+    docker compose logs -f iipdash-dev-django
+
+
+Building Docker Image Manually
+______________________________
+
+
+If you want to build the Docker image without starting containers:
+
+.. code:: bash
+
+    docker build -f docker/Dockerfile -t iipdash:latest .
+
+Then run it with custom settings:
+
+.. code:: bash
+
+    docker run -p 8000:8000 \
+        -e DEBUG=False \
+        -e SECRET_KEY=your-secret-key \
+        iipdash:latest
+
+Common Issues
+-------------
+
+- Port `number` already in use:
+  Stop the application and edit docker configuration files to use a different port.
+
+- Docker command not found:
+  Ensure Docker is installed and restarted.
+
+- Page does not load:
+  Check that containers are running using `docker compose ps` command.
+
+
+
 Deployment
 ==========
 
