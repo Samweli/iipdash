@@ -13,6 +13,7 @@ References:
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as CoreUserAdmin
 
+from .forms import AdminUserCreationForm
 from .models import User
 
 
@@ -37,3 +38,14 @@ class UserAdmin(CoreUserAdmin):
     #: :class:`django.contrib.auth.admin.UserAdmin` to include an additional
     #: section for the `uuid` field.
     fieldsets: tuple = CoreUserAdmin.fieldsets + (("Additional info", {"fields": ["uuid"]}),)
+
+    add_form = AdminUserCreationForm
+    add_fieldsets = (
+        (
+            None,
+            {
+                "classes": ("wide",),
+                "fields": ("email", "username", "password1", "password2"),
+            },
+        ),
+    )
