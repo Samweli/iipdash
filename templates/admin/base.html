@@ -1,0 +1,33 @@
+{% extends 'admin/base.html' %}
+
+{% block extrastyle %}{{ block.super }}
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&display=swap');
+
+    html[data-theme="light"], :root {
+      --primary: #5a91ff;
+      --secondary: #007FFF;
+      --button-bg: #5a91ff;
+      --default-button-bg: #007FFF;
+      --button-hover-bg: #006ad5;
+      --breadcrumbs-bg: #5a91ff;
+      --link-fg: #363636;
+      --link-hover-color: var(--secondary);
+      --selected-row: #dae1ff;
+      --object-tools-bg: var(--secondary);
+      --object-tools-hover-bg: var(--button-hover-bg);
+      --font-family-primary: 'DM Sans', sans-serif;
+    }
+
+    #site-name {
+        font-family: 'DM Serif Display', serif;
+        font-weight: 400;
+        font-size: 1.25rem;
+        line-height: 1.35;
+    }
+
+    #site-name a:link, #site-name a:visited {
+        color: #fff;
+    }
+</style>
+{% endblock %}
