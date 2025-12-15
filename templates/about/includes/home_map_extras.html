@@ -47,7 +47,7 @@
         <div class="d-flex align-items-center">
             <div class="me-1 p-txt-12-black fw-medium">0</div>
             <div>
-                <img src="{% static '/images/legend-population-density-hd.svg' %}"
+                <img src="{% static 'images/legend-population-density-hd.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">30+</div>
@@ -63,7 +63,7 @@
         <div class="d-flex align-items-center">
             <div class="me-1 p-txt-12-black fw-medium">Min</div>
             <div>
-                <img src="{% static '/images/legend-relative-wealth-index.svg' %}"
+                <img src="{% static 'images/legend-relative-wealth-index.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">Max</div>
@@ -79,7 +79,7 @@
         <div class="d-flex align-items-center">
             <div class="me-1 p-txt-12-black fw-medium">Min</div>
             <div>
-                <img src="{% static '/images/legend-cyclone-risk.svg' %}"
+                <img src="{% static 'images/legend-cyclone-risk.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">Max</div>
@@ -95,7 +95,7 @@
         <div class="d-flex align-items-center">
             <div class="me-1 p-txt-12-black fw-medium">Min</div>
             <div>
-                <img src="{% static '/images/legend-seismic-hazards.svg' %}"
+                <img src="{% static 'images/legend-seismic-hazards.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">Max</div>
@@ -111,7 +111,7 @@
         <div class="d-flex align-items-center">
             <div class="me-1 p-txt-12-black fw-medium">Min</div>
             <div>
-                <img src="{% static '/images/legend-areas-internet-speed-fixed.svg' %}"
+                <img src="{% static 'images/legend-areas-internet-speed-fixed.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">Max</div>
@@ -127,7 +127,7 @@
         <div class="d-flex align-items-center">
             <div class="me-1 p-txt-12-black fw-medium">Min</div>
             <div>
-                <img src="{% static '/images/legend-areas-internet-speed-mobile.svg' %}"
+                <img src="{% static 'images/legend-areas-internet-speed-mobile.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">Max</div>
@@ -143,7 +143,7 @@
         <div class="d-flex align-items-center">
             <div class="me-1 p-txt-12-black fw-medium">Min</div>
             <div>
-                <img src="{% static '/images/legend-cell-towers.svg' %}"
+                <img src="{% static 'images/legend-cell-towers.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">Max</div>
@@ -155,7 +155,7 @@
     <div class="mt-3" v-if="catalogSelectedLayers.includes('fiber-optics')">
         <div class="d-flex align-items-center">
             <div class="me-2">
-                <img src="{% static '/images/legend-fiber-optics.svg' %}"
+                <img src="{% static 'images/legend-fiber-optics.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="p-txt-14-black fw-semibold">{% trans 'Fiber cable' %}</div>
@@ -167,7 +167,7 @@
     <div class="mt-3" v-if="catalogSelectedLayers.includes('electricity-networks')">
         <div class="d-flex align-items-center">
             <div class="me-2">
-                <img src="{% static '/images/legend-electricity-networks.svg' %}"
+                <img src="{% static 'images/legend-electricity-networks.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="p-txt-14-black fw-semibold">{% trans 'Transmission line' %}</div>
@@ -179,7 +179,7 @@
     <div class="mt-3" v-if="catalogSelectedLayers.includes('health-facilities')">
         <div class="d-flex align-items-center">
             <div class="me-2">
-                <img src="{% static '/images/legend-health-facilities.svg' %}"
+                <img src="{% static 'images/legend-health-facilities.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="p-txt-14-black fw-semibold">{% trans 'Healthcare facility' %}</div>
@@ -191,7 +191,7 @@
     <div class="mt-3" v-if="catalogSelectedLayers.includes('fiber-nodes')">
         <div class="d-flex align-items-center">
             <div class="me-2">
-                <img src="{% static '/images/legend-fiber-nodes.svg' %}"
+                <img src="{% static 'images/legend-fiber-nodes.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="p-txt-14-black fw-semibold">{% trans 'Fiber-optic node' %}</div>
@@ -203,7 +203,7 @@
     <div class="mt-3" v-if="catalogSelectedLayers.includes('education-institutions')">
         <div class="d-flex align-items-center">
             <div class="me-2">
-                <img src="{% static '/images/legend-education-institutions.svg' %}"
+                <img src="{% static 'images/legend-education-institutions.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="p-txt-14-black fw-semibold">{% trans 'School location' %}</div>
@@ -215,7 +215,7 @@
     <div class="mt-3" v-if="catalogSelectedLayers.includes('mobile-coverage-2g')">
         <div class="d-flex align-items-center">
             <div class="me-2">
-                <img src="{% static '/images/legend-mobile-coverage-2g.svg' %}"
+                <img src="{% static 'images/legend-mobile-coverage-2g.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="p-txt-14-black fw-semibold">{% trans 'Mobile coverage (2G)' %}</div>
@@ -227,7 +227,7 @@
     <div class="mt-3" v-if="catalogSelectedLayers.includes('mobile-coverage-3g')">
         <div class="d-flex align-items-center">
             <div class="me-2">
-                <img src="{% static '/images/legend-mobile-coverage-3g.svg' %}"
+                <img src="{% static 'images/legend-mobile-coverage-3g.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="p-txt-14-black fw-semibold">{% trans 'Mobile coverage (3G)' %}</div>
@@ -239,7 +239,7 @@
     <div class="mt-3" v-if="catalogSelectedLayers.includes('mobile-coverage-4g')">
         <div class="d-flex align-items-center">
             <div class="me-2">
-                <img src="{% static '/images/legend-mobile-coverage-4g.svg' %}"
+                <img src="{% static 'images/legend-mobile-coverage-4g.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="p-txt-14-black fw-semibold">{% trans 'Mobile coverage (4G)' %}</div>
@@ -251,7 +251,7 @@
     <div class="mt-3" v-if="catalogSelectedLayers.includes('flooding-fluvial')">
         <div class="d-flex align-items-center">
             <div class="me-2">
-                <img src="{% static '/images/legend-flooding-fluvial.svg' %}"
+                <img src="{% static 'images/legend-flooding-fluvial.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="p-txt-14-black fw-semibold">{% trans 'Flooding (fluvial)' %}</div>
@@ -264,7 +264,7 @@
     <div class="mt-3" v-if="catalogSelectedLayers.includes('flooding-pluvial')">
         <div class="d-flex align-items-center">
             <div class="me-2">
-                <img src="{% static '/images/legend-flooding-pluvial.svg' %}"
+                <img src="{% static 'images/legend-flooding-pluvial.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="p-txt-14-black fw-semibold">{% trans 'Flooding (pluvial)' %}</div>
@@ -280,7 +280,7 @@
         {# Start: none #}
         <div class="d-flex align-items-center">
             <div>
-                <img src="{% static '/images/legend-hazard-exposure-coverage-none.svg' %}"
+                <img src="{% static 'images/legend-hazard-exposure-coverage-none.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">{% trans 'None' %}</div>
@@ -290,7 +290,7 @@
         {# Start: drought #}
         <div class="d-flex align-items-center">
             <div>
-                <img src="{% static '/images/legend-hazard-exposure-coverage-drought.svg' %}"
+                <img src="{% static 'images/legend-hazard-exposure-coverage-drought.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Drought' %}</div>
@@ -300,7 +300,7 @@
         {# Start: flood #}
         <div class="d-flex align-items-center">
             <div>
-                <img src="{% static '/images/legend-hazard-exposure-coverage-flood.svg' %}"
+                <img src="{% static 'images/legend-hazard-exposure-coverage-flood.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Flood' %}</div>
@@ -310,7 +310,7 @@
         {# Start: heat #}
         <div class="d-flex align-items-center">
             <div>
-                <img src="{% static '/images/legend-hazard-exposure-coverage-heat.svg' %}"
+                <img src="{% static 'images/legend-hazard-exposure-coverage-heat.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Heat' %}</div>
@@ -320,7 +320,7 @@
         {# Start: Drought and flood #}
         <div class="d-flex align-items-center">
             <div>
-                <img src="{% static '/images/legend-hazard-exposure-coverage-drought-and-flood.svg' %}"
+                <img src="{% static 'images/legend-hazard-exposure-coverage-drought-and-flood.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Drought and flood' %}</div>
@@ -330,7 +330,7 @@
         {# Start: Drought and heat #}
         <div class="d-flex align-items-center">
             <div>
-                <img src="{% static '/images/legend-hazard-exposure-coverage-drought-and-heat.svg' %}"
+                <img src="{% static 'images/legend-hazard-exposure-coverage-drought-and-heat.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Drought and heat' %}</div>
@@ -340,7 +340,7 @@
         {# Start: Flood and heat #}
         <div class="d-flex align-items-center">
             <div>
-                <img src="{% static '/images/legend-hazard-exposure-coverage-flood-and-heat.svg' %}"
+                <img src="{% static 'images/legend-hazard-exposure-coverage-flood-and-heat.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Flood and heat' %}</div>
@@ -350,7 +350,7 @@
         {# Start: Drought, flood, and heat #}
         <div class="d-flex align-items-center">
             <div>
-                <img src="{% static '/images/legend-hazard-exposure-coverage-drought-flood-and-heat.svg' %}"
+                <img src="{% static 'images/legend-hazard-exposure-coverage-drought-flood-and-heat.svg' %}"
                      class="img-fluid choropleth-img d-flex align-items-center">
             </div>
             <div class="ms-1 p-txt-12-black fw-medium">{% trans 'Drought, flood, and heat' %}</div>
