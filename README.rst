@@ -22,7 +22,7 @@ Its goal is to demonstrate the value of IIPs in guiding decisions that serve reg
 
 *Example: Platform preview*
 
-.. image:: _static/images/iipdash-platform-review.png
+.. image:: docs/_static/images/iipdash-platform-review.png
    :alt: Dashboard preview
 
 
@@ -39,7 +39,7 @@ Features
 
 *Example: Country education dashboard*
 
-.. image:: _static/images/iipdash-schools-connectivity.png
+.. image:: docs/_static/images/iipdash-schools-connectivity.png
    :alt: Dashboard visualization
 
 
@@ -51,7 +51,7 @@ Features
 
 *Example: Vulnerable communities*
 
-.. image:: _static/images/iipdash-vulnerable-communities.png
+.. image:: docs/_static/images/iipdash-vulnerable-communities.png
    :alt: Vulnerable communities
 
 
@@ -63,7 +63,7 @@ Features
 
 *Example: Gaps in digital access*
 
-.. image:: _static/images/iipdash-gaps-access.png
+.. image:: docs/_static/images/iipdash-gaps-access.png
     :alt: Gaps access
 
 
@@ -133,17 +133,16 @@ IIPDash is built on reliable, open-source technologies:
 Installation
 ============
 
-Information about installation, development and deployment can be found here :doc:`/installation`.
+Information about installation, development and deployment can be found here `<INSTALLATION.rst>`_
 
 
 Documentation
 =============
-A range of documentation is available see :doc:`/admin_guide` for the admin documentation 
-and `API link<http://digitalinfraplanning.org/openapi/docs>`__ for API docs.
+API documentation is available see http://digitalinfraplanning.org/openapi/docs.
 
 
 Contribution Guidelines
 =======================
-See :doc:`/contributing` for the contributing guidelines for this project.
+See `<CONTRIBUTING.rst>`_ for the contributing guidelines for this project.
 
 
