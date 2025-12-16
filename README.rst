@@ -22,7 +22,7 @@ Its goal is to demonstrate the value of IIPs in guiding decisions that serve reg
 
 *Example: Platform preview*
 
-.. image:: _static/images/iipdash-platform-review.png
+.. image:: docs/_static/images/iipdash-platform-review.png
    :alt: Dashboard preview
 
 
@@ -138,7 +138,7 @@ Information about installation, development and deployment can be found here `<I
 
 Documentation
 =============
-A range of documentation is available see :doc:`/admin_guide` for the admin documentation 
+A range of documentation is available see :doc:`/admin_guide`, `<docs/getting-started.rst>`__ for the admin documentation 
 and `API link<http://digitalinfraplanning.org/openapi/docs>`__ for API docs.
 
 
