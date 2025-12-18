@@ -1,0 +1,11 @@
+{% extends "admin/index.html" %}
+
+{% block content_subtitle %}
+    <p style="margin-bottom: 30px">
+        Use this portal to manage datasets, features, and users.
+        Please refer to your point of contact or
+        <a href="https://github.com/tehamalab/iipdash/blob/develop/docs/admin_guide.rst" style="color: var(--secondary)" target="_blank">this documentation</a>
+        for instructions.
+    </p>
+    {{ block.super }}
+{% endblock %}
