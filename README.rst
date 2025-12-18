@@ -88,16 +88,6 @@ Features
 - Supports collaboration among planners, GIS specialists, data managers and decision-makers.
 
 
-Data Sources & Licensing
-=======================
-
-- Most data layers are **publicly available**, while some are licensed.
-- Selecting a layer in the Home view provides metadata on **source, recency and coverage**.
-- Raw data has usually been minimally processed (cleaning or restructuring) for integration into IIPDash.
-- Summary statistics displayed on the platform are **pre-calculated by the World Bank**. Full-scale deployments could perform similar calculations in real time.
-- The platform source code is released under the **MIT/GPL open-source license**, enabling adaptation and reuse.
-
-
 Who Is IIPDash For?
 ==================
 
@@ -105,20 +95,6 @@ Who Is IIPDash For?
 - International development organizations seeking evidence-based insights.
 - Researchers and analysts in infrastructure, economics, or environmental planning.
 - NGOs and private sector partners supporting regional development initiatives.
-
-
-Why IIPDash Matters
-===================
-
-- Helps align infrastructure investments with national and regional development objectives.
-- Supports decision-making with clear, visual and interactive insights.
-- Encourages integrated planning by considering multiple sectors simultaneously.
-
-
-**Prototype scope:**  
-As a prototype covering three countries, it is limited by the quality and recency of the available data.
-While all efforts have been made to ensure accurate data, some features and datasets may be incomplete or missing.
-
 
 Implementation Overview
 =======================
