@@ -16,12 +16,11 @@ from pathlib import Path
 import django
 
 import sphinx_rtd_theme  # noqa: F401
+from docutils.parsers.rst.directives.images import Image as SphinxImage
 from sphinx.application import Sphinx
 from sphinx.ext import autodoc
 from sphinx.util import logging
 from sphinx.util.typing import ExtensionMetadata
-from docutils.parsers.rst.directives.images import Image as SphinxImage
-
 
 logger = logging.getLogger(__name__)
 
@@ -315,24 +314,24 @@ def skip_members(
         skip = True
     return skip
 
+
 class CustomImage(SphinxImage):
     """
     Custom image directive that resolves docs/_static/ paths correctly
     without Sphinx's automatic relative path resolution.
-    
+
     Allows users to always write: .. image:: docs/_static/images/filename.png
     in both README.rst and docs/*.rst files.
     """
-    
+
     def run(self):
         uri = self.arguments[0]
-        
+
         # If path starts with docs/_static/, remove docs/ prefix for Sphinx build
-        if uri.startswith('docs/_static/'):
-            self.arguments[0] = uri.replace('docs/_static/', '_static/', 1)
+        if uri.startswith("docs/_static/"):
+            self.arguments[0] = uri.replace("docs/_static/", "_static/", 1)
 
         return super().run()
-
 
 
 def setup(app: Sphinx) -> ExtensionMetadata:
@@ -356,7 +355,7 @@ def setup(app: Sphinx) -> ExtensionMetadata:
         https://www.sphinx-doc.org/en/master/usage/extensions/autodoc.html#event-autodoc-skip-member
     """
     app.connect("autodoc-skip-member", skip_members)
-    app.add_directive('image', CustomImage, override=True)
+    app.add_directive("image", CustomImage, override=True)
 
     return {
         "parallel_read_safe": True,
