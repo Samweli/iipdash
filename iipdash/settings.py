@@ -535,5 +535,10 @@ LOGGING = {
             "level": "INFO",
             "propagate": False,
         },
+        "django.security.DisallowedHost": {
+            "handlers": ["console_debug_false"],
+            "level": "CRITICAL",
+            "propagate": False,
+        },
     },
 }
