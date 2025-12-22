@@ -23,7 +23,7 @@ class HealthFacilityAdmin(GISModelAdmin, ImportExportModelAdmin):
 
     #: A list of fields in the admin's list view that link to the detailed
     #: area editing page.
-    list_display_links: list[str] = ["osm_id", "id", "uuid"]
+    list_display_links: list[str] = ["name", "id", "uuid"]
 
     #: A list of fields for filtering results in the admin change list view.
     list_filter = [

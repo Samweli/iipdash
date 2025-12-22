@@ -1,0 +1,170 @@
+{% extends "admin/base_site.html" %}
+{% load i18n static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" href="{% static "admin/css/dashboard.css" %}">{% endblock %}
+
+{% block coltype %}{% endblock %}
+
+{% block bodyclass %}{{ block.super }} user-guide{% endblock %}
+
+{% block nav-breadcrumbs %}{% endblock %}
+
+{% block nav-sidebar %}{% endblock %}
+
+{% block content %}
+<div id="content-main">
+    <p>
+        IIPdash offers an administration interface which is a powerful tool for managing data in the platform.
+        The admin portal is only accessible by some users with administrative privileges.
+    </p>
+
+    <p>
+        The interface can be used for various operations including
+        - Users management
+        - Viewing and filtering various records
+        - Importing and Exporting records
+        - Editing records - Deleting records
+        - and more.
+    </p>
+
+    <section id="accessing-the-interface">
+        <h2>Accessing the Interface</h2>
+        <img class="img-md" src="{% static 'images/main-menu-account.png' %}" alt="main account menu">
+
+        <p>
+            To access the admin portal
+        </p>
+        <ol>
+            <li><strong>Login</strong> to the platform using your account credentials.</li>
+            <li>Click the "<strong>Administration</strong>" sub-menu located within the “Account” menu item of the main top menu.</li>
+        </ol>
+
+        <p>
+            When you are in the home page of the admin portal you will see various sections or data modules
+            that you can manage, such as Users, Demographics, Administrative areas, e.t.c.
+            Clicking on a module/section will take you to a list of records in that module.
+        </p>
+        <img class="img-md" src="{% static 'images/admin-index.png' %}" alt="admin home page">
+    </section>
+
+    <section id="managing-users">
+        <h2>Managing Users</h2>
+        <img class="img-md" src="{% static 'images/admin-users.png' %}" alt="admin users section">
+        <p>The "<strong>Users</strong>" section allows you to manage user accounts.</p>
+
+        Typically, this can be used for tasks like.
+        <ul>
+            <li>Viewing a list of users: See all registered users, their usernames, email addresses, and active status.</li>
+            <li>Adding new users.</li>
+            <li>Editing user’s information such as name and email addresses.</li>
+            <li>Managing users permissions: Example staff/admin and superuser status.</li>
+            <li>Deleting users.</li>
+        </ul>
+
+        <p>The <strong><code>Users</code></strong> index page displays a list of users.</p>
+
+        <section id="adding-users">
+            <h3>Adding users</h3>
+            <img class="img-md" src="{% static 'images/admin-add-user.png' %}" alt="admin add user form">
+            <p>To create user via the admin portal</p>
+            <ol type="1">
+                <li>Click the “Add user” button located at the top of the users page or the "Add" located near the Users link.</li>
+                <li>Enter the email, username, password and password confirmation for the user to be created and then save.</li>
+                <li>
+                    You will be redirected to the page for adding or editing more user details, including email, name and staff status.
+                    Optionally add some details like email, first name, last name then save.
+                </li>
+                <li>
+                    <strong>ONLY if</strong> you want the newly created user to create/edit other users,
+                    in the step above, scroll to "User permissions", then scroll to the bottom of the User Permissions box,
+                    where you will find 4 options starting with "Users | user…". Double click each of them to add them to the user
+                    permission box on the right.
+                </li>
+            </ol>
+
+            <p>The platform stores the passwords in encrypted format, therefore the users passwords can't be accessed as plain text.</p>
+        </section>
+
+        <section id="managing-passwords">
+            <h3>Managing Users Passwords</h3>
+            <p>
+                There is no way to see the users’ passwords after they are saved.
+                If the admin would like to change a password they may use the "reset password" link in a user's page.
+                Alternatively users may change or reset their own passwords by using the password reset link available
+                in the login page or using the change password sub-menu in the account menu
+            </p>
+        </section>
+
+    </section>
+
+    <section id="managing-data">
+        <h2>Managing Data</h2>
+        <img class="img-md" src="{% static 'images/admin-layers-list.png' %}" alt="admin manage-data">
+
+        <p>The data in the admin portal is organized into modules/models.</p>
+        <p>To view a list of records of the specific module just click on the module/model link.</p>
+        <p>Most models will allow you to filter the list of returned results to help you find specific information.</p>
+        Common filtering options include:
+        <ul>
+            <li>Search: Enter keywords to find records that contain specific text</li>
+            <li>Date filters: Filter records by date (e.g., created today, this month, last year).</li>
+            <li>And filtering by categories or other predefined options</li>
+        </ul>
+
+        <p>
+            When the filters are applied, only records matching the filtering criteria will be included in the displayed record listing.
+        </p>
+        <p>
+            To view more details of a specific record, click on its link in the list. This will display a
+            page with data fields and information associated with that record.
+        </p>
+        <p>
+            While viewing a record, you’ll usually most of the fields will be editable.
+            To edit a record, you can edit the fields as needed and then save your changes.
+        </p>
+    </section>
+
+    <section id="deleting-records">
+        <h2>Deleting Records</h2>
+        <img class="img-md" src="{% static 'images/admin-layer-delete.png' %}" alt="admin delete data">
+        <p><strong>Warning:</strong> Be careful when deleting records because this action is irreversible.</p>
+
+        <p>
+            To delete a specific record you will need to open the details page for that specific record, and
+            click a delete button on that page.
+            You will be asked to confirm if you are sure that you want to delete a particular record
+            and if you confirm the record will be deleted.
+        </p>
+
+        <p>To delete multiple records at once you can</p>
+        <ol type="1">
+            <li>Select the records that need to be deleted using checkboxes in the record listing of a specific model</li>
+            <li>In the "action" dropdown at the top of the page select "delete selected …" and Go.</li>
+            <li>Confirm deletion.</li>
+        </ol>
+    </section>
+
+    <section id="importing-and-exporting-data">
+        <h2>Importing and Exporting data</h2>
+        <img class="img-md" src="{% static 'images/admin-confirm-import.png' %}" alt="admin confirm import">
+        <p>
+            The admin portal provides a way to easily import and export data in various formats, which can be very
+            useful for tasks like downloading data for additional external/independent analysis, updating information
+            in bulk or backing up the data.
+        </p>
+
+        <p>
+            If the import/export feature is available for a model, you’ll typically see "Import" and "Export"
+            buttons when viewing a list of records. Exporting allows you to download your data in a
+            file (like a CSV) while Importing lets you upload a file containing new or updated
+            data to add it to the system.
+        </p>
+
+        <p>
+            When importing data into via the admin portal you have to be careful and
+            make sure the imported file has the required data structure and content in order to
+            avoid errors and to maintain data integrity.
+        </p>
+    </section>
+</div>
+{% endblock %}

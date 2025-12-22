@@ -1,5 +1,32 @@
 {% extends 'admin/base.html' %}
 
+{% load i18n %}
+
+{% block content_title %}{% if title %}<h1 class="page-title">{{ title }}</h1>{% endif %}{% endblock %}
+{% block content_subtitle %}{% if subtitle %}<h2 class="page-subtitle">{{ subtitle }}</h2>{% endif %}{% endblock %}
+
+
+{% block userlinks %}
+    {% if site_url %}
+        <a href="{{ site_url }}">{% translate 'View site' %}</a> /
+    {% endif %}
+    {% if user.is_active and user.is_staff %}
+        {% url 'django-admindocs-docroot' as docsroot %}
+        {% if docsroot %}
+            <a href="{{ docsroot }}">{% translate 'Documentation' %}</a> /
+        {% endif %}
+    {% endif %}
+    {% if user.has_usable_password %}
+    <a href="{% url 'admin:password_change' %}">{% translate 'Change password' %}</a> /
+    {% endif %}
+    <form id="logout-form" method="post" action="{% url 'admin:logout' %}">
+        {% csrf_token %}
+        <button type="submit">{% translate 'Log out' %}</button>
+    </form> /
+    <a href="{% url 'admin-guide' %}" target="_blank">{% translate 'User guide' %}</a> /
+    {% include "admin/color_theme_toggle.html" %}
+{% endblock %}
+
 {% block extrastyle %}{{ block.super }}
 <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=DM+Serif+Display:ital@0;1&display=swap');
@@ -28,6 +55,65 @@
 
     #site-name a:link, #site-name a:visited {
         color: #fff;
+    }
+
+    .user-guide {
+        #content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .page-title {
+            padding-top: 3rem;
+            padding-bottom: 2rem;
+            font-weight: bold;
+            color: var(--body-medium-color);
+        }
+
+        .page-title,
+        #content-main {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        #content-main {
+            section {
+                margin-top: 2.5rem;
+
+                h2 {
+                    margin-bottom: 2rem;
+                    padding-bottom: 1rem;
+                    border-bottom: 1px solid var(--border-color);
+                }
+
+                h3 {
+                    color: var(--body-quiet-color);
+                    margin-bottom: 1rem;
+                    padding-bottom: 1rem;
+                    border-bottom: 1px solid var(--border-color);
+                }
+            }
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+
+            &.img-md {
+                max-width: 600px;
+            }
+
+        }
+
+    }
+
+    @media only screen and (min-width: 820px) {
+        .page-title,
+        #content-main {
+            width: 800px;
+            margin: 0 auto;
+        }
     }
 </style>
 {% endblock %}

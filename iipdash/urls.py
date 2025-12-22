@@ -60,11 +60,20 @@ from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, Spec
 from dashboards.views import HomeView
 
 from .api_urls import router as api_router
+from .views import AdminView
 
 urlpatterns = [
     path("", HomeView.as_view(), name="home"),
     path("about/", TemplateView.as_view(template_name="about/about.html"), name="about"),
     path("admin/", admin.site.urls),
+    path(
+        "admin-guide/",
+        AdminView.as_view(
+            title="Admin User Guide",
+            template_name="admin/user_guide/index.html",
+        ),
+        name="admin-guide",
+    ),
     path("accounts/", include("allauth.urls")),
     path("api/auth/", include("rest_framework.urls")),
     path("api/oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
